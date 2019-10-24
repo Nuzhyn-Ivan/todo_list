@@ -23,14 +23,21 @@ def recreate_database():
     due_date datetime,
     frequency INTEGER DEFAULT 0);
     '''
+
+    sqlite_insert_default_lists = '''
+    INSERT INTO 'Lists' ('name', 'order_id') VALUES ("Supermarket", 1 ), ("To Do", 2 ), ("Drag Store", 3 ), ("Movies to watch", 4 );
+    '''
     
     cursor = sqlite_connection.cursor()
     cursor.execute(sqlite_drop_lists)
     cursor.execute(sqlite_drop_entries)
     cursor.execute(sqlite_create_lists)
     cursor.execute(sqlite_create_entries)
+    cursor.execute(sqlite_insert_default_lists)
 
     cursor.close()
+    sqlite_connection.commit()
+    sqlite_connection.close()
 
 
 def execute_query(query):
@@ -53,7 +60,7 @@ def create_list(name):
 def read_lists():
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    query = """SELECT * FROM `Lists`"""
+    query = """SELECT * FROM `Lists` ORDER BY order_id """
     cursor.execute(query)
     records = cursor.fetchall()
     cursor.close()

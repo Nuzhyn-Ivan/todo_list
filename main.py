@@ -16,7 +16,7 @@ BUTTON_SIZE = (1.0, 1.0)
 BUTTON_BACKGROUND_COLOR = [1, 1, 1, .3]
 BUTTON_COLOR = [1, 1, 1, .5]
 
-list_name = 'gfdgfg'
+list_name = 'List name not changed'
 
 
 class ListsPage(GridLayout):
@@ -46,47 +46,53 @@ class ListsPage(GridLayout):
         list_3_description = lists[2]["name"]
         list_4_description = lists[3]["name"]
 
-        self.list_1 = Button(
-            text=list_1_description,
-            font_size=BUTTON_FONT_SIZE,
-            size_hint=BUTTON_SIZE,
-            background_color=BUTTON_BACKGROUND_COLOR,
-            color=BUTTON_COLOR,
-            #halign='left',
-            #valign='middle',
-            #padding_y= 1,
-            #text_size=self.size
-            #pos_hint={'center_x': 1, 'center_y': 1},
-            #background_normal='',
+        # Upper Panel
+        self.upper_panel = GridLayout()
+        self.upper_panel.cols = 3
+        self.upper_panel.add_widget(Button(text="Settings", background_color=BUTTON_BACKGROUND_COLOR, color=BUTTON_COLOR,))
+        self.upper_panel.add_widget(Button(text="Edit", background_color=BUTTON_BACKGROUND_COLOR, color=BUTTON_COLOR,))
+        self.upper_panel.add_widget(Button(text="Search", background_color=BUTTON_BACKGROUND_COLOR, color=BUTTON_COLOR,))
+        self.add_widget(self.upper_panel)
 
-        )
-        self.list_1.bind(on_press=self.list_button_press)
-        self.add_widget(self.list_1)
-        #self.disabled = True
+        # Lists buttons
+        self.lists_panel = GridLayout()
+        self.lists_panel.cols = 2
 
-        self.list_2 = Button(
-            text=list_2_description,
-            font_size=BUTTON_FONT_SIZE,
-            size_hint=BUTTON_SIZE,
-        )
-        self.list_2.bind(on_press=self.list_button_press)
-        self.add_widget(self.list_2)
+        self.lists_panel.list_1 = Button(text=list_1_description, font_size=BUTTON_FONT_SIZE, size_hint=BUTTON_SIZE,)
+        self.lists_panel.list_1.bind(on_press=self.list_button_press)
+        self.lists_panel.add_widget(self.lists_panel.list_1)
 
-        self.list_3 = Button(
-            text=list_3_description,
-            font_size=BUTTON_FONT_SIZE,
-            size_hint=BUTTON_SIZE,
-        )
-        self.list_3.bind(on_press=self.list_button_press)
-        self.add_widget(self.list_3)
+        self.lists_panel.label_1 = Label(text="0")
+        self.lists_panel.add_widget(self.lists_panel.label_1)
 
-        self.list_4 = Button(
-            text=list_4_description,
-            font_size=BUTTON_FONT_SIZE,
-            size_hint=BUTTON_SIZE,
-        )
-        self.list_4.bind(on_press=self.list_button_press)
-        self.add_widget(self.list_4)
+        self.lists_panel.list_2 = Button(text=list_2_description, font_size=BUTTON_FONT_SIZE, size_hint=BUTTON_SIZE,)
+        self.lists_panel.list_2.bind(on_press=self.list_button_press)
+        self.lists_panel.add_widget(self.lists_panel.list_2)
+
+        self.lists_panel.label_2 = Label(text="0")
+        self.lists_panel.add_widget(self.lists_panel.label_2)
+
+        self.lists_panel.list_3 = Button(text=list_3_description, font_size=BUTTON_FONT_SIZE, size_hint=BUTTON_SIZE,)
+        self.lists_panel.list_3.bind(on_press=self.list_button_press)
+        self.lists_panel.add_widget(self.lists_panel.list_3)
+
+        self.lists_panel.label_3 = Label(text="0")
+        self.lists_panel.add_widget(self.lists_panel.label_3)
+
+        self.lists_panel.list_4 = Button(text=list_4_description, font_size=BUTTON_FONT_SIZE, size_hint=BUTTON_SIZE,)
+        self.lists_panel.list_4.bind(on_press=self.list_button_press)
+        self.lists_panel.add_widget(self.lists_panel.list_4)
+
+        self.lists_panel.label_4 = Label(text="0")
+        self.lists_panel.add_widget(self.lists_panel.label_4)
+
+        self.add_widget(self.lists_panel)
+
+        # Bottom Panel
+        self.bottom_panel = GridLayout()
+        self.bottom_panel.cols = 1
+        self.bottom_panel.add_widget(Button(text="Create new List", background_color=BUTTON_BACKGROUND_COLOR, color=BUTTON_COLOR, ))
+        self.add_widget(self.bottom_panel)
 
     def list_button_press(self, instance):
         global list_name

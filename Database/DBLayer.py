@@ -98,11 +98,11 @@ def create_entrie(list_id, name):
     sqlite_connection.close()
 
 
-def read_entries(list_id):
+def read_entries():
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    query = """SELECT * FROM `Entries` WHERE list_id = ?"""
-    cursor.execute(query, (list_id,))
+    query = """SELECT * FROM `Entries` """
+    cursor.execute(query)
     records = cursor.fetchall()
     cursor.close()
     sqlite_connection.close()

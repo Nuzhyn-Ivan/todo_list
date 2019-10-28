@@ -6,13 +6,15 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.button import Button
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.image import Image
 from kivy.clock import Clock
 
 kivy.require("1.10.1")
 
 # TODO move to properties and add properties reader
 BUTTON_FONT_SIZE = 22
-BUTTON_SIZE = (1.0, 1.0)
+BUTTON_SIZE = (1.5, .5)
 BUTTON_BACKGROUND_COLOR = [1, 1, 1, .3]
 BUTTON_COLOR = [1, 1, 1, .5]
 
@@ -24,10 +26,6 @@ class ListsPage(GridLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # TODO cover lists with genelad GridLayout
-        # TODO add Label = counter of active entries for list
-        # TODO add create list button inside another GridLayout
-        # TODO add Settings and Search buttons inside another GridLayout
         self.cols = 1
 
         # TODO - add another class for converting dblayer to list of dict
@@ -40,57 +38,62 @@ class ListsPage(GridLayout):
         fields = ["id", "list_id", "name", "is_completed", "created_date", "due_date", "frequency", ]
         entries = [dict(zip(fields, d)) for d in values]
 
+        list_1_entries_count = str(db.read_entries_count(1)[0][0])
+        list_2_entries_count = str(db.read_entries_count(2)[0][0])
+        list_3_entries_count = str(db.read_entries_count(3)[0][0])
+        list_4_entries_count = str(db.read_entries_count(4)[0][0])
+
         # TODO need to add buttons to Lists dynamically based on db state
         list_1_description = lists[0]["name"]
         list_2_description = lists[1]["name"]
         list_3_description = lists[2]["name"]
         list_4_description = lists[3]["name"]
 
+
         # Upper Panel
-        self.upper_panel = GridLayout()
-        self.upper_panel.cols = 3
-        self.upper_panel.add_widget(Button(text="Settings", background_color=BUTTON_BACKGROUND_COLOR, color=BUTTON_COLOR,))
-        self.upper_panel.add_widget(Button(text="Edit", background_color=BUTTON_BACKGROUND_COLOR, color=BUTTON_COLOR,))
-        self.upper_panel.add_widget(Button(text="Search", background_color=BUTTON_BACKGROUND_COLOR, color=BUTTON_COLOR,))
+        self.upper_panel = GridLayout(cols=3, size_hint=(0.1, 0.1))
+
+        self.upper_panel.add_widget(Button(text="Settings", background_color=BUTTON_BACKGROUND_COLOR, color=BUTTON_COLOR, ))
+        self.upper_panel.add_widget(Button(text="Edit", background_color=BUTTON_BACKGROUND_COLOR, color=BUTTON_COLOR, size_hint=(None, 0.1), width=50))
+        self.upper_panel.add_widget(Button(text="Search", background_color=BUTTON_BACKGROUND_COLOR, color=BUTTON_COLOR, size_hint=(None, 0.1), width=50))
+
         self.add_widget(self.upper_panel)
 
         # Lists buttons
-        self.lists_panel = GridLayout()
-        self.lists_panel.cols = 2
+        self.lists_panel = GridLayout(cols=2,)
 
         self.lists_panel.list_1 = Button(text=list_1_description, font_size=BUTTON_FONT_SIZE, size_hint=BUTTON_SIZE,)
         self.lists_panel.list_1.bind(on_press=self.list_button_press)
         self.lists_panel.add_widget(self.lists_panel.list_1)
 
-        self.lists_panel.label_1 = Label(text="0")
+        self.lists_panel.label_1 = Label(text=list_1_entries_count, width=50)
         self.lists_panel.add_widget(self.lists_panel.label_1)
 
         self.lists_panel.list_2 = Button(text=list_2_description, font_size=BUTTON_FONT_SIZE, size_hint=BUTTON_SIZE,)
         self.lists_panel.list_2.bind(on_press=self.list_button_press)
         self.lists_panel.add_widget(self.lists_panel.list_2)
 
-        self.lists_panel.label_2 = Label(text="0")
+        self.lists_panel.label_2 = Label(text=list_2_entries_count)
         self.lists_panel.add_widget(self.lists_panel.label_2)
 
         self.lists_panel.list_3 = Button(text=list_3_description, font_size=BUTTON_FONT_SIZE, size_hint=BUTTON_SIZE,)
         self.lists_panel.list_3.bind(on_press=self.list_button_press)
         self.lists_panel.add_widget(self.lists_panel.list_3)
 
-        self.lists_panel.label_3 = Label(text="0")
+        self.lists_panel.label_3 = Label(text=list_3_entries_count)
         self.lists_panel.add_widget(self.lists_panel.label_3)
 
         self.lists_panel.list_4 = Button(text=list_4_description, font_size=BUTTON_FONT_SIZE, size_hint=BUTTON_SIZE,)
         self.lists_panel.list_4.bind(on_press=self.list_button_press)
         self.lists_panel.add_widget(self.lists_panel.list_4)
 
-        self.lists_panel.label_4 = Label(text="0")
+        self.lists_panel.label_4 = Label(text=list_3_entries_count)
         self.lists_panel.add_widget(self.lists_panel.label_4)
 
         self.add_widget(self.lists_panel)
 
         # Bottom Panel
-        self.bottom_panel = GridLayout()
-        self.bottom_panel.cols = 1
+        self.bottom_panel = GridLayout(cols=1, size_hint=(0.15, 0.15))
         self.bottom_panel.add_widget(Button(text="Create new List", background_color=BUTTON_BACKGROUND_COLOR, color=BUTTON_COLOR, ))
         self.add_widget(self.bottom_panel)
 
@@ -99,6 +102,11 @@ class ListsPage(GridLayout):
         list_name = instance.text
         chat_app.screen_manager.transition.direction = 'left'
         chat_app.screen_manager.current = 'Entries'
+
+
+class ImageButton(ButtonBehavior, Image):
+    def on_press(self):
+        print('pressed')
 
 
 class EntriesPage(GridLayout):
@@ -111,8 +119,8 @@ class EntriesPage(GridLayout):
 
         # Back button
         self.back_to_lists = Button(
-            # TODO replace with icon
-            text="<--",
+            background_normal="images/back_button.png",
+            background_down="images/back_button.png",
             font_size=BUTTON_FONT_SIZE,
             size_hint=BUTTON_SIZE,
         )

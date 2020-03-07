@@ -4,7 +4,7 @@ from kivy.properties import ListProperty
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 import time
 import Database.DBLayer as db
-import random
+
 
 
 class ListsScreen(Screen):
@@ -114,7 +114,7 @@ MyScreenManager:
                 text: 'My state is ' +  'root.entries_descriptions'
                 font_size: 30 
             Button:
-                text: os.getcwd()
+                text: 'sd'
                 #'Plop world' if self.state == 'normal' else 'Release me!'
                 #'My state is %s' % root.entries_descriptions
                 font_size: 30

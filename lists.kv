@@ -1,0 +1,53 @@
+<ListsWindow>:
+    name: 'lists'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+
+    # Upper Panel
+        GridLayout:
+            cols:3
+            size_hint: 0.1, 0.1
+
+            Button:
+                text: 'Settings'
+            Button:
+                text: 'Edit'
+            Button:
+                text: 'Search'
+
+    # Lists buttons
+        GridLayout:
+            cols:1
+            size: root.width, root.height
+
+            Button:
+                text: 'Create new List'
+                font_size: 30
+
+            Button:
+                text: 'Create new List'
+                font_size: 30
+
+            Button:
+                text: 'Create new List'
+                font_size: 30
+
+            Button:
+                text: 'Create new List'
+                font_size: 30
+
+            Button:
+                text: 'Drag Store'
+                font_size: 30
+                on_release: app.root.refresh_entries()
+
+            Button:
+                text: 'To Do'
+                font_size: 30
+                on_release: app.root.refresh_entries()
+
+            Button:
+                text: 'Supermarket'
+                font_size: 30
+                on_release: app.root.refresh_entries()

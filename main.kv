@@ -1,95 +1,99 @@
-#:import hex kivy.utils.get_color_from_hex
+#: import hex kivy.utils.get_color_from_hex
+#: import FadeTransition kivy.uix.screenmanager.FadeTransition
 ScreenManagement:
+    transition: FadeTransition()
     ListsScreen:
     EntriesScreen:
 
 <ListsScreen>:
     name: 'lists_screen'
-    orientation: 'vertical'
-    spacing: 10
-    #space_x: self.size[0]/3
-    canvas.before:
-        Color:
-            rgba: hex('CC6600')
-        Rectangle:
-            size: self.size
-            pos: self.pos
-
-
-    # Upper Panel
-    BoxLayout:
-        size_hint_y: None
-        height: 50
-
-        Button:
-            text: 'Settings'
-        Button:
-            text: 'Edit'
-        Button:
-            text: 'Search'
-
-
-    # Lists panel
-    BoxLayout:
-        padding: 10
-        # Lists buttons
-        BoxLayout:
-            orientation: 'vertical'
-            #padding: lists_window.space_x, 10
-            size_hint: 0.8, 0.1
-            Button:
-                text: 'Drag Store'
-                font_size: 30
-                height: 40
-                size_hint_y: None
-                on_press: root.manager.current = "entries_screen"
-
-            Button:
-                text: 'To Do'
-                font_size: 30
-                height: 40
-                size_hint_y: None
-                on_press: root.navigate_to_entries_in_list()
-            Button:
-                id: 'supermarket'
-                text: 'Supermarket'
-                font_size: 30
-                height: 40
-                size_hint_y: None
-                on_press: root.navigate_to_entries_in_list()
-
-
-        # Lists counters
-        BoxLayout:
-            orientation: 'vertical'
-            #padding: lists_window.space_x, 10
-            size_hint: 0.2, 0.1
-            Label:
-                text:"count"
-                font_size: 30
-                height: 40
-                size_hint_y: None
-            Label:
-                text:"count"
-                font_size: 30
-                height: 40
-                size_hint_y: None
-            Label:
-                text:"count"
-                font_size: 30
-                height: 40
-                size_hint_y: None
-
-
-    # Bottom panel
+    # Main
     BoxLayout:
         orientation: 'vertical'
-        #padding: lists_window.space_x, 10
-        size_hint_y: None
-        height: 50
-        Button:
-            text: 'Create new List'
-            font_size: 30
+        spacing: 10
+        #space_x: self.size[0]/3
+        canvas.before:
+            Color:
+                rgba: hex('CC6600')
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+
+        # Upper Panel
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+
+            Button:
+                text: 'Settings'
+            Button:
+                text: 'Edit'
+            Button:
+                text: 'Search'
+
+
+        # Lists panel
+        BoxLayout:
+            padding: 10
+            # Lists buttons
+            BoxLayout:
+                orientation: 'vertical'
+                #padding: lists_window.space_x, 10
+                size_hint: 0.8, 0.1
+                Button:
+                    text: 'Drag Store'
+                    font_size: 30
+                    height: 40
+                    size_hint_y: None
+                    on_press: root.manager.current = "entries_screen"
+
+                Button:
+                    text: 'To Do'
+                    font_size: 30
+                    height: 40
+                    size_hint_y: None
+                    on_press: root.manager.current = "entries_screen"
+                Button:
+                    id: 'supermarket'
+                    text: 'Supermarket'
+                    font_size: 30
+                    height: 40
+                    size_hint_y: None
+                    on_press: root.manager.current = "entries_screen"
+
+
+            # Lists counters
+            BoxLayout:
+                orientation: 'vertical'
+                #padding: lists_window.space_x, 10
+                size_hint: 0.2, 0.1
+                Label:
+                    text:"count"
+                    font_size: 30
+                    height: 40
+                    size_hint_y: None
+                Label:
+                    text:"count"
+                    font_size: 30
+                    height: 40
+                    size_hint_y: None
+                Label:
+                    text:"count"
+                    font_size: 30
+                    height: 40
+                    size_hint_y: None
+
+
+        # Bottom panel
+        BoxLayout:
+            orientation: 'vertical'
+            #padding: lists_window.space_x, 10
+            size_hint_y: None
+            height: 50
+            Button:
+                text: 'Create new List'
+                font_size: 30
 
 <EntriesScreen>:
     name: 'entries_screen'
@@ -108,6 +112,6 @@ ScreenManagement:
     BoxLayout:
         orientation: 'vertical'
         Button:
-            text: 'Create new List'
+            text: 'Back to Lists'
             font_size: 30
             on_press: root.manager.current = "lists_screen"

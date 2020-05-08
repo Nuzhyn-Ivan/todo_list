@@ -1,0 +1,51 @@
+#:import hex kivy.utils.get_color_from_hex
+#:import os os
+<EntriesWindow>:
+    id: entries_window
+    name: 'Entries'
+    orientation: 'vertical'
+    spacing: 10
+    canvas.before:
+        Color:
+            rgba: hex('CC6600')
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    # Upper panel
+    BoxLayout:
+        size_hint_y: None
+        height: 50
+
+        Button:
+            size_hint: 0.2, 1
+            text: 'Back to Lists'
+            on_release: app.root.current = 'lists_window'
+        Label:
+            size_hint: 0.8, 1
+            text: 'name of current list'
+    # Entries panel
+    BoxLayout:
+        padding: 10
+        # Entries
+        BoxLayout:
+            orientation: 'vertical'
+            Button:
+                size_hint: 0.2, 1
+                text: 'entry 1'
+                on_release: app.root.current = 'lists_window'
+            Button:
+                size_hint: 0.2, 1
+                text: 'entry 2'
+                on_release: app.root.current = 'lists_window'
+        # Entries done
+        BoxLayout:
+            orientation: 'vertical'
+            Button:
+                size_hint: 0.2, 1
+                text: 'done entry 1'
+                on_release: app.root.current = 'lists_window'
+            Button:
+                size_hint: 0.2, 1
+                text: 'done entry 2'
+                on_release: app.root.current = 'lists_window'

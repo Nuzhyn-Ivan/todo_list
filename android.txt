@@ -1,3 +1,0 @@
-title=TODO
-author=I_Nuzhyn
-orientation=portrait

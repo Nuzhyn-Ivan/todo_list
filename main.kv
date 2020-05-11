@@ -4,6 +4,7 @@ ScreenManagement:
     transition: FadeTransition()
     ListsScreen:
     EntriesScreen:
+    SettingsScreen:
 
 <ListsScreen>:
     name: 'lists_screen'
@@ -24,9 +25,11 @@ ScreenManagement:
         BoxLayout:
             size_hint_y: None
             height: 50
+            size_hint: 1, 0.15
 
             Button:
                 text: 'Settings'
+                on_press: root.manager.current = "settings_screen"
             Button:
                 text: 'Edit'
             Button:
@@ -42,25 +45,37 @@ ScreenManagement:
                 #padding: lists_window.space_x, 10
                 size_hint: 0.8, 0.1
                 Button:
-                    text: 'Drag Store'
+                    text: root.Lists_list[0][1]
                     font_size: 30
                     height: 40
                     size_hint_y: None
                     on_press: root.manager.current = "entries_screen"
 
                 Button:
-                    text: 'To Do'
+                    text: root.Lists_list[1][1]
                     font_size: 30
                     height: 40
                     size_hint_y: None
                     on_press: root.manager.current = "entries_screen"
                 Button:
                     id: 'supermarket'
-                    text: 'Supermarket'
+                    text: root.Lists_list[2][1]
+                    font_size: 30
+                    height: 40
+                    size_hint_y: None
+
+                    on_release: root.manager.current = "entries_screen"
+
+
+                Button:
+                    id: 'supermarket'
+                    text: root.Lists_list[3][1]
                     font_size: 30
                     height: 40
                     size_hint_y: None
                     on_press: root.manager.current = "entries_screen"
+
+
 
 
             # Lists counters
@@ -68,6 +83,11 @@ ScreenManagement:
                 orientation: 'vertical'
                 #padding: lists_window.space_x, 10
                 size_hint: 0.2, 0.1
+                Label:
+                    text:"count"
+                    font_size: 30
+                    height: 40
+                    size_hint_y: None
                 Label:
                     text:"count"
                     font_size: 30
@@ -100,18 +120,68 @@ ScreenManagement:
     orientation: 'vertical'
     spacing: 10
     #space_x: self.size[0]/3
+    on_enter: root.add_all_entries()
     canvas.before:
         Color:
             rgba: hex('CC6600')
         Rectangle:
             size: self.size
             pos: self.pos
-
-
-    # Upper Panel
+    # Root
     BoxLayout:
         orientation: 'vertical'
+        BoxLayout:
+            size_hint_y: None
+            size_hint: 1, 0.15
+            height: 50
+
+            Button:
+                text: 'Settings'
+                on_press: root.manager.current = "settings_screen"
+            Button:
+                text: 'Edit'
+                on_press: root.add_entrie(str(root.Entries_list[0][1]), root.Entries_list[0][2])
+            Button:
+                text: 'Search'
+                on_press: root.add_all_entries()
+
+        TextInput:
+            text: 'Add new'
+            write_tab: False
+            on_focus: self.text = ""
+        # Entries Panel
+        BoxLayout:
+            orientation: 'vertical'
+            id: entries_panel_id
+
+        # Bottom Panel
+        BoxLayout:
+            orientation: 'vertical'
+            Button:
+                text: 'Back'
+                font_size: 30
+                on_press: root.manager.current = "lists_screen"
+
+<SettingsScreen>:
+    name: 'settings_screen'
+    orientation: 'vertical'
+    spacing: 10
+    #space_x: self.size[0]/3
+    canvas.before:
+        Color:
+            rgba: hex('CC6600')
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    # Root
+    BoxLayout:
+        orientation: 'vertical'
+
         Button:
-            text: 'Back to Lists'
+            text: 'App version 0.1.1'
+            font_size: 30
+        Button:
+            text: 'Back'
             font_size: 30
             on_press: root.manager.current = "lists_screen"
+

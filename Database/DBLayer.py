@@ -27,13 +27,17 @@ def recreate_database():
     sqlite_insert_default_lists = '''
     INSERT INTO 'Lists' ('name', 'order_id') VALUES ("Supermarket", 1 ), ("To Do", 2 ), ("Drag Store", 3 ), ("Movies to watch", 4 );
     '''
-    
+    sqlite_insert_default_entries = '''
+    INSERT INTO 'Entries' ('list_id', 'name') VALUES (1, 'first' ), (1, 'first2' ), (1, 'first3' ), (1, 'first4' );
+    '''
+
     cursor = sqlite_connection.cursor()
     cursor.execute(sqlite_drop_lists)
     cursor.execute(sqlite_drop_entries)
     cursor.execute(sqlite_create_lists)
     cursor.execute(sqlite_create_entries)
     cursor.execute(sqlite_insert_default_lists)
+    cursor.execute(sqlite_insert_default_entries)
 
     cursor.close()
     sqlite_connection.commit()
@@ -98,11 +102,21 @@ def create_entrie(list_id, name):
     sqlite_connection.close()
 
 
-def read_entries():
+def read_entries(list_id):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """SELECT * FROM `Entries` WHERE list_id = ? """
+    cursor.execute(query, (list_id,))
+    records = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    return records
+
+def read_all_entries():
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT * FROM `Entries` """
-    cursor.execute(query)
+    cursor.execute(query, )
     records = cursor.fetchall()
     cursor.close()
     sqlite_connection.close()

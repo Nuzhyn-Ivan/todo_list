@@ -3,15 +3,14 @@ from kivy.lang import Builder
 from kivy.properties import ListProperty
 from kivy.properties import StringProperty
 from kivy.uix.button import Button
+from kivy.uix.screenmanager import ScreenManager, Screen
 
 import Database.DBLayer as db
 
-from kivy.uix.screenmanager import ScreenManager, Screen
-
 
 class ButtonListItem(Button):
-    id = StringProperty('')
-    text = StringProperty('')
+    id = StringProperty(None)
+    text = StringProperty(None)
 
     def click(button):
         global app
@@ -20,18 +19,13 @@ class ButtonListItem(Button):
 
 
 class ListsScreen(Screen):
-
     Lists_list = ListProperty(db.read_lists())
 
 
-
-
 class EntriesScreen(Screen):
-
-        # TODO add scroll
+    # TODO add scroll
     # TODO add entries dynamically
     Entries_list = ListProperty(db.read_entries(1))
-
 
     def add_entrie(self, id, text):
         ib = ButtonListItem(
@@ -52,24 +46,18 @@ class EntriesScreen(Screen):
         db.complete_entrie('entrie name')  # TODO entrie name
 
 
-
-
-
-
-
 class SettingsScreen(Screen):
-
     pass
 
 
 class ScreenManagement(ScreenManager):
     pass
 
+
 pre = Builder.load_file("main.kv")
 
+
 class MainApp(App):
-
-
     def build(self):
         return pre
 

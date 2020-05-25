@@ -120,7 +120,9 @@ ScreenManagement:
     orientation: 'vertical'
     spacing: 10
     #space_x: self.size[0]/3
-    on_enter: root.add_all_entries()
+    on_pre_enter: root.add_all_entries()
+    # on_enter: root.add_all_entries()
+    on_pre_leave: root.remove_all_entries()
     canvas.before:
         Color:
             rgba: hex('CC6600')
@@ -142,6 +144,7 @@ ScreenManagement:
                 text: 'Edit'
                 on_press: root.add_entrie(str(root.Entries_list[0][1]), root.Entries_list[0][2])
             Button:
+                id: search_id
                 text: 'Search'
                 on_press: root.add_all_entries()
 

@@ -10,7 +10,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 
 
 class ButtonListItem(Button):
-    wid = StringProperty('')
+    id = StringProperty('')
     text = StringProperty('')
 
     def click(button):
@@ -33,9 +33,9 @@ class EntriesScreen(Screen):
     Entries_list = ListProperty(db.read_entries(1))
 
 
-    def add_entrie(self, wid, text):
+    def add_entrie(self, id, text):
         ib = ButtonListItem(
-            wid=wid,
+            id=id,
             text=text
         )
         entrie_panel = self.ids.entries_panel_id
@@ -43,8 +43,10 @@ class EntriesScreen(Screen):
 
     def add_all_entries(self):
         for no in range(4):
-            self.add_entrie(str(self.Entries_list[no][0]), self.Entries_list[no][2])
+            self.add_entrie('id_my', self.Entries_list[no][2])
 
+    def remove_all_entries(self):
+        self.ids.entries_panel_id.clear_widgets()
 
     def done_entrie(self):
         db.complete_entrie('entrie name')  # TODO entrie name

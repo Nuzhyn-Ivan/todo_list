@@ -21,11 +21,17 @@ class ButtonListItem(Button):
 class ListsScreen(Screen):
     Lists_list = ListProperty(db.read_lists())
 
+    def set_list_id_pressed(self, list_id):
+        # TODO find correct solution
+        EntriesScreen.list_id = list_id
+
+    def read_entries_count(self, list_id):
+        return db.read_entries_count(list_id)
+
 
 class EntriesScreen(Screen):
+    list_id = None
     # TODO add scroll
-    # TODO add entries dynamically
-    Entries_list = ListProperty(db.read_entries(1))
 
     def add_entrie(self, id, text):
         ib = ButtonListItem(
@@ -36,14 +42,18 @@ class EntriesScreen(Screen):
         entrie_panel.add_widget(ib)
 
     def add_all_entries(self):
-        for no in range(4):
-            self.add_entrie('id_my', self.Entries_list[no][2])
+        entries_list = db.read_entries(self.list_id)
+        for no in range(len(entries_list)):
+            self.add_entrie('id_entrie', entries_list[no][2])  # id_entrie just a useless text, not used at all
 
     def remove_all_entries(self):
         self.ids.entries_panel_id.clear_widgets()
 
     def done_entrie(self):
         db.complete_entrie('entrie name')  # TODO entrie name
+
+    def print_this(self, text):
+        EntriesScreen.add_entrie(self, 'dsf', text)
 
 
 class SettingsScreen(Screen):

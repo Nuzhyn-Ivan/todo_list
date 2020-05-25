@@ -49,32 +49,37 @@ ScreenManagement:
                     font_size: 30
                     height: 40
                     size_hint_y: None
-                    on_press: root.manager.current = "entries_screen"
+                    on_press:
+                        root.set_list_id_pressed(root.Lists_list[0][0])
+                        root.manager.current = "entries_screen"
+
 
                 Button:
                     text: root.Lists_list[1][1]
                     font_size: 30
                     height: 40
                     size_hint_y: None
-                    on_press: root.manager.current = "entries_screen"
+                    on_press:
+                        root.set_list_id_pressed(root.Lists_list[1][0])
+                        root.manager.current = "entries_screen"
+
                 Button:
-                    id: 'supermarket'
                     text: root.Lists_list[2][1]
                     font_size: 30
                     height: 40
                     size_hint_y: None
-
-                    on_release: root.manager.current = "entries_screen"
-
+                    on_release:
+                        root.set_list_id_pressed(root.Lists_list[2][0])
+                        root.manager.current = "entries_screen"
 
                 Button:
-                    id: 'supermarket'
                     text: root.Lists_list[3][1]
                     font_size: 30
                     height: 40
                     size_hint_y: None
-                    on_press: root.manager.current = "entries_screen"
-
+                    on_press:
+                        root.set_list_id_pressed(root.Lists_list[3][0])
+                        root.manager.current = "entries_screen"
 
 
 
@@ -84,22 +89,22 @@ ScreenManagement:
                 #padding: lists_window.space_x, 10
                 size_hint: 0.2, 0.1
                 Label:
-                    text:"count"
+                    text: root.read_entries_count(0)
                     font_size: 30
                     height: 40
                     size_hint_y: None
                 Label:
-                    text:"count"
+                    text: root.read_entries_count(1)
                     font_size: 30
                     height: 40
                     size_hint_y: None
                 Label:
-                    text:"count"
+                    text: root.read_entries_count(2)
                     font_size: 30
                     height: 40
                     size_hint_y: None
                 Label:
-                    text:"count"
+                    text: root.read_entries_count(3)
                     font_size: 30
                     height: 40
                     size_hint_y: None
@@ -150,8 +155,10 @@ ScreenManagement:
 
         TextInput:
             text: 'Add new'
+            multiline: False
             write_tab: False
             on_focus: self.text = ""
+            on_text_validate: root.print_this(self.text)
         # Entries Panel
         BoxLayout:
             orientation: 'vertical'
@@ -181,7 +188,7 @@ ScreenManagement:
         orientation: 'vertical'
 
         Button:
-            text: 'App version 0.1.1'
+            text: 'App version 0.1.2'
             font_size: 30
         Button:
             text: 'Back'

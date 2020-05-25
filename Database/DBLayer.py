@@ -131,7 +131,7 @@ def read_entries_count(list_id):
     records = cursor.fetchall()
     cursor.close()
     sqlite_connection.close()
-    return records
+    return str(records[0][0])
 
 
 def update_entrie(name, new_name):

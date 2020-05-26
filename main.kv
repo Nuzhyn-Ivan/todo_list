@@ -25,7 +25,7 @@ ScreenManagement:
         BoxLayout:
             size_hint_y: None
             height: 50
-            size_hint: 1, 0.15
+            size_hint: 1, 0.1
 
             Button:
                 text: 'Settings'
@@ -50,7 +50,7 @@ ScreenManagement:
                     height: 40
                     size_hint_y: None
                     on_press:
-                        root.set_list_id_pressed(root.Lists_list[0][0])
+                        root.set_list_id_pressed(0)
                         root.manager.current = "entries_screen"
 
 
@@ -60,7 +60,7 @@ ScreenManagement:
                     height: 40
                     size_hint_y: None
                     on_press:
-                        root.set_list_id_pressed(root.Lists_list[1][0])
+                        root.set_list_id_pressed(1)
                         root.manager.current = "entries_screen"
 
                 Button:
@@ -69,7 +69,7 @@ ScreenManagement:
                     height: 40
                     size_hint_y: None
                     on_release:
-                        root.set_list_id_pressed(root.Lists_list[2][0])
+                        root.set_list_id_pressed(2)
                         root.manager.current = "entries_screen"
 
                 Button:
@@ -78,7 +78,7 @@ ScreenManagement:
                     height: 40
                     size_hint_y: None
                     on_press:
-                        root.set_list_id_pressed(root.Lists_list[3][0])
+                        root.set_list_id_pressed(3)
                         root.manager.current = "entries_screen"
 
 
@@ -137,10 +137,11 @@ ScreenManagement:
     # Root
     BoxLayout:
         orientation: 'vertical'
+
+        # Upper panel
         BoxLayout:
             size_hint_y: None
-            size_hint: 1, 0.15
-            height: 50
+            size_hint: 1, 0.1
 
             Button:
                 text: 'Settings'
@@ -153,23 +154,39 @@ ScreenManagement:
                 text: 'Search'
                 on_press: root.add_all_entries()
 
-        TextInput:
-            text: 'Add new'
-            multiline: False
-            write_tab: False
-            on_focus: self.text = ""
-            on_text_validate: root.print_this(self.text)
-        # Entries Panel
+         # middle panel
         BoxLayout:
+            size_hint_y: None
+            size_hint: 1, 0.8
             orientation: 'vertical'
-            id: entries_panel_id
+
+            TextInput:
+                id: input_id
+                size_hint_y: None
+                size_hint: 1, 0.1
+                text: 'Add new'
+                is_focusable: True
+                focus: True
+                multiline: False
+                write_tab: False
+                on_focus: self.text = ""
+                on_text_validate:
+                    input_id.focus = True
+                    root.create_entrie('id',self.text)
+
+            # Entries Panel
+            BoxLayout:
+                orientation: 'vertical'
+                id: entries_panel_id
 
         # Bottom Panel
         BoxLayout:
             orientation: 'vertical'
+            size_hint: 1, 0.1
             Button:
                 text: 'Back'
-                font_size: 30
+                size_hint_y: None
+
                 on_press: root.manager.current = "lists_screen"
 
 <SettingsScreen>:

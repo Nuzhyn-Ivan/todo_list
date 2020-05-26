@@ -105,7 +105,7 @@ def create_entrie(list_id, name):
 def read_entries(list_id):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    query = """SELECT * FROM `Entries` WHERE list_id = ? """
+    query = """SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 0"""
     cursor.execute(query, (list_id,))
     records = cursor.fetchall()
     cursor.close()
@@ -126,7 +126,7 @@ def read_all_entries():
 def read_entries_count(list_id):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    query = """SELECT COUNT(*) FROM `Entries` WHERE list_id = ? """
+    query = """SELECT COUNT(*) FROM `Entries` WHERE list_id = ?  and is_completed = 0"""
     cursor.execute(query, (list_id,))
     records = cursor.fetchall()
     cursor.close()

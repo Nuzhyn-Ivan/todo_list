@@ -1,5 +1,6 @@
 #: import hex kivy.utils.get_color_from_hex
 #: import FadeTransition kivy.uix.screenmanager.FadeTransition
+#: import settings settings
 ScreenManagement:
     transition: FadeTransition()
     ListsScreen:
@@ -11,18 +12,17 @@ ScreenManagement:
     # Main
     BoxLayout:
         orientation: 'vertical'
-        spacing: 10
         #space_x: self.size[0]/3
         canvas.before:
             Color:
-                rgba: hex('CC6600')
+                rgba: hex(settings.background_colour)
             Rectangle:
                 size: self.size
                 pos: self.pos
 
-
         # Upper Panel
         BoxLayout:
+            orientation: 'horizontal'
             size_hint_y: None
             height: 50
             size_hint: 1, 0.1
@@ -38,17 +38,18 @@ ScreenManagement:
 
         # Lists panel
         BoxLayout:
+            orientation: 'horizontal'
             padding: 10
             # Lists buttons
             BoxLayout:
                 orientation: 'vertical'
                 #padding: lists_window.space_x, 10
-                size_hint: 0.8, 0.1
+                size_hint_y: None
+                size_hint: 0.8, 1
                 Button:
                     text: root.Lists_list[0][1]
-                    font_size: 30
+                    font_size: settings.font_size
                     height: 40
-                    size_hint_y: None
                     on_press:
                         root.set_list_id_pressed(0)
                         root.manager.current = "entries_screen"
@@ -56,27 +57,24 @@ ScreenManagement:
 
                 Button:
                     text: root.Lists_list[1][1]
-                    font_size: 30
+                    font_size: settings.font_size
                     height: 40
-                    size_hint_y: None
                     on_press:
                         root.set_list_id_pressed(1)
                         root.manager.current = "entries_screen"
 
                 Button:
                     text: root.Lists_list[2][1]
-                    font_size: 30
+                    font_size: settings.font_size
                     height: 40
-                    size_hint_y: None
                     on_release:
                         root.set_list_id_pressed(2)
                         root.manager.current = "entries_screen"
 
                 Button:
                     text: root.Lists_list[3][1]
-                    font_size: 30
+                    font_size: settings.font_size
                     height: 40
-                    size_hint_y: None
                     on_press:
                         root.set_list_id_pressed(3)
                         root.manager.current = "entries_screen"
@@ -87,50 +85,42 @@ ScreenManagement:
             BoxLayout:
                 orientation: 'vertical'
                 #padding: lists_window.space_x, 10
-                size_hint: 0.2, 0.1
+                size_hint: 0.2, 1
                 Label:
                     text: root.read_entries_count(0)
-                    font_size: 30
+                    font_size: settings.font_size
                     height: 40
-                    size_hint_y: None
                 Label:
                     text: root.read_entries_count(1)
-                    font_size: 30
+                    font_size: settings.font_size
                     height: 40
-                    size_hint_y: None
                 Label:
                     text: root.read_entries_count(2)
-                    font_size: 30
+                    font_size: settings.font_size
                     height: 40
-                    size_hint_y: None
                 Label:
                     text: root.read_entries_count(3)
-                    font_size: 30
+                    font_size: settings.font_size
                     height: 40
-                    size_hint_y: None
-
 
         # Bottom panel
         BoxLayout:
             orientation: 'vertical'
-            #padding: lists_window.space_x, 10
             size_hint_y: None
             height: 50
+            size_hint: 1, 0.1
             Button:
                 text: 'Create new List'
-                font_size: 30
+                font_size: settings.font_size
 
 <EntriesScreen>:
     name: 'entries_screen'
     orientation: 'vertical'
-    spacing: 10
-    #space_x: self.size[0]/3
     on_pre_enter: root.add_all_entries()
-    # on_enter: root.add_all_entries()
     on_pre_leave: root.remove_all_entries()
     canvas.before:
         Color:
-            rgba: hex('CC6600')
+            rgba: hex(settings.background_colour)
         Rectangle:
             size: self.size
             pos: self.pos
@@ -140,7 +130,9 @@ ScreenManagement:
 
         # Upper panel
         BoxLayout:
+            orientation: 'horizontal'
             size_hint_y: None
+            height: 50
             size_hint: 1, 0.1
 
             Button:
@@ -156,9 +148,9 @@ ScreenManagement:
 
          # middle panel
         BoxLayout:
+            orientation: 'vertical'
             size_hint_y: None
             size_hint: 1, 0.8
-            orientation: 'vertical'
 
             TextInput:
                 id: input_id
@@ -182,33 +174,32 @@ ScreenManagement:
         # Bottom Panel
         BoxLayout:
             orientation: 'vertical'
+            size_hint_y: None
+            height: 50
             size_hint: 1, 0.1
             Button:
                 text: 'Back'
-                size_hint_y: None
-
                 on_press: root.manager.current = "lists_screen"
 
 <SettingsScreen>:
     name: 'settings_screen'
     orientation: 'vertical'
-    spacing: 10
     #space_x: self.size[0]/3
     canvas.before:
         Color:
-            rgba: hex('CC6600')
+            rgba: hex(settings.background_colour)
         Rectangle:
             size: self.size
             pos: self.pos
     # Root
     BoxLayout:
         orientation: 'vertical'
-
+        spacing: 10
         Button:
             text: 'App version 0.1.2'
-            font_size: 30
+            font_size: settings.font_size
         Button:
             text: 'Back'
-            font_size: 30
+            font_size: settings.font_size
             on_press: root.manager.current = "lists_screen"
 

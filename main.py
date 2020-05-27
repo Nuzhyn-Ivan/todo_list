@@ -6,6 +6,8 @@ from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 import Database.DBLayer as db
+import settings as settings
+
 
 
 class ButtonListItem(Button):
@@ -21,7 +23,6 @@ class ButtonListItem(Button):
 
 class ListsScreen(Screen):
     Lists_list = ListProperty(db.read_lists())
-
     def set_list_id_pressed(self, list_id):
         # TODO find correct solution
         EntriesScreen.list_id = list_id
@@ -32,19 +33,18 @@ class ListsScreen(Screen):
 
 class EntriesScreen(Screen):
     list_id = None
+
     # TODO add scroll
 
     def add_entrie(self, id, text):
         entrie = ButtonListItem(
             id=id,
             text=text,
-            size_hint=(1,0.1),
+            size_hint=(1, None)
         )
         entrie.bind(on_press=self.done_entrie)
-
         entrie_panel = self.ids.entries_panel_id
         entrie_panel.add_widget(entrie)
-
 
     def add_all_entries(self):
         entries_list = db.read_entries(self.list_id)

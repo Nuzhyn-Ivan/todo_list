@@ -92,7 +92,7 @@ def delete_list(name):
     sqlite_connection.close()
 
 
-def create_entrie(list_id, name):
+def create_entry(list_id, name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = "INSERT INTO 'Entries' ( 'list_id', 'name') VALUES (?, ? )"
@@ -134,7 +134,7 @@ def read_entries_count(list_id):
     return str(records[0][0])
 
 
-def update_entrie(name, new_name):
+def update_entry(name, new_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """UPDATE `Entries` SET name = ? WHERE name = ?"""
@@ -144,7 +144,7 @@ def update_entrie(name, new_name):
     sqlite_connection.close()
 
 
-def complete_entrie(name):
+def complete_entry(name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """UPDATE `Entries` SET is_completed = 1 WHERE name = ?"""
@@ -154,7 +154,7 @@ def complete_entrie(name):
     sqlite_connection.close()
 
 
-def delete_entrie(list_id):
+def delete_entries(list_id):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """DELETE FROM `Entries` WHERE list_id = ? """

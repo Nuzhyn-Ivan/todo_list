@@ -35,73 +35,74 @@ ScreenManagement:
             Button:
                 text: 'Search'
 
-
-        # Lists panel
-        BoxLayout:
-            orientation: 'horizontal'
-            padding: 10
-            # Lists buttons
+        ScrollView:
+            # Lists panel
             BoxLayout:
-                orientation: 'vertical'
-                #padding: lists_window.space_x, 10
-                size_hint_y: None
-                size_hint: 0.8, 1
-                Button:
-                    text: root.Lists_list[0][1]
-                    font_size: settings.font_size
-                    height: 40
-                    on_press:
-                        root.set_list_id_pressed(0)
-                        root.manager.current = "entries_screen"
+                orientation: 'horizontal'
+                padding: 10
+                # Lists buttons
+                BoxLayout:
+                    orientation: 'vertical'
+                    #padding: lists_window.space_x, 10
+                    size_hint_y: None
+                    size_hint: 0.8, 1
+                    Button:
+                        text: root.Lists_list[0][1]
+                        font_size: settings.font_size
+                        height: 40
+                        on_press:
+                            root.set_list_id_pressed(0)
+                            root.manager.current = "entries_screen"
 
 
-                Button:
-                    text: root.Lists_list[1][1]
-                    font_size: settings.font_size
-                    height: 40
-                    on_press:
-                        root.set_list_id_pressed(1)
-                        root.manager.current = "entries_screen"
+                    Button:
+                        text: root.Lists_list[1][1]
+                        font_size: settings.font_size
+                        height: 40
+                        on_press:
+                            root.set_list_id_pressed(1)
+                            root.manager.current = "entries_screen"
 
-                Button:
-                    text: root.Lists_list[2][1]
-                    font_size: settings.font_size
-                    height: 40
-                    on_release:
-                        root.set_list_id_pressed(2)
-                        root.manager.current = "entries_screen"
+                    Button:
+                        text: root.Lists_list[2][1]
+                        font_size: settings.font_size
+                        height: 40
+                        on_release:
+                            root.set_list_id_pressed(2)
+                            root.manager.current = "entries_screen"
 
-                Button:
-                    text: root.Lists_list[3][1]
-                    font_size: settings.font_size
-                    height: 40
-                    on_press:
-                        root.set_list_id_pressed(3)
-                        root.manager.current = "entries_screen"
+                    Button:
+                        text: root.Lists_list[3][1]
+                        font_size: settings.font_size
+                        height: 40
+                        on_press:
+                            root.set_list_id_pressed(3)
+                            root.manager.current = "entries_screen"
 
 
 
-            # Lists counters
-            BoxLayout:
-                orientation: 'vertical'
-                #padding: lists_window.space_x, 10
-                size_hint: 0.2, 1
-                Label:
-                    text: root.read_entries_count(0)
-                    font_size: settings.font_size
-                    height: 40
-                Label:
-                    text: root.read_entries_count(1)
-                    font_size: settings.font_size
-                    height: 40
-                Label:
-                    text: root.read_entries_count(2)
-                    font_size: settings.font_size
-                    height: 40
-                Label:
-                    text: root.read_entries_count(3)
-                    font_size: settings.font_size
-                    height: 40
+                # Lists counters
+                BoxLayout:
+                    orientation: 'vertical'
+                    #padding: lists_window.space_x, 10
+                    size_hint: 0.2, 1
+
+                    Label:
+                        text: root.read_entries_count(0)
+                        font_size: settings.font_size
+                        height: 40
+                    Label:
+                        text: root.read_entries_count(1)
+                        font_size: settings.font_size
+                        height: 40
+                    Label:
+                        text: root.read_entries_count(2)
+                        font_size: settings.font_size
+                        height: 40
+                    Label:
+                        text: root.read_entries_count(3)
+                        font_size: settings.font_size
+                        height: 40
 
         # Bottom panel
         BoxLayout:
@@ -140,17 +141,26 @@ ScreenManagement:
                 on_press: root.manager.current = "settings_screen"
             Button:
                 text: 'Edit'
-                on_press: root.add_entrie(str(root.Entries_list[0][1]), root.Entries_list[0][2])
             Button:
                 id: search_id
                 text: 'Search'
-                on_press: root.add_all_entries()
 
          # middle panel
         BoxLayout:
             orientation: 'vertical'
             size_hint_y: None
             size_hint: 1, 0.8
+
+
+
+            # Entries Panel
+            ScrollView:
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: 1
+                    id: entries_panel_id
+                    height: self.minimum_height
+                    size_hint_y: None
 
             TextInput:
                 id: input_id
@@ -164,12 +174,7 @@ ScreenManagement:
                 on_focus: self.text = ""
                 on_text_validate:
                     input_id.focus = True
-                    root.create_entrie('id',self.text)
-
-            # Entries Panel
-            BoxLayout:
-                orientation: 'vertical'
-                id: entries_panel_id
+                    root.create_entry('id',self.text)
 
         # Bottom Panel
         BoxLayout:
@@ -195,11 +200,14 @@ ScreenManagement:
     BoxLayout:
         orientation: 'vertical'
         spacing: 10
-        Button:
-            text: 'App version 0.1.2'
+        Label:
+            text: 'App version ' + settings.app_version
             font_size: settings.font_size
         Button:
             text: 'Back'
             font_size: settings.font_size
+            size_hint_y: None
+            height: 50
+            size_hint: 1, 0.1
             on_press: root.manager.current = "lists_screen"
 

@@ -36,31 +36,32 @@ class EntriesScreen(Screen):
 
     # TODO add scroll
 
-    def add_entrie(self, id, text):
-        entrie = ButtonListItem(
+    def add_entry(self, id, text):
+        entry = ButtonListItem(
             id=id,
             text=text,
-            size_hint=(1, None)
+            size_hint=(1, None),
+            height="70dp"
         )
-        entrie.bind(on_press=self.done_entrie)
+        entry.bind(on_release=self.done_entry)
         entrie_panel = self.ids.entries_panel_id
-        entrie_panel.add_widget(entrie)
+        entrie_panel.add_widget(entry)
 
     def add_all_entries(self):
         entries_list = db.read_entries(self.list_id)
         for no in range(len(entries_list)):
-            self.add_entrie('id_entrie', entries_list[no][2])  # TODO - generate id correctly
+            self.add_entry('id_entry', entries_list[no][2])  # TODO - generate id correctly
 
     def remove_all_entries(self):
         self.ids.entries_panel_id.clear_widgets()
 
-    def done_entrie(self, btn_obj):
-        db.complete_entrie(btn_obj.text)  # TODO entrie id
+    def done_entry(self, btn_obj):
+        db.complete_entry(btn_obj.text)  # TODO entrie id
         self.ids.entries_panel_id.remove_widget(btn_obj)
 
-    def create_entrie(self, id, text):
-        self.add_entrie(id, text)
-        db.create_entrie(self.list_id, text)
+    def create_entry(self, id, text):
+        self.add_entry(id, text)
+        db.create_entry(self.list_id, text)
 
 
 

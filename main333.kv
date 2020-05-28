@@ -113,6 +113,7 @@ ScreenManagement:
             Button:
                 text: 'Create new List'
                 font_size: settings.font_size
+                on_press: root.open_list_popup(*args)
 
 <EntriesScreen>:
     name: 'entries_screen'
@@ -137,13 +138,11 @@ ScreenManagement:
             size_hint: 1, 0.1
 
             Button:
-                text: 'Settings'
-                on_press: root.manager.current = "settings_screen"
+                text: 'History'
             Button:
                 text: 'Edit'
             Button:
-                id: search_id
-                text: 'Search'
+                text: 'Tags'
 
          # middle panel
         BoxLayout:
@@ -166,15 +165,15 @@ ScreenManagement:
                 id: input_id
                 size_hint_y: None
                 size_hint: 1, 0.1
-                text: 'Add new'
+                font_size: self.height - 15
                 is_focusable: True
-                focus: True
+                hint_text: 'Add new entry'
+                # hint_text_color: defaults  [0.5, 0.5, 0.5, 1.0] (grey).
                 multiline: False
                 write_tab: False
-                on_focus: self.text = ""
                 on_text_validate:
-                    input_id.focus = True
                     root.create_entry('id',self.text)
+                    self.text = ""
 
         # Bottom Panel
         BoxLayout:
@@ -210,4 +209,14 @@ ScreenManagement:
             height: 50
             size_hint: 1, 0.1
             on_press: root.manager.current = "lists_screen"
+
+<CreateListPopup>:
+    title: 'title'
+    id: create_list_popup_id
+    on_open: app.root.popupreference=self
+    size_hint: 0.5, 0.5
+    auto_dismiss: True
+    Button:
+        text: 'Back'
+
 

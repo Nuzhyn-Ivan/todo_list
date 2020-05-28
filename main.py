@@ -1,14 +1,20 @@
 from kivy.app import App
+from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.properties import ListProperty
 from kivy.properties import StringProperty
 from kivy.uix.button import Button
+from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.core.window import Window
 
 import Database.DBLayer as db
 import settings as settings
 
 
+
+Window.softinput_mode = 'below_target'
+# https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
 
 class ButtonListItem(Button):
     id = StringProperty(None)
@@ -30,6 +36,8 @@ class ListsScreen(Screen):
     def read_entries_count(self, list_id):
         return db.read_entries_count(list_id)
 
+    def open_list_popup(self, *args):
+        CreateListPopup().open()
 
 class EntriesScreen(Screen):
     list_id = None
@@ -59,13 +67,20 @@ class EntriesScreen(Screen):
         db.complete_entry(btn_obj.text)  # TODO entrie id
         self.ids.entries_panel_id.remove_widget(btn_obj)
 
+    def focus_text_input(self, df):
+        self.ids.input_id.focus = True
+
     def create_entry(self, id, text):
         self.add_entry(id, text)
         db.create_entry(self.list_id, text)
-
+        Clock.schedule_once(self.focus_text_input, 0.1)
 
 
 class SettingsScreen(Screen):
+    pass
+
+
+class CreateListPopup(Popup):
     pass
 
 
@@ -73,7 +88,7 @@ class ScreenManagement(ScreenManager):
     pass
 
 
-pre = Builder.load_file("main.kv")
+pre = Builder.load_file("main333.kv")
 
 
 class MainApp(App):

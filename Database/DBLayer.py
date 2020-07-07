@@ -1,5 +1,7 @@
 import sqlite3
-db_path = 'Database//TODO.db'
+import settings
+db_path = settings.db_path
+
 
 def recreate_database():
     sqlite_connection = sqlite3.connect(db_path)
@@ -49,13 +51,16 @@ def execute_query(query):
     cursor = sqlite_connection.cursor()
     cursor.execute(query)
     cursor.close()
+    records = cursor.fetchall()
+    return records
 
 
-def create_list(name):
+# Lists CRUD
+def create_list(list_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, 1 )"
-    cursor.execute(query, (name,))
+    cursor.execute(query, (list_name,))
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()
@@ -72,31 +77,60 @@ def read_lists():
     return records
 
 
-def update_list(name, new_name):
+def get_list_name(list_id):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """SELECT name FROM `Lists` where id = ? """
+    cursor.execute(query, (list_id,))
+    records = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    return records[0][0]
+
+
+def get_list_id(list_name):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """SELECT id FROM `Lists` where name = ? """
+    cursor.execute(query, (list_name,))
+    records = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    return records[0][0]
+
+
+def update_list(list_name, new_list_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """UPDATE `Lists` SET name = ? WHERE name = ?"""
-    cursor.execute(query, (new_name, name))
+    cursor.execute(query, (new_list_name, list_name))
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()
 
 
-def delete_list(name):
+def delete_list_by_name(list_name):
+    list_id = get_list_id(list_name)
+    delete_entries(list_id)
+    delete_list_by_id(list_id)
+
+
+def delete_list_by_id(list_id):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    query = """DELETE FROM `Lists` WHERE name = ? """
-    cursor.execute(query, (name,))
+    query = """DELETE FROM `Lists` WHERE id = ? """
+    cursor.execute(query, (list_id,))
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()
 
 
-def create_entry(list_id, name):
+# Entries CRUD
+def create_entry(list_id, entry_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = "INSERT INTO 'Entries' ( 'list_id', 'name') VALUES (?, ? )"
-    cursor.execute(query, (list_id, name))
+    cursor.execute(query, (list_id, entry_name))
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()
@@ -111,6 +145,17 @@ def read_entries(list_id):
     cursor.close()
     sqlite_connection.close()
     return records
+
+
+def update_entry(entry_name, new_entry_name):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """UPDATE `Entries` SET name = ? WHERE name = ?"""
+    cursor.execute(query, (new_entry_name, entry_name))
+    cursor.close()
+    sqlite_connection.commit()
+    sqlite_connection.close()
+
 
 def read_all_entries():
     sqlite_connection = sqlite3.connect(db_path)
@@ -134,21 +179,11 @@ def read_entries_count(list_id):
     return str(records[0][0])
 
 
-def update_entry(name, new_name):
-    sqlite_connection = sqlite3.connect(db_path)
-    cursor = sqlite_connection.cursor()
-    query = """UPDATE `Entries` SET name = ? WHERE name = ?"""
-    cursor.execute(query, (new_name, name))
-    cursor.close()
-    sqlite_connection.commit()
-    sqlite_connection.close()
-
-
-def complete_entry(name):
+def complete_entry(entry_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """UPDATE `Entries` SET is_completed = 1 WHERE name = ?"""
-    cursor.execute(query, (name,))
+    cursor.execute(query, (entry_name,))
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()

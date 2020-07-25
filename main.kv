@@ -4,13 +4,12 @@
 #: import images images
 <Runner>:
     # Handling the gesture event.
-    on_left_to_right_line: manager.current = 'lists_screen';  manager.transition.direction = 'right'
+    on_left_to_right_line: manager.change_screen("lists_screen", "right")
     ScreenManagement:
         id: manager
         ListsScreen:
         EntriesScreen:
         SettingsScreen:
-
 <ListsScreen>:
     name: 'lists_screen'
     md_bg_color: hex(settings.background_colour)
@@ -30,10 +29,8 @@
 
             Button:
                 text: 'Settings'
+                on_press: root.manager.change_screen("settings_screen", "left")
 
-                on_press:
-                    root.manager.transition = CardTransition(direction='left', duration = 0.1)
-                    root.manager.current = "settings_screen"
             Button:
                 text: 'Edit'
             Button:
@@ -53,14 +50,23 @@
 
         # Bottom panel
         BoxLayout:
-            orientation: 'vertical'
-            size_hint_y: None
+            orientation: 'horizontal'
             height: 50
             size_hint: 1, 0.1
-            Button:
-                text: 'Create new List'
-                #font_size: settings.font_size
-                on_press: root.open_list_popup(*args)
+
+            TextInput:
+                id: add_list_input_id
+                halign: "center"
+                valign: "middle"
+                is_focusable: True
+                hint_text: 'Create new List'
+                font_size: 0.5 * self.height
+                multiline: False
+                write_tab: False
+                on_text_validate:
+                    root.create_list(self.text)
+                    root.refresh_lists()
+                    self.text = ""
 
 <EntriesScreen>:
     name: 'entries_screen'
@@ -68,7 +74,7 @@
     on_pre_enter:
         root.refresh_entries()
         self.ids.current_list_lbl.text = "<--  " + root.list_name
-    # on_pre_leave: root.remove_all_entries()
+    on_pre_leave: self.ids.input_id.focus = False
     md_bg_color: hex(settings.background_colour)
 
     # Root
@@ -86,9 +92,7 @@
                 id: current_list_lbl
                 text: "<-  " + root.list_name
                 size_hint: 0.6, 1
-                on_press:
-                    root.manager.transition = CardTransition(direction='right', duration = 0.1)
-                    root.manager.current = "lists_screen"
+                on_press: root.manager.change_screen("lists_screen", "right")
 
             Button:
                 text: 'Edit'
@@ -100,39 +104,42 @@
         # Entries Panel
         ScrollView:
             StackLayout:
-                #orientation: 'vertical'
-                orientation:'rl-bt'
-                spacing: 1
-                size_hint: 1, 0.8
                 id: entries_panel_id
                 height: self.minimum_height
-                size_hint_y: None
-                pos_hint: {'top': 1}
+                orientation: 'rl-tb'
+                padding: 10
+                spacing: 1
+                size_hint: (1,None)
+
+
+
+                #size_hint: 1, 0.8
+
+                #size: (self.parent.width, self.parent.height)
+                #size_hint_y: None
+
+
 
 
         # Bottom Panel
         BoxLayout:
             orientation: 'vertical'
-            size_hint_y: None
-            height: 40
-            size_hint: 1, 0.07
-            TextInput:
+            height: 50
+            size_hint: 1, 0.1
+            TextInputCustomValidate:
                 id: input_id
                 #font_size: self.height - 15
                 # hint_text_color: defaults  [0.5, 0.5, 0.5, 1.0] (grey).
                 #valign: "middle"
                 halign: "center"
-
                 is_focusable: True
                 hint_text: 'Add new entry'
-                font_size: self.height - 15
-
+                font_size: 0.5 * self.height
                 multiline: False
                 write_tab: False
                 on_text_validate:
                     root.create_entry(self.text)
-                    self.text = ""
-
+                    self.text = ''
 
 
 <SettingsScreen>:
@@ -144,12 +151,15 @@
     # Root
     BoxLayout:
         orientation: 'vertical'
-        spacing: 10
+        spacing: 2
         Label:
             text: 'App version ' + settings.app_version
+
             #font_size: settings.font_size
         Button:
             text: 'Reset DB'
+            height: "70dp"
+            size_hint: (1, None)
             on_press:
                 root.reset_db()
 
@@ -157,45 +167,72 @@
             halign: "center"
             valign: "middle"
             is_focusable: True
-            hint_text: 'Add list name'
+            hint_text: 'Delete list'
             multiline: False
             write_tab: False
-            font_size: self.height - 15
+            font_size:  0.5 * self.height
+            height: "70dp"
+            size_hint: (1, None)
             on_text_validate:
                 root.delete_list_by_name(self.text)
                 self.text = ""
-        MDIconButton:
-            icon: "images/back.png"
-            #font_size: settings.font_size
-            on_press:
-                root.manager.transition = CardTransition(direction='right', duration = 0.1)
-                root.manager.current = "lists_screen"
+        MDTextField:
+            halign: "center"
+            valign: "middle"
+            is_focusable: True
+            hint_text: 'Entry font size'
+            multiline: False
+            write_tab: False
+            font_size:  0.5 * self.height
+            height: "70dp"
+            size_hint: (1, None)
+            text : root.entries_font_size
 
-<CreateListPopup>:
-    title: 'Create new List'
-    id: create_list_popup_id
+        MDTextField:
+            halign: "center"
+            valign: "middle"
+            is_focusable: True
+            hint_text: 'Lists font size'
+            multiline: False
+            write_tab: False
+            font_size:  0.5 * self.height
+            height: "70dp"
+            size_hint: (1, None)
+            text : root.lists_font_size
+
+
+        BoxLayout:
+            orientation: 'horizontal'
+            Button:
+                text: 'Back'
+                height: "70dp"
+                size_hint: (1, None)
+                #font_size: settings.font_size
+                on_press: root.manager.change_screen("lists_screen", "right")
+            Button:
+                text: 'Save'
+                height: "70dp"
+                size_hint: (1, None)
+                #font_size: settings.font_size
+                on_press:
+                    root.manager.change_screen("lists_screen", "right")
+                    root.save_settings()
+
+<ErrorPopup>:
+    title: 'Exeption handler'
+    id: error_popup_id
     on_open: app.root.popupreference=self
     size_hint: 1, 0.4
     auto_dismiss: True
     BoxLayout:
         orientation: 'vertical'
         spacing: 10
-        TextInput:
-            id: add_list_input_id
-            halign: "center"
-            valign: "middle"
-            font_size: self.height - 15
-            is_focusable: True
-            height: "70dp"
-            size_hint:(1, None)
-            hint_text: 'List name'
-            multiline: False
-            write_tab: False
-            on_text_validate:
-                root.create_list(self.text)
-                root.dismiss()
+        Label:
+            text: root.error_text
+
+
         Button:
-            text: 'Back'
+            text: 'Close'
             height: "70dp"
             size_hint:(1, None)
             on_press:

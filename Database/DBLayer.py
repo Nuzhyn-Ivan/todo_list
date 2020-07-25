@@ -1,11 +1,19 @@
 import sqlite3
+import os.path
 import settings
+import main as main
+
 db_path = settings.db_path
 
 
-def recreate_database():
-    sqlite_connection = sqlite3.connect(db_path)
+def create_db():
+    if not os.path.exists(db_path):
+        recreate_database()
 
+
+def recreate_database():
+
+    sqlite_connection = sqlite3.connect(db_path)
     sqlite_drop_lists = "DROP TABLE IF EXISTS Lists"
     sqlite_drop_entries = "DROP TABLE IF EXISTS Entries"
     sqlite_create_lists = '''
@@ -46,6 +54,7 @@ def recreate_database():
     sqlite_connection.close()
 
 
+
 def execute_query(query):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
@@ -56,14 +65,20 @@ def execute_query(query):
 
 
 # Lists CRUD
+
 def create_list(list_name):
-    sqlite_connection = sqlite3.connect(db_path)
-    cursor = sqlite_connection.cursor()
-    query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, 1 )"
-    cursor.execute(query, (list_name,))
+    try:
+        sqlite_connection = sqlite3.connect(db_path)
+        cursor = sqlite_connection.cursor()
+        query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, 1 )"
+        cursor.execute(query, (list_name,))
+    except sqlite3.Error as e:
+        main.MainApp.open_error_popup('Cant create list with this name')
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()
+
+
 
 
 def read_lists():

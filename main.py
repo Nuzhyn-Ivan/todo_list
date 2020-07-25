@@ -1,19 +1,26 @@
+from kivy.core.audio import SoundLoader
+from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.properties import StringProperty
 from kivy.uix.button import Button
-from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, SlideTransition, CardTransition
+from kivy.uix.textinput import TextInput
 from kivymd.uix.screen import MDScreen
 from kivy.core.window import Window
 from kivymd.app import MDApp
 import gesture_box as gesture
-
+import settings
 import Database.DBLayer as db
 
 
 Window.softinput_mode = 'below_target'
 # https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
 
+
+class TextInputCustomValidate(TextInput):
+    def __init__(self, **kwargs):
+        super(TextInputCustomValidate, self).__init__(**kwargs)
+        self.text_validate_unfocus = False
 
 
 class ButtonListItem(Button):
@@ -34,11 +41,9 @@ class ListsScreen(MDScreen):
     def _do_setup(self, *l):
         self.refresh_lists()
 
-    def read_entries_count(self, list_id):
+    @staticmethod
+    def read_entries_count(list_id):
         return db.read_entries_count(list_id)
-
-    def open_list_popup(self, *args):
-        CreateListPopup().open()
 
     def refresh_lists(self):
         lists = db.read_lists()
@@ -49,6 +54,7 @@ class ListsScreen(MDScreen):
                 text=str(i[1] + " (" + db.read_entries_count(i[0]) + ")"),  # list name
                 size_hint=(1, None),
                 height="70dp",
+                font_size=settings.lists_font_size,
             )
             list_btn.bind(on_press=self.open_entry)
             lists_panel = self.ids.lists_panel_id
@@ -60,19 +66,25 @@ class ListsScreen(MDScreen):
         self.manager.transition = CardTransition(direction='left', duration=0.1)
         self.manager.current = "entries_screen"
 
+    @staticmethod
+    def create_list(text):
+        text = text.strip()
+        if text:
+            db.create_list(text)
+
 
 class EntriesScreen(MDScreen):
     list_id = StringProperty()
     list_name = StringProperty()
-    # TODO add scroll
+    done_entry_sound = SoundLoader.load(settings.done_entry_sound)
 
-    def add_entry(self, id, text):
+    def add_entry(self, entry_id, text):
         entry = ButtonListItem(
-            id=id,
+            id=entry_id,
             text=text,
-            size_hint=(1, None),
+            size_hint_y=None,
             height="70dp",
-
+            font_size=settings.entries_font_size,
         )
         entry.bind(on_release=self.done_entry)
         entry_panel = self.ids.entries_panel_id
@@ -82,40 +94,36 @@ class EntriesScreen(MDScreen):
         entries_list = db.read_entries(int(self.list_id))
         self.ids.entries_panel_id.clear_widgets()
         for no in range(len(entries_list)):
-            self.add_entry('id_entry', entries_list[no][2])  # TODO - generate id correctly
+            self.add_entry(entries_list[no][2], entries_list[no][2])  # TODO - generate id correctly
 
     def done_entry(self, btn_obj):
         db.complete_entry(btn_obj.text)  # TODO entrie id
         self.ids.entries_panel_id.remove_widget(btn_obj)
+        self.done_entry_sound.play()
 
-    def focus_text_input(self, df):
-        self.ids.input_id.focus = True
+    def focus_entries_panel_id(self):
+        self.ids.entries_panel_id.focus = True
 
     def create_entry(self, text):
         text = text.strip()
         if text:
             self.add_entry(text, text)
             db.create_entry(self.list_id, text)
-        Clock.schedule_once(self.focus_text_input, 0.1)
 
 
 class SettingsScreen(MDScreen):
-    def reset_db(self):
+    entries_font_size = settings.entries_font_size
+    lists_font_size = settings.lists_font_size
+    @staticmethod
+    def reset_db():
         db.recreate_database()
 
-    def delete_list_by_name(self, text):
+    @staticmethod
+    def delete_list_by_name(text):
         db.delete_list_by_name(text)
 
-
-class CreateListPopup(Popup):
-
-    def create_list(self, text):
-        text = text.strip()
-        if text:
-            db.create_list(text)
-
-    def focus_text_input(self, df):
-        self.ids.add_list_input_id.focus = True
+    def save_settings(self):
+        pass
 
 
 class Runner(gesture.GestureBox):
@@ -133,23 +141,38 @@ class ScreenManagement(ScreenManager):
             if self.current_screen.name == "lists_screen":
                 return False  # exit the app from this page
             elif self.current_screen.name == "settings_screen":
-                self.transition = CardTransition(direction='right', duration=0.1)
-                self.current = "lists_screen"
+                self.change_screen("lists_screen", 'right')
                 return True  # do not exit the app
             elif self.current_screen.name == "entries_screen":
-                self.transition = CardTransition(direction='right', duration=0.1)
-                self.current = "lists_screen"
+                self.change_screen("lists_screen", 'right')
                 return True  # do not exit the app
+
+    def change_screen(self, screen_name, direction):
+        self.transition = CardTransition(direction=direction, duration=settings.screen_transition_duration)
+        self.current = screen_name
+
+
+class ErrorPopup(Popup):
+    error_text = 'some error text'
+    pass
 
 
 class MainApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = 'Light'
         # self.theme_cls.theme_style = 'Dark'
+        self.icon = 'images/icon.png'
+        self.title = settings.app_title
         return Runner()
+
+    @staticmethod
+    def open_error_popup(text):
+        ErrorPopup.error_text = text
+        ErrorPopup().open()
 
 
 if __name__ == '__main__':
+    db.create_db()
     MainApp().run()
 
 

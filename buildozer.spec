@@ -13,7 +13,7 @@ package.domain = org.todo
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,wav
+source.include_exts = py,png,jpg,kv,wav,ini
 
 # (list) List of inclusions using pattern matching
 #source.include_patterns = assets/*,images/*.png

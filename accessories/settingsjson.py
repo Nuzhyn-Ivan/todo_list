@@ -1,6 +1,6 @@
 import json
 
-settings_json = json.dumps([
+UI_panel = json.dumps([
     {'type': 'string',
      'title': 'font_size',
      'desc': 'String description font_size',
@@ -22,3 +22,38 @@ settings_json = json.dumps([
      'section': 'UI',
      'key': 'background_colour',
      'options': ['CC6600', 'ffffff', ]},])
+System_panel = json.dumps([
+    {'type': 'string',
+     'title': 'app_version ',
+     'desc': 'String description app_version ',
+     'section': 'System',
+     'key': 'app_version'},
+    {'type': 'string',
+     'title': 'TODOit ',
+     'desc': 'Numeric app_title',
+     'section': 'System',
+     'key': 'app_title'},
+    {'type': 'string',
+     'title': '0, 0, 0, 1',
+     'desc': 'String description font_color ',
+     'section': 'System',
+     'key': 'font_color'},
+    {'type': 'string',
+     'title': 'An options db_path ',
+     'desc': 'Options description db_path ',
+     'section': 'System',
+     'key': 'db_path',
+     },
+    {'type': 'string',
+    'title': 'An screen_transition_duration  db_path ',
+    'desc': 'Options screen_transition_duration  db_path ',
+    'section': 'System',
+    'key': 'screen_transition_duration',
+    },
+  {'type': 'string',
+  'title': 'An done_entry_sound    ',
+  'desc': 'Options done_entry_sound   db_path ',
+  'section': 'System',
+  'key': 'done_entry_sound',
+  },
+])

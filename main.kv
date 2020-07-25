@@ -1,7 +1,7 @@
 #: import hex kivy.utils.get_color_from_hex
 #: import CardTransition kivy.uix.screenmanager.CardTransition
-#: import settings settings
 #: import images images
+#: import settings settings
 <Runner>:
     # Handling the gesture event.
     on_left_to_right_line: manager.change_screen("lists_screen", "right")
@@ -12,7 +12,7 @@
         SettingsScreen:
 <ListsScreen>:
     name: 'lists_screen'
-    md_bg_color: hex(settings.background_colour)
+    md_bg_color: hex(app.config.get('UI', 'background_colour'))
     on_pre_enter: root.refresh_lists()
     # on_pre_leave:
     # Main
@@ -75,7 +75,7 @@
         root.refresh_entries()
         self.ids.current_list_lbl.text = "<--  " + root.list_name
     on_pre_leave: self.ids.input_id.focus = False
-    md_bg_color: hex(settings.background_colour)
+    md_bg_color: hex(app.config.get('UI', 'background_colour'))
 
     # Root
     BoxLayout:
@@ -146,7 +146,7 @@
     name: 'settings_screen'
     orientation: 'vertical'
     #space_x: self.size[0]/3
-    md_bg_color: hex(settings.background_colour)
+    md_bg_color: hex(app.config.get('UI', 'background_colour'))
 
     # Root
     BoxLayout:

@@ -14,7 +14,7 @@ from kivymd.app import MDApp
 import gesture_box as gesture
 from accessories import settings
 import utils.DBLayer as db
-from accessories.settingsjson import settings_json
+import accessories.settingsjson as settings_panel
 
 Window.softinput_mode = 'below_target'
 # https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
@@ -166,6 +166,7 @@ class MainApp(MDApp):
         self.theme_cls.theme_style = 'Light'
         # self.theme_cls.theme_style = 'Dark'
         self.icon = 'images/icon.png'
+        self.use_kivy_settings = False  # do not add kivy settings on settings panel
         self.title = settings.app_title
         return Runner()
 
@@ -175,17 +176,23 @@ class MainApp(MDApp):
             'entries_font_size': 42,
             'lists_font_size': '30dp',
             'background_colour': 'CC6600',
-        })
+        },
+)
         if not os.path.exists('../TODO_config.ini'):  # first install or config was removed
             shutil.copyfile('main.ini', '../TODO_config.ini')
         else:
             shutil.copyfile('../TODO_config.ini', 'main.ini')  # load existing config
 
+    def on_config_change(self, config, section, key, value):
+        shutil.copyfile('main.ini', '../TODO_config.ini')
+
     def build_settings(self, settings):
         settings.add_json_panel('UI settings',
                                 self.config,
-                                data=settings_json)
-
+                                data=settings_panel.UI_panel)
+        settings.add_json_panel('System settings',
+                                self.config,
+                                data=settings_panel.System_panel)
     @staticmethod
     def open_error_popup(text):
         ErrorPopup.error_text = text

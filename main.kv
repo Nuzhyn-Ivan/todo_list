@@ -199,7 +199,12 @@
             height: "70dp"
             size_hint: (1, None)
             text : root.lists_font_size
-
+        Button:
+            text: 'open kivy settings'
+            height: "70dp"
+            size_hint: (1, None)
+            #font_size: settings.font_size
+            on_release: app.open_settings()
 
         BoxLayout:
             orientation: 'horizontal'

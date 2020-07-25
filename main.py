@@ -1,17 +1,20 @@
+import os
+import shutil
+
 from kivy.core.audio import SoundLoader
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.properties import StringProperty
 from kivy.uix.button import Button
-from kivy.uix.screenmanager import ScreenManager, SlideTransition, CardTransition
+from kivy.uix.screenmanager import ScreenManager, CardTransition
 from kivy.uix.textinput import TextInput
 from kivymd.uix.screen import MDScreen
 from kivy.core.window import Window
 from kivymd.app import MDApp
 import gesture_box as gesture
-import settings
-import Database.DBLayer as db
-
+from accessories import settings
+import utils.DBLayer as db
+from accessories.settingsjson import settings_json
 
 Window.softinput_mode = 'below_target'
 # https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
@@ -158,12 +161,30 @@ class ErrorPopup(Popup):
 
 
 class MainApp(MDApp):
+
     def build(self):
         self.theme_cls.theme_style = 'Light'
         # self.theme_cls.theme_style = 'Dark'
         self.icon = 'images/icon.png'
         self.title = settings.app_title
         return Runner()
+
+    def build_config(self, config):
+        config.setdefaults('UI', {
+            'font_size': '30dp',
+            'entries_font_size': 42,
+            'lists_font_size': '30dp',
+            'background_colour': 'CC6600',
+        })
+        if not os.path.exists('../TODO_config.ini'):  # first install or config was removed
+            shutil.copyfile('main.ini', '../TODO_config.ini')
+        else:
+            shutil.copyfile('../TODO_config.ini', 'main.ini')  # load existing config
+
+    def build_settings(self, settings):
+        settings.add_json_panel('UI settings',
+                                self.config,
+                                data=settings_json)
 
     @staticmethod
     def open_error_popup(text):

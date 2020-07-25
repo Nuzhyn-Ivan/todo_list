@@ -1,6 +1,6 @@
 import sqlite3
 import os.path
-import settings
+from accessories import settings
 import main as main
 
 db_path = settings.db_path

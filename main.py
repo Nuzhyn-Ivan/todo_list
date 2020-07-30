@@ -13,6 +13,7 @@ from kivy.core.window import Window
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
 
+import CustomWidgets
 from utils import gesture_box as gesture
 import utils.DBLayer as db
 import utils.ConfigParser as config
@@ -20,22 +21,6 @@ import utils.ConfigParser as config
 
 Window.softinput_mode = 'below_target'
 # https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
-
-
-class TextInputCustomValidate(TextInput):
-    def __init__(self, **kwargs):
-        super(TextInputCustomValidate, self).__init__(**kwargs)
-        self.text_validate_unfocus = False
-
-
-class ButtonListItem(Button):
-    id = StringProperty(None)
-    text = StringProperty(None)
-
-    def click(button):
-        global app
-        app.clearSelection()
-        button.background_color = (0,160,66,.9)
 
 
 class ListsScreen(MDScreen):
@@ -54,7 +39,7 @@ class ListsScreen(MDScreen):
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
         for i in lists:
-            list_btn = ButtonListItem(
+            list_btn = Button(
                 id=str(i[0]),  # id
                 text=str(i[1] + " (" + db.read_entries_count(i[0]) + ")"),  # list name
                 size_hint=(1, None),
@@ -84,7 +69,7 @@ class EntriesScreen(MDScreen):
     done_entry_sound = SoundLoader.load(config.get('System', 'done_entry_sound'),)
 
     def add_entry(self, entry_id, text):
-        entry = ButtonListItem(
+        entry = CustomWidgets.ButtonListItem(
             id=entry_id,
             text=text,
             size_hint_y=None,

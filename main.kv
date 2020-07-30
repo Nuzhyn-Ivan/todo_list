@@ -1,7 +1,7 @@
 #: import hex kivy.utils.get_color_from_hex
 #: import CardTransition kivy.uix.screenmanager.CardTransition
 #: import images images
-#: import settings settings
+
 <Runner>:
     # Handling the gesture event.
     on_left_to_right_line: manager.change_screen("lists_screen", "right")
@@ -30,12 +30,10 @@
             Button:
                 text: 'Settings'
                 on_press: root.manager.change_screen("settings_screen", "left")
-
             Button:
                 text: 'Edit'
             Button:
                 text: 'Search'
-
 
         ScrollView:
             # Lists panel
@@ -141,7 +139,6 @@
                     root.create_entry(self.text)
                     self.text = ''
 
-
 <SettingsScreen>:
     name: 'settings_screen'
     orientation: 'vertical'
@@ -152,16 +149,34 @@
     BoxLayout:
         orientation: 'vertical'
         spacing: 2
-        Label:
-            text: 'App version ' + settings.app_version
 
-            #font_size: settings.font_size
         Button:
             text: 'Reset DB'
             height: "70dp"
             size_hint: (1, None)
             on_press:
                 root.reset_db()
+        Button:
+            id: btn
+            text: 'sdfopen'
+            height: "70dp"
+            size_hint: (1, None)
+            on_press: dropdown.open(self)
+        DropDown:
+            id: dropdown
+            on_select: btn.text ='sdfdsf'
+            Button:
+                id: btn1
+                text: '1'
+                height: "70dp"
+                size_hint: (1, None)
+
+
+
+
+
+
+
 
         TextInput:
             halign: "center"
@@ -186,7 +201,7 @@
             font_size:  0.5 * self.height
             height: "70dp"
             size_hint: (1, None)
-            text : root.entries_font_size
+            text : app.config.get('UI', 'entries_font_size')
 
         MDTextField:
             halign: "center"
@@ -198,13 +213,8 @@
             font_size:  0.5 * self.height
             height: "70dp"
             size_hint: (1, None)
-            text : root.lists_font_size
-        Button:
-            text: 'open kivy settings'
-            height: "70dp"
-            size_hint: (1, None)
-            #font_size: settings.font_size
-            on_release: app.open_settings()
+            text : app.config.get('UI', 'lists_font_size')
+
 
         BoxLayout:
             orientation: 'horizontal'
@@ -212,13 +222,11 @@
                 text: 'Back'
                 height: "70dp"
                 size_hint: (1, None)
-                #font_size: settings.font_size
                 on_press: root.manager.change_screen("lists_screen", "right")
             Button:
                 text: 'Save'
                 height: "70dp"
                 size_hint: (1, None)
-                #font_size: settings.font_size
                 on_press:
                     root.manager.change_screen("lists_screen", "right")
                     root.save_settings()
@@ -235,11 +243,9 @@
         Label:
             text: root.error_text
 
-
         Button:
             text: 'Close'
             height: "70dp"
             size_hint:(1, None)
             on_press:
                 root.dismiss()
-

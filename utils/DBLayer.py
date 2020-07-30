@@ -1,9 +1,10 @@
 import sqlite3
 import os.path
-from accessories import settings
+
+import utils.ConfigParser as config
 import main as main
 
-db_path = settings.db_path
+db_path = config.get('System', 'db_path')
 
 
 def create_db():
@@ -73,6 +74,7 @@ def create_list(list_name):
         query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, 1 )"
         cursor.execute(query, (list_name,))
     except sqlite3.Error as e:
+        # TODO move this out. DBLayer must contain only db layer
         main.MainApp.open_error_popup('Cant create list with this name')
     cursor.close()
     sqlite_connection.commit()

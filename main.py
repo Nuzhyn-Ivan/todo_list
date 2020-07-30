@@ -8,13 +8,15 @@ from kivy.properties import StringProperty
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, CardTransition
 from kivy.uix.textinput import TextInput
-from kivymd.uix.screen import MDScreen
 from kivy.core.window import Window
+
 from kivymd.app import MDApp
-import gesture_box as gesture
-from accessories import settings
+from kivymd.uix.screen import MDScreen
+
+from utils import gesture_box as gesture
 import utils.DBLayer as db
-import accessories.settingsjson as settings_panel
+import utils.ConfigParser as config
+
 
 Window.softinput_mode = 'below_target'
 # https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
@@ -57,7 +59,7 @@ class ListsScreen(MDScreen):
                 text=str(i[1] + " (" + db.read_entries_count(i[0]) + ")"),  # list name
                 size_hint=(1, None),
                 height="70dp",
-                font_size=settings.lists_font_size,
+                font_size=config.get('UI', 'lists_font_size'),
             )
             list_btn.bind(on_press=self.open_entry)
             lists_panel = self.ids.lists_panel_id
@@ -66,7 +68,7 @@ class ListsScreen(MDScreen):
     def open_entry(self, btn_obj):
         EntriesScreen.list_id = btn_obj.id
         EntriesScreen.list_name = db.get_list_name(btn_obj.id)
-        self.manager.transition = CardTransition(direction='left', duration=0.1)
+        self.manager.transition = CardTransition(direction='left', duration=float(config.get('System', 'screen_transition_duration')))
         self.manager.current = "entries_screen"
 
     @staticmethod
@@ -79,7 +81,7 @@ class ListsScreen(MDScreen):
 class EntriesScreen(MDScreen):
     list_id = StringProperty()
     list_name = StringProperty()
-    done_entry_sound = SoundLoader.load(settings.done_entry_sound)
+    done_entry_sound = SoundLoader.load(config.get('System', 'done_entry_sound'),)
 
     def add_entry(self, entry_id, text):
         entry = ButtonListItem(
@@ -87,7 +89,7 @@ class EntriesScreen(MDScreen):
             text=text,
             size_hint_y=None,
             height="70dp",
-            font_size=settings.entries_font_size,
+            font_size=config.get('UI', 'entries_font_size'),
         )
         entry.bind(on_release=self.done_entry)
         entry_panel = self.ids.entries_panel_id
@@ -115,8 +117,7 @@ class EntriesScreen(MDScreen):
 
 
 class SettingsScreen(MDScreen):
-    entries_font_size = settings.entries_font_size
-    lists_font_size = settings.lists_font_size
+
     @staticmethod
     def reset_db():
         db.recreate_database()
@@ -151,7 +152,7 @@ class ScreenManagement(ScreenManager):
                 return True  # do not exit the app
 
     def change_screen(self, screen_name, direction):
-        self.transition = CardTransition(direction=direction, duration=settings.screen_transition_duration)
+        self.transition = CardTransition(direction=direction, duration=float(config.get('System', 'screen_transition_duration')))
         self.current = screen_name
 
 
@@ -166,8 +167,7 @@ class MainApp(MDApp):
         self.theme_cls.theme_style = 'Light'
         # self.theme_cls.theme_style = 'Dark'
         self.icon = 'images/icon.png'
-        self.use_kivy_settings = False  # do not add kivy settings on settings panel
-        self.title = settings.app_title
+        self.title = config.get('System', 'app_title') + '   ' + config.get('System', 'app_version')
         return Runner()
 
     def build_config(self, config):
@@ -178,6 +178,7 @@ class MainApp(MDApp):
             'background_colour': 'CC6600',
         },
 )
+        # TODO - this is stupid to write whole file on every change. Replace to edit file
         if not os.path.exists('../TODO_config.ini'):  # first install or config was removed
             shutil.copyfile('main.ini', '../TODO_config.ini')
         else:
@@ -186,13 +187,6 @@ class MainApp(MDApp):
     def on_config_change(self, config, section, key, value):
         shutil.copyfile('main.ini', '../TODO_config.ini')
 
-    def build_settings(self, settings):
-        settings.add_json_panel('UI settings',
-                                self.config,
-                                data=settings_panel.UI_panel)
-        settings.add_json_panel('System settings',
-                                self.config,
-                                data=settings_panel.System_panel)
     @staticmethod
     def open_error_popup(text):
         ErrorPopup.error_text = text

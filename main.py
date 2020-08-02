@@ -1,26 +1,49 @@
 import os
 import shutil
 
+from kivy.base import EventLoop
 from kivy.core.audio import SoundLoader
+from kivy.uix.bubble import Bubble, BubbleButton
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.properties import StringProperty
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, CardTransition
-from kivy.uix.textinput import TextInput
 from kivy.core.window import Window
+
 
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
 
 import CustomWidgets
-from utils import gesture_box as gesture
 import utils.DBLayer as db
 import utils.ConfigParser as config
 
 
 Window.softinput_mode = 'below_target'
 # https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
+
+
+class ScreenManagement(ScreenManager):
+
+    def __init__(self, **kwargs):
+        super(ScreenManagement, self).__init__(**kwargs)
+        Window.bind(on_keyboard=self.on_key)
+
+    def on_key(self, window, key, *args):
+        if key == 27:  # the esc key or 'Back' key on phone
+            if self.current_screen.name == "lists_screen":
+                return False  # exit the app from this page
+            elif self.current_screen.name == "settings_screen":
+                self.change_screen("lists_screen", 'right')
+                return True  # do not exit the app
+            elif self.current_screen.name == "entries_screen":
+                self.change_screen("lists_screen", 'right')
+                return True  # do not exit the app
+
+    def change_screen(self, screen_name, direction):
+        self.transition = CardTransition(direction=direction, duration=float(config.get('screen_transition_duration')))
+        self.current = screen_name
 
 
 class ListsScreen(MDScreen):
@@ -44,7 +67,7 @@ class ListsScreen(MDScreen):
                 text=str(i[1] + " (" + db.read_entries_count(i[0]) + ")"),  # list name
                 size_hint=(1, None),
                 height="70dp",
-                font_size=config.get('UI', 'lists_font_size'),
+                font_size=config.get('lists_font_size'),
             )
             list_btn.bind(on_press=self.open_entry)
             lists_panel = self.ids.lists_panel_id
@@ -53,7 +76,7 @@ class ListsScreen(MDScreen):
     def open_entry(self, btn_obj):
         EntriesScreen.list_id = btn_obj.id
         EntriesScreen.list_name = db.get_list_name(btn_obj.id)
-        self.manager.transition = CardTransition(direction='left', duration=float(config.get('System', 'screen_transition_duration')))
+        self.manager.transition = CardTransition(direction='left', duration=float(config.get('screen_transition_duration')))
         self.manager.current = "entries_screen"
 
     @staticmethod
@@ -66,7 +89,7 @@ class ListsScreen(MDScreen):
 class EntriesScreen(MDScreen):
     list_id = StringProperty()
     list_name = StringProperty()
-    done_entry_sound = SoundLoader.load(config.get('System', 'done_entry_sound'),)
+    done_entry_sound = SoundLoader.load(config.get('done_entry_sound'),)
 
     def add_entry(self, entry_id, text):
         entry = CustomWidgets.ButtonListItem(
@@ -74,11 +97,10 @@ class EntriesScreen(MDScreen):
             text=text,
             size_hint_y=None,
             height="70dp",
-            font_size=config.get('UI', 'entries_font_size'),
+            font_size=config.get('entries_font_size'),
         )
         entry.bind(on_release=self.done_entry)
-        entry_panel = self.ids.entries_panel_id
-        entry_panel.add_widget(entry)
+        self.ids.entries_panel_id.add_widget(entry)
 
     def refresh_entries(self):
         entries_list = db.read_entries(int(self.list_id))
@@ -115,32 +137,6 @@ class SettingsScreen(MDScreen):
         pass
 
 
-class Runner(gesture.GestureBox):
-    pass
-
-
-class ScreenManagement(ScreenManager):
-
-    def __init__(self, **kwargs):
-        super(ScreenManagement, self).__init__(**kwargs)
-        Window.bind(on_keyboard=self.on_key)
-
-    def on_key(self, window, key, *args):
-        if key == 27:  # the esc key or 'Back' key on phone
-            if self.current_screen.name == "lists_screen":
-                return False  # exit the app from this page
-            elif self.current_screen.name == "settings_screen":
-                self.change_screen("lists_screen", 'right')
-                return True  # do not exit the app
-            elif self.current_screen.name == "entries_screen":
-                self.change_screen("lists_screen", 'right')
-                return True  # do not exit the app
-
-    def change_screen(self, screen_name, direction):
-        self.transition = CardTransition(direction=direction, duration=float(config.get('System', 'screen_transition_duration')))
-        self.current = screen_name
-
-
 class ErrorPopup(Popup):
     error_text = 'some error text'
     pass
@@ -152,15 +148,20 @@ class MainApp(MDApp):
         self.theme_cls.theme_style = 'Light'
         # self.theme_cls.theme_style = 'Dark'
         self.icon = 'images/icon.png'
-        self.title = config.get('System', 'app_title') + '   ' + config.get('System', 'app_version')
-        return Runner()
+        self.title = config.get('app_title') + '   ' + config.get('app_version')
+        return CustomWidgets.Runner()
 
     def build_config(self, config):
-        config.setdefaults('UI', {
+        config.setdefaults('', {
             'font_size': '30dp',
             'entries_font_size': 42,
             'lists_font_size': '30dp',
             'background_colour': 'CC6600',
+            'app_version': '0.0.20',
+            'app_title': 'TODOit',
+            'db_path': "..// TODO.db",
+            'screen_transition_duration': 0,
+            'done_entry_sound': 'sounds // done_entry.wav',
         },
 )
         # TODO - this is stupid to write whole file on every change. Replace to edit file

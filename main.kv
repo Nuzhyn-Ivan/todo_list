@@ -2,6 +2,8 @@
 #: import CardTransition kivy.uix.screenmanager.CardTransition
 #: import images images
 #: import CustomWidgets CustomWidgets
+#: import Clipboard kivy.core.clipboard.Clipboard
+#: import  ConfigParser utils.ConfigParser
 
 <Runner>:
     # Handling the gesture event.
@@ -13,7 +15,7 @@
         SettingsScreen:
 <ListsScreen>:
     name: 'lists_screen'
-    md_bg_color: hex(app.config.get('UI', 'background_colour'))
+    md_bg_color: hex(ConfigParser.get('background_colour'))
     on_pre_enter: root.refresh_lists()
     # on_pre_leave:
     # Main
@@ -53,7 +55,7 @@
             height: 50
             size_hint: 1, 0.1
 
-            TextInput:
+            TextInputCustomValidate:
                 id: add_list_input_id
                 halign: "center"
                 valign: "middle"
@@ -62,6 +64,7 @@
                 font_size: 0.5 * self.height
                 multiline: False
                 write_tab: False
+                use_bubble: True
                 on_text_validate:
                     root.create_list(self.text)
                     root.refresh_lists()
@@ -74,7 +77,7 @@
         root.refresh_entries()
         self.ids.current_list_lbl.text = "<--  " + root.list_name
     on_pre_leave: self.ids.input_id.focus = False
-    md_bg_color: hex(app.config.get('UI', 'background_colour'))
+    md_bg_color: hex(ConfigParser.get('background_colour'))
 
     # Root
     BoxLayout:
@@ -110,15 +113,9 @@
                 spacing: 1
                 size_hint: (1,None)
 
-
-
                 #size_hint: 1, 0.8
-
                 #size: (self.parent.width, self.parent.height)
                 #size_hint_y: None
-
-
-
 
         # Bottom Panel
         BoxLayout:
@@ -134,8 +131,9 @@
                 is_focusable: True
                 hint_text: 'Add new entry'
                 font_size: 0.5 * self.height
-                multiline: False
                 write_tab: False
+                use_bubble: True
+                multiline: False
                 on_text_validate:
                     root.create_entry(self.text)
                     self.text = ''
@@ -144,7 +142,7 @@
     name: 'settings_screen'
     orientation: 'vertical'
     #space_x: self.size[0]/3
-    md_bg_color: hex(app.config.get('UI', 'background_colour'))
+    md_bg_color: hex(ConfigParser.get('background_colour'))
 
     # Root
     BoxLayout:
@@ -173,12 +171,6 @@
                 size_hint: (1, None)
 
 
-
-
-
-
-
-
         TextInput:
             halign: "center"
             valign: "middle"
@@ -192,6 +184,7 @@
             on_text_validate:
                 root.delete_list_by_name(self.text)
                 self.text = ""
+
         MDTextField:
             halign: "center"
             valign: "middle"
@@ -202,7 +195,7 @@
             font_size:  0.5 * self.height
             height: "70dp"
             size_hint: (1, None)
-            text : app.config.get('UI', 'entries_font_size')
+            text : ConfigParser.get('entries_font_size')
 
         MDTextField:
             halign: "center"
@@ -214,7 +207,7 @@
             font_size:  0.5 * self.height
             height: "70dp"
             size_hint: (1, None)
-            text : app.config.get('UI', 'lists_font_size')
+            text : ConfigParser.get('lists_font_size')
 
 
         BoxLayout:

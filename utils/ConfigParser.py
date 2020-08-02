@@ -4,10 +4,9 @@ __configfile = ConfigParser(interpolation=None)
 __configfile.read('main.ini')
 
 
-# TODO implement independence from 'section' - add section automatically
-def get(section, option):
-    return __configfile.get(section, option)
+def get(option):
+    return __configfile.get('DEFAULT', option)
 
 
-def set(section, option, value):
-    __configfile.set(section, option, value)
+def set(option, value):
+    __configfile.set('DEFAULT', option, value)

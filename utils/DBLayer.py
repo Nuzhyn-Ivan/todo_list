@@ -4,7 +4,7 @@ import os.path
 import utils.ConfigParser as config
 import main as main
 
-db_path = config.get('System', 'db_path')
+db_path = config.get('db_path')
 
 
 def create_db():

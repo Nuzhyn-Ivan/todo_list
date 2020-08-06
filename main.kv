@@ -3,8 +3,8 @@
 #: import images images
 #: import CustomWidgets CustomWidgets
 #: import Clipboard kivy.core.clipboard.Clipboard
-#: import  ConfigParser utils.ConfigParser
-
+#: import  config utils.ConfigParser
+#: import  lang lang.Localization
 <Runner>:
     # Handling the gesture event.
     on_left_to_right_line: manager.change_screen("lists_screen", "right")
@@ -15,7 +15,7 @@
         SettingsScreen:
 <ListsScreen>:
     name: 'lists_screen'
-    md_bg_color: hex(ConfigParser.get('background_colour'))
+    md_bg_color: hex(config.get('background_colour'))
     on_pre_enter: root.refresh_lists()
     # on_pre_leave:
     # Main
@@ -31,12 +31,12 @@
             size_hint: 1, 0.1
 
             Button:
-                text: 'Settings'
+                text: lang.get('settings_btn')
                 on_press: root.manager.change_screen("settings_screen", "left")
             Button:
-                text: 'Edit'
+                text: lang.get('edit_btn')
             Button:
-                text: 'Search'
+                text: lang.get('search_btn')
 
         ScrollView:
             # Lists panel
@@ -60,7 +60,7 @@
                 halign: "center"
                 valign: "middle"
                 is_focusable: True
-                hint_text: 'Create new List'
+                hint_text: lang.get('list_textinput_hint')
                 font_size: 0.5 * self.height
                 multiline: False
                 write_tab: False
@@ -77,7 +77,7 @@
         root.refresh_entries()
         self.ids.current_list_lbl.text = "<--  " + root.list_name
     on_pre_leave: self.ids.input_id.focus = False
-    md_bg_color: hex(ConfigParser.get('background_colour'))
+    md_bg_color: hex(config.get('background_colour'))
 
     # Root
     BoxLayout:
@@ -97,10 +97,10 @@
                 on_press: root.manager.change_screen("lists_screen", "right")
 
             Button:
-                text: 'Edit'
+                text: lang.get('edit_btn')
                 size_hint: 0.2, 1
             Button:
-                text: 'Tags'
+                text: lang.get('tags_btn')
                 size_hint: 0.2, 1
 
         # Entries Panel
@@ -129,7 +129,7 @@
                 #valign: "middle"
                 halign: "center"
                 is_focusable: True
-                hint_text: 'Add new entry'
+                hint_text: lang.get('entry_textinput_hint')
                 font_size: 0.5 * self.height
                 write_tab: False
                 use_bubble: True
@@ -142,7 +142,7 @@
     name: 'settings_screen'
     orientation: 'vertical'
     #space_x: self.size[0]/3
-    md_bg_color: hex(ConfigParser.get('background_colour'))
+    md_bg_color: hex(config.get('background_colour'))
 
     # Root
     BoxLayout:
@@ -150,32 +150,17 @@
         spacing: 2
 
         Button:
-            text: 'Reset DB'
+            text: lang.get('reset_db_btn')
             height: "70dp"
             size_hint: (1, None)
             on_press:
                 root.reset_db()
-        Button:
-            id: btn
-            text: 'sdfopen'
-            height: "70dp"
-            size_hint: (1, None)
-            on_press: dropdown.open(self)
-        DropDown:
-            id: dropdown
-            on_select: btn.text ='sdfdsf'
-            Button:
-                id: btn1
-                text: '1'
-                height: "70dp"
-                size_hint: (1, None)
-
 
         TextInput:
             halign: "center"
             valign: "middle"
             is_focusable: True
-            hint_text: 'Delete list'
+            hint_text: lang.get('delete_list_textinput_hint')
             multiline: False
             write_tab: False
             font_size:  0.5 * self.height
@@ -195,7 +180,7 @@
             font_size:  0.5 * self.height
             height: "70dp"
             size_hint: (1, None)
-            text : ConfigParser.get('entries_font_size')
+            text : config.get('entries_font_size')
 
         MDTextField:
             halign: "center"
@@ -207,18 +192,18 @@
             font_size:  0.5 * self.height
             height: "70dp"
             size_hint: (1, None)
-            text : ConfigParser.get('lists_font_size')
+            text : config.get('lists_font_size')
 
 
         BoxLayout:
             orientation: 'horizontal'
             Button:
-                text: 'Back'
+                text: lang.get('edit_btn')
                 height: "70dp"
                 size_hint: (1, None)
                 on_press: root.manager.change_screen("lists_screen", "right")
             Button:
-                text: 'Save'
+                text: lang.get('save_btn')
                 height: "70dp"
                 size_hint: (1, None)
                 on_press:
@@ -226,7 +211,7 @@
                     root.save_settings()
 
 <ErrorPopup>:
-    title: 'Exeption handler'
+    title: lang.get('error_popup_title')
     id: error_popup_id
     on_open: app.root.popupreference=self
     size_hint: 1, 0.4
@@ -238,7 +223,7 @@
             text: root.error_text
 
         Button:
-            text: 'Close'
+            text: lang.get('close_btn')
             height: "70dp"
             size_hint:(1, None)
             on_press:

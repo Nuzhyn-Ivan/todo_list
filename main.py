@@ -1,9 +1,11 @@
 import os
 import shutil
+import gettext
 
 from kivy.base import EventLoop
 from kivy.core.audio import SoundLoader
 from kivy.uix.bubble import Bubble, BubbleButton
+from kivy.uix.dropdown import DropDown
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.properties import StringProperty
@@ -19,7 +21,7 @@ import CustomWidgets
 import utils.DBLayer as db
 import utils.ConfigParser as config
 
-
+_ = gettext.gettext
 Window.softinput_mode = 'below_target'
 # https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
 
@@ -124,6 +126,7 @@ class EntriesScreen(MDScreen):
 
 
 class SettingsScreen(MDScreen):
+    pass
 
     @staticmethod
     def reset_db():
@@ -138,8 +141,7 @@ class SettingsScreen(MDScreen):
 
 
 class ErrorPopup(Popup):
-    error_text = 'some error text'
-    pass
+    error_text = _("some error text")
 
 
 class MainApp(MDApp):
@@ -162,6 +164,7 @@ class MainApp(MDApp):
             'db_path': "..// TODO.db",
             'screen_transition_duration': 0,
             'done_entry_sound': 'sounds // done_entry.wav',
+            'lang': 'en',
         },
 )
         # TODO - this is stupid to write whole file on every change. Replace to edit file

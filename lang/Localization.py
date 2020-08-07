@@ -1,10 +1,24 @@
 import utils.ConfigParser as config
+import codecs
+import locale
 
-system_language = config.get('lang')
 lang_dict = {}
 
+try:
+    system_language = config.get('lang')
+except:
+    system_default_lang = locale.getdefaultlocale()[0][3:]
+    if system_default_lang in ('US', 'us', 'EN', 'en'):
+        config.set('lang', 'en')
+    elif system_default_lang in ('RU', 'ru'):
+        config.set('lang', 'ru')
+    else:
+        config.set('lang', 'en')
+finally:
+    system_language = config.get('lang')
 
-with open("lang/{}.ini".format(system_language)) as myfile:
+
+with codecs.open("lang/{}.ini".format(system_language), encoding='utf-8') as myfile:
     for line in myfile:
         name, var = line.partition("=")[::2]
         lang_dict[name.strip()] = str(var)

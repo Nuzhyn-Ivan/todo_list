@@ -1,6 +1,6 @@
-import os
-import shutil
+
 import gettext
+
 
 from kivy.base import EventLoop
 from kivy.core.audio import SoundLoader
@@ -16,6 +16,7 @@ from kivy.core.window import Window
 
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
+
 
 import CustomWidgets
 import utils.DBLayer as db
@@ -74,6 +75,7 @@ class ListsScreen(MDScreen):
             list_btn.bind(on_press=self.open_entry)
             lists_panel = self.ids.lists_panel_id
             lists_panel.add_widget(list_btn)
+
 
     def open_entry(self, btn_obj):
         EntriesScreen.list_id = btn_obj.id
@@ -153,8 +155,8 @@ class MainApp(MDApp):
         self.title = config.get('app_title') + '   ' + config.get('app_version')
         return CustomWidgets.Runner()
 
-    def build_config(self, config):
-        config.setdefaults('', {
+    def build_config(self, app_config):
+        app_config.setdefaults('', {
             'font_size': '30dp',
             'entries_font_size': 42,
             'lists_font_size': '30dp',
@@ -164,17 +166,8 @@ class MainApp(MDApp):
             'db_path': "..// TODO.db",
             'screen_transition_duration': 0,
             'done_entry_sound': 'sounds // done_entry.wav',
-            'lang': 'en',
         },
-)
-        # TODO - this is stupid to write whole file on every change. Replace to edit file
-        if not os.path.exists('../TODO_config.ini'):  # first install or config was removed
-            shutil.copyfile('main.ini', '../TODO_config.ini')
-        else:
-            shutil.copyfile('../TODO_config.ini', 'main.ini')  # load existing config
-
-    def on_config_change(self, config, section, key, value):
-        shutil.copyfile('main.ini', '../TODO_config.ini')
+                               )
 
     @staticmethod
     def open_error_popup(text):
@@ -183,8 +176,12 @@ class MainApp(MDApp):
 
 
 if __name__ == '__main__':
+    config.load_config()
     db.create_db()
     MainApp().run()
+
+
+
 
 
 

@@ -4,16 +4,18 @@ from kivy.uix.bubble import Bubble
 from kivy.uix.button import Button
 from kivy.uix.dropdown import DropDown
 from kivy.uix.textinput import TextInput
+from kivymd.uix.textfield import MDTextField
+
 from utils import gesture_box as gesture
 import main
 import utils.ConfigParser as config
 from kivy.base import EventLoop
 from kivy.config import Config
 
-#Config.set('input', 'mouse', 'mouse,disable_multitouch')
+Config.set('input', 'mouse', 'mouse,disable_multitouch')
 
 
-class TextInputCustomValidate(TextInput):
+class TextInputCustomValidate(MDTextField):
     def __init__(self, **kwargs):
         super(TextInputCustomValidate, self).__init__(**kwargs)
         self.text_validate_unfocus = False
@@ -21,15 +23,9 @@ class TextInputCustomValidate(TextInput):
     def on_touch_down(self, touch):
         super(TextInputCustomValidate, self).on_touch_down(touch)
 
-        if touch.button == 'right':
-            self.parent.parent.parent.focus_entries_panel_id()
-            print('sdf')
+        # if touch.button == 'right':
+        #     self.parent.parent.parent.focus_entries_panel_id()
 
-
-# TODO why do I need it?
-class ButtonListItem(Button):
-    id = StringProperty(None)
-    text = StringProperty(None)
 
     def click(button):
         global app

@@ -7,8 +7,8 @@ lang_dict = {}
 try:
     system_language = config.get('lang')
 except:
-    system_default_lang = locale.getdefaultlocale()[0][3:]
-    if system_default_lang in ('US', 'us', 'EN', 'en'):
+    system_default_lang = locale.getdefaultlocale()[0][:2]
+    if system_default_lang in ('EN', 'en'):
         config.set('lang', 'en')
     elif system_default_lang in ('RU', 'ru'):
         config.set('lang', 'ru')
@@ -21,7 +21,7 @@ finally:
 with codecs.open("lang/{}.ini".format(system_language), encoding='utf-8') as myfile:
     for line in myfile:
         name, var = line.partition("=")[::2]
-        lang_dict[name.strip()] = str(var)
+        lang_dict[name.strip()] = str(var).rstrip('\n')
 
 
 def get(string):

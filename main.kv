@@ -13,34 +13,34 @@
         ListsScreen:
         EntriesScreen:
         SettingsScreen:
+
 <ListsScreen>:
     name: 'lists_screen'
-    md_bg_color: hex(config.get('background_colour'))
     on_pre_enter: root.refresh_lists()
     # on_pre_leave:
     # Main
-    BoxLayout:
+    MDBoxLayout:
         orientation: 'vertical'
         #space_x: self.size[0]/3
 
         # Upper Panel
-        BoxLayout:
+        MDBoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
             height: 50
             size_hint: 1, 0.1
 
-            Button:
+            MDFlatButton:
                 text: lang.get('settings_btn')
-                on_press: root.manager.change_screen("settings_screen", "left")
-            Button:
+                on_release: root.manager.change_screen("settings_screen", "left")
+            MDFlatButton:
                 text: lang.get('edit_btn')
-            Button:
+            MDFlatButton:
                 text: lang.get('search_btn')
 
         ScrollView:
             # Lists panel
-            BoxLayout:
+            MDBoxLayout:
                 id: lists_panel_id
                 size_hint: 1, 0.8
                 orientation: 'vertical'
@@ -50,7 +50,7 @@
                 padding: 10
 
         # Bottom panel
-        BoxLayout:
+        MDBoxLayout:
             orientation: 'horizontal'
             height: 50
             size_hint: 1, 0.1
@@ -64,7 +64,7 @@
                 font_size: 0.5 * self.height
                 multiline: False
                 write_tab: False
-                use_bubble: True
+
                 on_text_validate:
                     root.create_list(self.text)
                     root.refresh_lists()
@@ -77,48 +77,45 @@
         root.refresh_entries()
         self.ids.current_list_lbl.text = "<--  " + root.list_name
     on_pre_leave: self.ids.input_id.focus = False
-    md_bg_color: hex(config.get('background_colour'))
 
     # Root
-    BoxLayout:
+    MDBoxLayout:
         orientation: 'vertical'
 
         # Upper panel
-        BoxLayout:
+        MDBoxLayout:
             id: entries_upper_panel_id
             orientation: 'horizontal'
             size_hint_y: None
             height: 50
             size_hint: 1, 0.1
-            Button:
+            MDFlatButton:
                 id: current_list_lbl
                 text: "<-  " + root.list_name
                 size_hint: 0.6, 1
-                on_press: root.manager.change_screen("lists_screen", "right")
+                on_release: root.manager.change_screen("lists_screen", "right")
 
-            Button:
+            MDFlatButton:
                 text: lang.get('edit_btn')
                 size_hint: 0.2, 1
-            Button:
+            MDFlatButton:
                 text: lang.get('tags_btn')
                 size_hint: 0.2, 1
 
         # Entries Panel
         ScrollView:
-            StackLayout:
+            MDStackLayout:
                 id: entries_panel_id
-                height: self.minimum_height
                 orientation: 'rl-tb'
                 padding: 10
                 spacing: 1
-                size_hint: (1,None)
+                adaptive_height: True
+                adaptive_width: True
 
-                #size_hint: 1, 0.8
-                #size: (self.parent.width, self.parent.height)
-                #size_hint_y: None
+
 
         # Bottom Panel
-        BoxLayout:
+        MDBoxLayout:
             orientation: 'vertical'
             height: 50
             size_hint: 1, 0.1
@@ -132,7 +129,6 @@
                 hint_text: lang.get('entry_textinput_hint')
                 font_size: 0.5 * self.height
                 write_tab: False
-                use_bubble: True
                 multiline: False
                 on_text_validate:
                     root.create_entry(self.text)
@@ -142,18 +138,17 @@
     name: 'settings_screen'
     orientation: 'vertical'
     #space_x: self.size[0]/3
-    md_bg_color: hex(config.get('background_colour'))
 
     # Root
-    BoxLayout:
+    MDBoxLayout:
         orientation: 'vertical'
         spacing: 2
 
-        Button:
+        MDFlatButton:
             text: lang.get('reset_db_btn')
             height: "70dp"
             size_hint: (1, None)
-            on_press:
+            on_release:
                 root.reset_db()
 
         TextInput:
@@ -196,16 +191,17 @@
 
         BoxLayout:
             orientation: 'horizontal'
-            Button:
-                text: lang.get('edit_btn')
+            spacing: 2
+
+            MDFlatButton:
+                text: lang.get('back_btn')
                 height: "70dp"
-                size_hint: (1, None)
-                on_press: root.manager.change_screen("lists_screen", "right")
-            Button:
+
+                on_release: root.manager.change_screen("lists_screen", "right")
+            MDFlatButton:
                 text: lang.get('save_btn')
                 height: "70dp"
-                size_hint: (1, None)
-                on_press:
+                on_release:
                     root.manager.change_screen("lists_screen", "right")
                     root.save_settings()
 
@@ -215,15 +211,15 @@
     on_open: app.root.popupreference=self
     size_hint: 1, 0.4
     auto_dismiss: True
-    BoxLayout:
+    MDBoxLayout:
         orientation: 'vertical'
         spacing: 10
-        Label:
+        MDLabel:
             text: root.error_text
 
-        Button:
+        MDFlatButton:
             text: lang.get('close_btn')
             height: "70dp"
             size_hint:(1, None)
-            on_press:
+            on_release:
                 root.dismiss()

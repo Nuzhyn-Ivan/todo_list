@@ -1,8 +1,5 @@
-
-import gettext
-
-
 from kivy.base import EventLoop
+import locale
 from kivy.core.audio import SoundLoader
 from kivy.uix.bubble import Bubble, BubbleButton
 from kivy.uix.dropdown import DropDown
@@ -15,6 +12,7 @@ from kivy.core.window import Window
 
 
 from kivymd.app import MDApp
+from kivymd.uix.button import MDFlatButton
 from kivymd.uix.screen import MDScreen
 
 
@@ -22,7 +20,7 @@ import CustomWidgets
 import utils.DBLayer as db
 import utils.ConfigParser as config
 
-_ = gettext.gettext
+
 Window.softinput_mode = 'below_target'
 # https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
 
@@ -65,17 +63,16 @@ class ListsScreen(MDScreen):
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
         for i in lists:
-            list_btn = Button(
+            list_btn = MDFlatButton(
                 id=str(i[0]),  # id
                 text=str(i[1] + " (" + db.read_entries_count(i[0]) + ")"),  # list name
                 size_hint=(1, None),
                 height="70dp",
                 font_size=config.get('lists_font_size'),
             )
-            list_btn.bind(on_press=self.open_entry)
+            list_btn.bind(on_release=self.open_entry)
             lists_panel = self.ids.lists_panel_id
             lists_panel.add_widget(list_btn)
-
 
     def open_entry(self, btn_obj):
         EntriesScreen.list_id = btn_obj.id
@@ -96,10 +93,10 @@ class EntriesScreen(MDScreen):
     done_entry_sound = SoundLoader.load(config.get('done_entry_sound'),)
 
     def add_entry(self, entry_id, text):
-        entry = CustomWidgets.ButtonListItem(
+        entry = MDFlatButton(
             id=entry_id,
             text=text,
-            size_hint_y=None,
+            width=1,
             height="70dp",
             font_size=config.get('entries_font_size'),
         )
@@ -128,7 +125,6 @@ class EntriesScreen(MDScreen):
 
 
 class SettingsScreen(MDScreen):
-    pass
 
     @staticmethod
     def reset_db():
@@ -143,14 +139,16 @@ class SettingsScreen(MDScreen):
 
 
 class ErrorPopup(Popup):
-    error_text = _("some error text")
+    error_text = "some error text"
 
 
 class MainApp(MDApp):
 
     def build(self):
-        self.theme_cls.theme_style = 'Light'
-        # self.theme_cls.theme_style = 'Dark'
+        self.theme_cls.theme_style = 'Dark'  # 'Light'
+        self.theme_cls.primary_palette = 'Orange'
+        # self.theme_cls.theme_style  =
+        # TODO move ALL paths to system settings
         self.icon = 'images/icon.png'
         self.title = config.get('app_title') + '   ' + config.get('app_version')
         return CustomWidgets.Runner()
@@ -160,7 +158,6 @@ class MainApp(MDApp):
             'font_size': '30dp',
             'entries_font_size': 42,
             'lists_font_size': '30dp',
-            'background_colour': 'CC6600',
             'app_version': '0.0.20',
             'app_title': 'TODOit',
             'db_path': "..// TODO.db",

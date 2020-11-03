@@ -63,14 +63,17 @@ class ListsScreen(MDScreen):
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
         for i in lists:
-            list_btn = MDFlatButton(
+            list_btn = CustomWidgets.MDFlatButtonCustom(
                 id=str(i[0]),  # id
                 text=str(i[1] + " (" + db.read_entries_count(i[0]) + ")"),  # list name
-                size_hint=(1, None),
-                height="70dp",
+                long_press_time=2,
                 font_size=config.get('lists_font_size'),
+                size_hint=(1, None),
+
+
             )
             list_btn.bind(on_release=self.open_entry)
+            list_btn.bind(on_long_press=self.delete_list)
             lists_panel = self.ids.lists_panel_id
             lists_panel.add_widget(list_btn)
 
@@ -86,6 +89,10 @@ class ListsScreen(MDScreen):
         if text:
             db.create_list(text)
 
+    def delete_list(self, btn_obj):
+        db.delete_list_by_id(btn_obj.id)
+        self.refresh_lists()
+
 
 class EntriesScreen(MDScreen):
     list_id = StringProperty()
@@ -96,9 +103,11 @@ class EntriesScreen(MDScreen):
         entry = MDFlatButton(
             id=entry_id,
             text=text,
-            width=1,
+            size_hint=(1, None),
             height="70dp",
             font_size=config.get('entries_font_size'),
+
+
         )
         entry.bind(on_release=self.done_entry)
         self.ids.entries_panel_id.add_widget(entry)
@@ -107,10 +116,10 @@ class EntriesScreen(MDScreen):
         entries_list = db.read_entries(int(self.list_id))
         self.ids.entries_panel_id.clear_widgets()
         for no in range(len(entries_list)):
-            self.add_entry(entries_list[no][2], entries_list[no][2])  # TODO - generate id correctly
+            self.add_entry(entries_list[no][0], entries_list[no][2])
 
     def done_entry(self, btn_obj):
-        db.complete_entry(btn_obj.text)  # TODO entrie id
+        db.complete_entry(btn_obj.id)
         self.ids.entries_panel_id.remove_widget(btn_obj)
         self.done_entry_sound.play()
 
@@ -130,9 +139,6 @@ class SettingsScreen(MDScreen):
     def reset_db():
         db.recreate_database()
 
-    @staticmethod
-    def delete_list_by_name(text):
-        db.delete_list_by_name(text)
 
     def save_settings(self):
         pass
@@ -153,11 +159,12 @@ class MainApp(MDApp):
         self.title = config.get('app_title') + '   ' + config.get('app_version')
         return CustomWidgets.Runner()
 
+
     def build_config(self, app_config):
         app_config.setdefaults('', {
-            'font_size': '30dp',
+            'font_size': '15dp',
             'entries_font_size': 42,
-            'lists_font_size': '30dp',
+            'lists_font_size': '15dp',
             'app_version': '0.0.20',
             'app_title': 'TODOit',
             'db_path': "..// TODO.db",

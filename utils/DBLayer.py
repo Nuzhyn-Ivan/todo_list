@@ -196,11 +196,11 @@ def read_entries_count(list_id):
     return str(records[0][0])
 
 
-def complete_entry(entry_name):
+def complete_entry(entry_id):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    query = """UPDATE `Entries` SET is_completed = 1 WHERE name = ?"""
-    cursor.execute(query, (entry_name,))
+    query = """UPDATE `Entries` SET is_completed = 1 WHERE id = ?"""
+    cursor.execute(query, (entry_id,))
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()

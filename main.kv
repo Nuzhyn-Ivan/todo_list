@@ -82,11 +82,11 @@
     on_pre_leave: self.ids.input_id.focus = False
 
     # Root
-    MDBoxLayout:
+    BoxLayout:
         orientation: 'vertical'
 
         # Upper panel
-        MDBoxLayout:
+        BoxLayout:
             id: entries_upper_panel_id
             orientation: 'horizontal'
             size_hint_y: None
@@ -108,7 +108,7 @@
         # Entries Panel
 
         ScrollView:
-            MDBoxLayout:
+            BoxLayout:
                 id: entries_panel_id
                 size_hint: 1, 0.8
                 orientation: 'vertical'
@@ -118,7 +118,7 @@
                 padding: 10
 
         # Bottom Panel
-        MDBoxLayout:
+        BoxLayout:
             orientation: 'vertical'
             height: 50
             size_hint: 1, 0.1

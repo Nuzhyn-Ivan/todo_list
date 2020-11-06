@@ -1,15 +1,9 @@
-from kivy.base import EventLoop
-import locale
-from kivy.core.audio import SoundLoader
-from kivy.uix.bubble import Bubble, BubbleButton
-from kivy.uix.dropdown import DropDown
+from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.properties import StringProperty
-from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, CardTransition
 from kivy.core.window import Window
-
 
 from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
@@ -63,7 +57,7 @@ class ListsScreen(MDScreen):
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
         for i in lists:
-            list_btn = CustomWidgets.MDFlatButtonCustom(
+            list_btn = CustomWidgets.ButtonCustom(
                 id=str(i[0]),  # id
                 text=str(i[1] + " (" + db.read_entries_count(i[0]) + ")"),  # list name
                 long_press_time=2,
@@ -97,23 +91,20 @@ class ListsScreen(MDScreen):
 class EntriesScreen(MDScreen):
     list_id = StringProperty()
     list_name = StringProperty()
-    done_entry_sound = SoundLoader.load(config.get('done_entry_sound'),)
 
     def add_entry(self, entry_id, text):
-        entry = MDFlatButton(
-            id=entry_id,
-            text=text,
+        entry = Button(
+            id=str(entry_id),
+            text=str(text),
             size_hint=(1, None),
             height="70dp",
             font_size=config.get('entries_font_size'),
-
-
         )
         entry.bind(on_release=self.done_entry)
         self.ids.entries_panel_id.add_widget(entry)
 
     def refresh_entries(self):
-        entries_list = db.read_entries(int(self.list_id))
+        entries_list = db.read_entries(self.list_id)
         self.ids.entries_panel_id.clear_widgets()
         for no in range(len(entries_list)):
             self.add_entry(entries_list[no][0], entries_list[no][2])
@@ -121,7 +112,6 @@ class EntriesScreen(MDScreen):
     def done_entry(self, btn_obj):
         db.complete_entry(btn_obj.id)
         self.ids.entries_panel_id.remove_widget(btn_obj)
-        self.done_entry_sound.play()
 
     def focus_entries_panel_id(self):
         self.ids.entries_panel_id.focus = True
@@ -129,8 +119,8 @@ class EntriesScreen(MDScreen):
     def create_entry(self, text):
         text = text.strip()
         if text:
-            self.add_entry(text, text)
             db.create_entry(self.list_id, text)
+            self.refresh_entries()
 
 
 class SettingsScreen(MDScreen):

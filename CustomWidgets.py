@@ -29,7 +29,7 @@ class TextInputCustomValidate(TextInput):
         #     self.parent.parent.parent.focus_entries_panel_id()
 
 
-class MDFlatButtonCustom(MDFlatButton):
+class ButtonCustom(Button):
     __events__ = ('on_long_press',)
 
     long_press_time = Factory.NumericProperty(1)

@@ -157,7 +157,7 @@ def read_entries(list_id):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 0"""
-    cursor.execute(query, (list_id,))
+    cursor.execute(query, (int(list_id),))
     records = cursor.fetchall()
     cursor.close()
     sqlite_connection.close()

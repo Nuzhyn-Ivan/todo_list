@@ -55,7 +55,6 @@ def recreate_database():
     sqlite_connection.close()
 
 
-
 def execute_query(query):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
@@ -68,19 +67,18 @@ def execute_query(query):
 # Lists CRUD
 
 def create_list(list_name):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
     try:
-        sqlite_connection = sqlite3.connect(db_path)
-        cursor = sqlite_connection.cursor()
         query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, 1 )"
         cursor.execute(query, (list_name,))
     except sqlite3.Error as e:
-        # TODO move this out. DBLayer must contain only db layer
-        main.MainApp.open_error_popup('Cant create list with this name')
-    cursor.close()
-    sqlite_connection.commit()
-    sqlite_connection.close()
-
-
+        return False
+    finally:
+        cursor.close()
+        sqlite_connection.commit()
+        sqlite_connection.close()
+    return True
 
 
 def read_lists():

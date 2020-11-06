@@ -1,13 +1,10 @@
+from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.properties import StringProperty
-from kivy.uix.screenmanager import ScreenManager, CardTransition
+from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
 from kivy.core.window import Window
-
-from kivymd.app import MDApp
-from kivymd.uix.button import MDFlatButton
-from kivymd.uix.screen import MDScreen
 
 
 import CustomWidgets
@@ -41,7 +38,7 @@ class ScreenManagement(ScreenManager):
         self.current = screen_name
 
 
-class ListsScreen(MDScreen):
+class ListsScreen(Screen):
     def __init__(self,  **kw):
         super().__init__(**kw)
         Clock.schedule_once(self._do_setup)
@@ -60,7 +57,7 @@ class ListsScreen(MDScreen):
             list_btn = CustomWidgets.ButtonCustom(
                 id=str(i[0]),  # id
                 text=str(i[1] + " (" + db.read_entries_count(i[0]) + ")"),  # list name
-                long_press_time=2,
+                long_press_time=1,
                 font_size=config.get('lists_font_size'),
                 size_hint=(1, None),
 
@@ -81,14 +78,21 @@ class ListsScreen(MDScreen):
     def create_list(text):
         text = text.strip()
         if text:
-            db.create_list(text)
+            result = db.create_list(text)
+            if not result:
+                ErrorPopup.open('DB error')
 
     def delete_list(self, btn_obj):
         db.delete_list_by_id(btn_obj.id)
         self.refresh_lists()
 
+    def open_error(self):
+        # TODO doesnt work
+        ErrorPopup.open()
 
-class EntriesScreen(MDScreen):
+
+
+class EntriesScreen(Screen):
     list_id = StringProperty()
     list_name = StringProperty()
 
@@ -123,31 +127,29 @@ class EntriesScreen(MDScreen):
             self.refresh_entries()
 
 
-class SettingsScreen(MDScreen):
+class SettingsScreen(Screen):
 
     @staticmethod
     def reset_db():
         db.recreate_database()
 
-
+    #TODO implement
     def save_settings(self):
         pass
 
 
 class ErrorPopup(Popup):
+    #TODO implement
     error_text = "some error text"
 
 
-class MainApp(MDApp):
+class MainApp(App):
 
     def build(self):
-        self.theme_cls.theme_style = 'Dark'  # 'Light'
-        self.theme_cls.primary_palette = 'Orange'
-        # self.theme_cls.theme_style  =
         # TODO move ALL paths to system settings
         self.icon = 'images/icon.png'
         self.title = config.get('app_title') + '   ' + config.get('app_version')
-        return CustomWidgets.Runner()
+        return ScreenManagement()
 
 
     def build_config(self, app_config):

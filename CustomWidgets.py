@@ -8,7 +8,7 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.textfield import MDTextField
 from kivy.factory import Factory
 
-from utils import gesture_box as gesture
+
 import main
 import utils.ConfigParser as config
 from kivy.base import EventLoop
@@ -48,8 +48,7 @@ class ButtonCustom(Button):
         pass
 
 
-class Runner(gesture.GestureBox):
-    pass
+
 
 
 

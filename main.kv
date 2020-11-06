@@ -5,39 +5,36 @@
 #: import Clipboard kivy.core.clipboard.Clipboard
 #: import  config utils.ConfigParser
 #: import  lang lang.Localization
-<Runner>:
-    # Handling the gesture event.
-    on_left_to_right_line: manager.change_screen("lists_screen", "right")
-    ScreenManagement:
-        id: manager
-        ListsScreen:
-        EntriesScreen:
-        SettingsScreen:
+<ScreenManagement>:
+    id: manager
+    ListsScreen:
+    EntriesScreen:
+    SettingsScreen:
 
 <ListsScreen>:
     name: 'lists_screen'
     on_pre_enter: root.refresh_lists()
     # on_pre_leave:
     # Main
-    MDBoxLayout:
+    BoxLayout:
         orientation: 'vertical'
         #space_x: self.size[0]/3
 
         # Upper Panel
-        MDBoxLayout:
+        BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
             height: 50
             size_hint: 1, 0.1
 
-            MDFlatButton:
+            Button:
                 text: lang.get('settings_btn')
                 on_release: root.manager.change_screen("settings_screen", "left")
                 size_hint: 0.6, 1
-            MDFlatButton:
+            Button:
                 text: lang.get('edit_btn')
                 size_hint: 0.2, 1
-            MDFlatButton:
+            Button:
                 text: lang.get('search_btn')
                 size_hint: 0.2, 1
 
@@ -53,7 +50,7 @@
 
 
         # Bottom panel
-        MDBoxLayout:
+        BoxLayout:
             orientation: 'horizontal'
             height: 50
             size_hint: 1, 0.1
@@ -92,16 +89,16 @@
             size_hint_y: None
             height: 50
             size_hint: 1, 0.1
-            MDFlatButton:
+            Button:
                 id: current_list_lbl
                 text: "<-  " + root.list_name
                 size_hint: 0.6, 1
                 on_release: root.manager.change_screen("lists_screen", "right")
 
-            MDFlatButton:
+            Button:
                 text: lang.get('edit_btn')
                 size_hint: 0.2, 1
-            MDFlatButton:
+            Button:
                 text: lang.get('tags_btn')
                 size_hint: 0.2, 1
 
@@ -143,18 +140,18 @@
     #space_x: self.size[0]/3
 
     # Root
-    MDBoxLayout:
+    BoxLayout:
         orientation: 'vertical'
         spacing: 2
 
-        MDFlatButton:
+        Button:
             text: lang.get('reset_db_btn')
             height: "70dp"
             size_hint: (1, None)
             on_release:
                 root.reset_db()
 
-        MDTextField:
+        TextInput:
             halign: "center"
             valign: "middle"
             is_focusable: True
@@ -166,7 +163,7 @@
             size_hint: (1, None)
             text : config.get('entries_font_size')
 
-        MDTextField:
+        TextInput:
             halign: "center"
             valign: "middle"
             is_focusable: True
@@ -182,12 +179,12 @@
             orientation: 'horizontal'
             spacing: 2
 
-            MDFlatButton:
+            Button:
                 text: lang.get('back_btn')
                 height: "70dp"
 
                 on_release: root.manager.change_screen("lists_screen", "right")
-            MDFlatButton:
+            Button:
                 text: lang.get('save_btn')
                 height: "70dp"
                 on_release:
@@ -200,13 +197,13 @@
     on_open: app.root.popupreference=self
     size_hint: 1, 0.4
     auto_dismiss: True
-    MDBoxLayout:
+    BoxLayout:
         orientation: 'vertical'
         spacing: 10
-        MDLabel:
+        Label:
             text: root.error_text
 
-        MDFlatButton:
+        Button:
             text: lang.get('close_btn')
             height: "70dp"
             size_hint:(1, None)

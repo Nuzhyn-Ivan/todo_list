@@ -156,25 +156,15 @@ def read_entries(list_id):
     return records
 
 
-def update_entry(entry_name, new_entry_name):
-    sqlite_connection = sqlite3.connect(db_path)
-    cursor = sqlite_connection.cursor()
-    query = """UPDATE `Entries` SET name = ? WHERE name = ?"""
-    cursor.execute(query, (new_entry_name, entry_name))
-    cursor.close()
-    sqlite_connection.commit()
-    sqlite_connection.close()
-
-
-def read_all_entries():
-    sqlite_connection = sqlite3.connect(db_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT * FROM `Entries` """
-    cursor.execute(query, )
-    records = cursor.fetchall()
-    cursor.close()
-    sqlite_connection.close()
-    return records
+# def read_all_entries():
+#     sqlite_connection = sqlite3.connect(db_path)
+#     cursor = sqlite_connection.cursor()
+#     query = """SELECT * FROM `Entries` """
+#     cursor.execute(query, )
+#     records = cursor.fetchall()
+#     cursor.close()
+#     sqlite_connection.close()
+#     return records
 
 
 def read_entries_count(list_id):
@@ -186,6 +176,15 @@ def read_entries_count(list_id):
     cursor.close()
     sqlite_connection.close()
     return str(records[0][0])
+
+def update_entry(entry_name, new_entry_name):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """UPDATE `Entries` SET name = ? WHERE name = ?"""
+    cursor.execute(query, (new_entry_name, entry_name))
+    cursor.close()
+    sqlite_connection.commit()
+    sqlite_connection.close()
 
 
 def complete_entry(entry_id):

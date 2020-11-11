@@ -77,15 +77,11 @@ class ListsScreen(Screen):
         if text:
             result = db.create_list(text)
             if not result:
-                ErrorPopup.open('DB error')
+                MainApp.open_error_popup('Database error')
 
     def delete_list(self, btn_obj):
         db.delete_list_by_id(btn_obj.id)
         self.refresh_lists()
-
-    def open_error(self):
-        # TODO doesnt work
-        ErrorPopup.open()
 
 
 class EntriesScreen(Screen):
@@ -130,13 +126,14 @@ class SettingsScreen(Screen):
     def reset_db():
         db.recreate_database()
 
-    #TODO implement
+    # TODO implement
     def save_settings(self):
         pass
 
 
 class ErrorPopup(Popup):
-    #TODO implement
+    # TODO implement exact error display
+    popup_title = 'some popup title'
     error_text = "some error text"
 
 

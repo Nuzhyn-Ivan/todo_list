@@ -105,10 +105,10 @@
         # Entries Panel
 
         ScrollView:
-            GridLayout:
+            BoxLayout:
                 id: entries_panel_id
                 size_hint: 1, None
-                cols: 1
+                orientation: 'vertical'
                 spacing: 1
                 height: self.minimum_height
                 padding: 5
@@ -135,48 +135,62 @@
 
 <SettingsScreen>:
     name: 'settings_screen'
-    orientation: 'vertical'
-    #space_x: self.size[0]/3
-
     # Root
     BoxLayout:
         orientation: 'vertical'
-        spacing: 2
+        ScrollView:
+            BoxLayout:
+                id: settings_panel_id
+                size_hint: 1, None
+                orientation: 'vertical'
+                spacing: 2
+                height: self.minimum_height
+                padding: 5
 
-        Button:
-            text: lang.get('reset_db_btn')
-            height: "70dp"
-            size_hint: (1, None)
-            on_release:
-                root.reset_db()
 
-        TextInput:
-            halign: "center"
-            valign: "middle"
-            is_focusable: True
-            hint_text: 'Entry font size'
-            multiline: False
-            write_tab: False
-            font_size:  0.5 * self.height
-            height: "70dp"
-            size_hint: (1, None)
-            text : config.get('entries_font_size')
+                Button:
+                    text: lang.get('reset_db_btn')
+                    height: "70dp"
+                    size_hint: (1, None)
+                    on_release:
+                        root.reset_db()
 
-        TextInput:
-            halign: "center"
-            valign: "middle"
-            is_focusable: True
-            hint_text: 'Lists font size'
-            multiline: False
-            write_tab: False
-            font_size:  0.5 * self.height
-            height: "70dp"
-            size_hint: (1, None)
-            text : config.get('lists_font_size')
+                TextInput:
+                    halign: "center"
+                    valign: "middle"
+                    is_focusable: True
+                    hint_text: 'Entry font size'
+                    multiline: False
+                    write_tab: False
+                    font_size:  0.5 * self.height
+                    height: "70dp"
+                    size_hint: (1, None)
+                    text : config.get('entries_font_size')
 
+                TextInput:
+                    halign: "center"
+                    valign: "middle"
+                    is_focusable: True
+                    hint_text: 'Lists font size'
+                    multiline: False
+                    write_tab: False
+                    font_size:  0.5 * self.height
+                    height: "70dp"
+                    size_hint: (1, None)
+                    text : config.get('lists_font_size')
+                Button:
+                    text: 'pp'
+                    height: "70dp"
+                    size_hint:(1, None)
+                    on_release:
+                        app.open_error_popup('sd')
+
+        # bottom panel
         BoxLayout:
             orientation: 'horizontal'
             spacing: 2
+            height: 50
+            size_hint: 1, 0.1
 
             Button:
                 text: lang.get('back_btn')
@@ -191,17 +205,16 @@
                     root.save_settings()
 
 <ErrorPopup>:
-    title: lang.get('error_popup_title')
+    title: root.popup_title
     id: error_popup_id
     on_open: app.root.popupreference=self
     size_hint: 1, 0.4
-    auto_dismiss: True
+    auto_dismiss: False
     BoxLayout:
         orientation: 'vertical'
         spacing: 10
         Label:
             text: root.error_text
-
         Button:
             text: lang.get('close_btn')
             height: "70dp"

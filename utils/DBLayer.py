@@ -2,7 +2,6 @@ import sqlite3
 import os.path
 
 import utils.ConfigParser as config
-import main as main
 
 db_path = config.get('db_path')
 
@@ -55,13 +54,13 @@ def recreate_database():
     sqlite_connection.close()
 
 
-def execute_query(query):
-    sqlite_connection = sqlite3.connect(db_path)
-    cursor = sqlite_connection.cursor()
-    cursor.execute(query)
-    cursor.close()
-    records = cursor.fetchall()
-    return records
+# def execute_query(query):
+#     sqlite_connection = sqlite3.connect(db_path)
+#     cursor = sqlite_connection.cursor()
+#     cursor.execute(query)
+#     cursor.close()
+#     records = cursor.fetchall()
+#     return records
 
 
 # Lists CRUD
@@ -124,13 +123,8 @@ def update_list(list_name, new_list_name):
     sqlite_connection.close()
 
 
-def delete_list_by_name(list_name):
-    list_id = get_list_id(list_name)
-    delete_entries(list_id)
-    delete_list_by_id(list_id)
-
-
 def delete_list_by_id(list_id):
+    delete_entries(list_id)
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """DELETE FROM `Lists` WHERE id = ? """

@@ -6,7 +6,6 @@ from kivy.properties import StringProperty
 from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
 from kivy.core.window import Window
 
-
 import CustomWidgets
 import utils.DBLayer as db
 import utils.ConfigParser as config
@@ -60,8 +59,6 @@ class ListsScreen(Screen):
                 long_press_time=1,
                 font_size=config.get('lists_font_size'),
                 size_hint=(1, None),
-
-
             )
             list_btn.bind(on_release=self.open_entry)
             list_btn.bind(on_long_press=self.delete_list)
@@ -91,12 +88,11 @@ class ListsScreen(Screen):
         ErrorPopup.open()
 
 
-
 class EntriesScreen(Screen):
     list_id = StringProperty()
     list_name = StringProperty()
 
-    def add_entry(self, entry_id, text):
+    def add_entry(self, entry_id, text, index):
         entry = Button(
             id=str(entry_id),
             text=str(text),
@@ -105,13 +101,14 @@ class EntriesScreen(Screen):
             font_size=config.get('entries_font_size'),
         )
         entry.bind(on_release=self.done_entry)
-        self.ids.entries_panel_id.add_widget(entry)
+        self.ids.entries_panel_id.add_widget(entry, index)
 
     def refresh_entries(self):
         entries_list = db.read_entries(self.list_id)
+        entries_count = len(entries_list)
         self.ids.entries_panel_id.clear_widgets()
-        for no in range(len(entries_list)):
-            self.add_entry(entries_list[no][0], entries_list[no][2])
+        for entry_num in range(len(entries_list)):
+            self.add_entry(entries_list[entry_num][0], entries_list[entry_num][2], (entries_count - entry_num))
 
     def done_entry(self, btn_obj):
         db.complete_entry(btn_obj.id)
@@ -150,7 +147,7 @@ class MainApp(App):
         self.icon = 'images/icon.png'
         self.title = config.get('app_title') + '   ' + config.get('app_version')
         return ScreenManagement()
-
+        # TODO add background  https://kivy.org/doc/stable/guide/widgets.html
 
     def build_config(self, app_config):
         app_config.setdefaults('', {

@@ -1,5 +1,8 @@
+from kivy import utils
 from kivy.app import App
 from kivy.core.text import Label
+from kivy.graphics.context_instructions import Color
+from kivy.graphics.vertex_instructions import Rectangle
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -127,12 +130,13 @@ class EntriesScreen(Screen):
             db.create_entry(self.list_id, text)
             self.refresh_entries()
 
+    # TODO implement auto-complete on entry
     def auto_complete(self, text):
         return db.read_entries_by_name_part(self.list_id, text)
 
 
+# TODO https://www.reddit.com/r/kivy/comments/99n2ct/anyone_having_idea_for_autocomplete_feature_in/
 class DropDownWidget(BoxLayout):
-    # TODO https://www.reddit.com/r/kivy/comments/99n2ct/anyone_having_idea_for_autocomplete_feature_in/
     txt_input = ObjectProperty()
     rv = ObjectProperty()
 
@@ -162,6 +166,7 @@ class ErrorPopup(Popup):
 class MainApp(App):
 
     def build(self):
+        Window.clearcolor = utils.get_color_from_hex(config.get('background_colour'))
         # TODO move ALL paths to system settings
         self.icon = 'images/icon.png'
         self.title = config.get('app_title') + '   ' + config.get('app_version')
@@ -177,7 +182,7 @@ class MainApp(App):
             'app_title': 'TODOit',
             'db_path': "..// TODO.db",
             'screen_transition_duration': 0,
-            'done_entry_sound': 'sounds // done_entry.wav',
+
         },
                                )
 

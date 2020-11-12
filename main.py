@@ -127,6 +127,9 @@ class EntriesScreen(Screen):
             db.create_entry(self.list_id, text)
             self.refresh_entries()
 
+    def auto_complete(self, text):
+        return db.read_entries_by_name_part(self.list_id, text)
+
 
 class DropDownWidget(BoxLayout):
     # TODO https://www.reddit.com/r/kivy/comments/99n2ct/anyone_having_idea_for_autocomplete_feature_in/

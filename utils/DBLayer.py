@@ -33,6 +33,7 @@ def recreate_database():
     due_date datetime,
     frequency INTEGER DEFAULT 0);
     '''
+    sqlite_create_entry_name_index = 'CREATE UNIQUE INDEX entry_name ON Entries(name);'
 
     sqlite_insert_default_lists = '''
     INSERT INTO 'Lists' ('name', 'order_id') VALUES ("Supermarket", 1 ), ("To Do", 2 ), ("Drag Store", 3 ), ("Movies to watch", 4 );
@@ -46,6 +47,7 @@ def recreate_database():
     cursor.execute(sqlite_drop_entries)
     cursor.execute(sqlite_create_lists)
     cursor.execute(sqlite_create_entries)
+    cursor.execute(sqlite_create_entry_name_index)
     cursor.execute(sqlite_insert_default_lists)
     cursor.execute(sqlite_insert_default_entries)
 
@@ -156,6 +158,16 @@ def read_entries(list_id):
     return records
 
 
+def read_entries_by_name_part(list_id, name):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = '''SELECT name FROM `Entries` WHERE list_id = ? and name like ? and is_completed = 1'''
+    cursor.execute(query, (int(list_id), str(name)+'%'))
+    records = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    return records
+
 # def read_all_entries():
 #     sqlite_connection = sqlite3.connect(db_path)
 #     cursor = sqlite_connection.cursor()
@@ -176,6 +188,7 @@ def read_entries_count(list_id):
     cursor.close()
     sqlite_connection.close()
     return str(records[0][0])
+
 
 def update_entry(entry_name, new_entry_name):
     sqlite_connection = sqlite3.connect(db_path)

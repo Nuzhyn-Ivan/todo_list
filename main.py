@@ -1,10 +1,18 @@
 from kivy.app import App
+from kivy.core.text import Label
+from kivy.uix.behaviors import FocusBehavior
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, ObjectProperty, ListProperty, NumericProperty, BooleanProperty
+from kivy.uix.recycleboxlayout import RecycleBoxLayout
+from kivy.uix.recycleview import RecycleView
+from kivy.uix.recycleview.layout import LayoutSelectionBehavior
+from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
 from kivy.core.window import Window
+from kivy.uix.textinput import TextInput
 
 import CustomWidgets
 import utils.DBLayer as db
@@ -118,6 +126,17 @@ class EntriesScreen(Screen):
         if text:
             db.create_entry(self.list_id, text)
             self.refresh_entries()
+
+
+class DropDownWidget(BoxLayout):
+    # TODO https://www.reddit.com/r/kivy/comments/99n2ct/anyone_having_idea_for_autocomplete_feature_in/
+    txt_input = ObjectProperty()
+    rv = ObjectProperty()
+
+
+class RV(RecycleView):
+    def __init__(self, **kwargs):
+        super(RV, self).__init__(**kwargs)
 
 
 class SettingsScreen(Screen):

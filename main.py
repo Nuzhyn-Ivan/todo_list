@@ -9,7 +9,7 @@ from kivy.uix.button import Button
 from kivy.uix.dropdown import DropDown
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
-from kivy.properties import StringProperty, ObjectProperty, ListProperty, NumericProperty, BooleanProperty
+from kivy.properties import StringProperty, ObjectProperty, ListProperty, NumericProperty, BooleanProperty, DictProperty
 from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.recycleview.layout import LayoutSelectionBehavior
@@ -21,6 +21,7 @@ from kivy.uix.textinput import TextInput
 import CustomWidgets
 import utils.DBLayer as db
 import utils.ConfigParser as config
+import lang.Localization as lang
 
 
 
@@ -136,7 +137,13 @@ class EntriesScreen(Screen):
 
 
 class SettingsScreen(Screen):
-    current_settings = {'background_colour': config.get('background_colour'),}
+    # TODO move all kv strings to lang
+    current_settings = {}
+    current_settings['background_colour'] = config.get('background_colour')
+    current_settings['lang'] = config.get('lang')
+
+
+
 
     def __init__(self, **kwargs):
         super(SettingsScreen, self).__init__(**kwargs)
@@ -144,6 +151,7 @@ class SettingsScreen(Screen):
 
     def get_current_settings(self):
         self.current_settings['background_colour'] = config.get('background_colour')
+        self.current_settings['lang'] = config.get('lang')
 
     @staticmethod
     def reset_db():
@@ -153,6 +161,8 @@ class SettingsScreen(Screen):
     def apply_settings(self):
         for i in self.current_settings:
             config.set(i, self.current_settings[i])
+        # TODO lang reload doesnt work
+        lang.reload_lang()
         MainApp.build(self)
 
     def set_default_settings(self):
@@ -169,6 +179,7 @@ class MainApp(App):
 
     def build(self):
         # TODO refactor backgroung
+
         backgroung_dict = {'Orange': [0.8, 0.4, 0.0, 1], "White": [1.0, 1.0, 1.0, 1]}
         Window.clearcolor = backgroung_dict[config.get('background_colour')]
         Window.softinput_mode = 'below_target'

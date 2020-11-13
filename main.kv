@@ -190,29 +190,56 @@
                     Button:
                         id: current_background_btn
                         text: 'Background: ' + root.current_settings['background_colour']
-                        on_parent: dropdown.dismiss()
-                        on_release: dropdown.open(self)
+                        on_parent: background_dropdown.dismiss()
+                        on_release: background_dropdown.open(self)
                         size_hint_y: None
                         height: "70dp"
 
                     DropDown:
-                        id: dropdown
+                        id: background_dropdown
                         on_select: current_background_btn.text = '{}'.format(args[1])
                         Button:
                             text: 'Background: Orange'
                             size_hint_y: None
                             height: "70dp"
                             on_release:
-                                dropdown.select('Background: Orange')
+                                background_dropdown.select('Background: Orange')
                                 root.current_settings['background_colour'] =  'Orange'
                         Button:
                             text: 'Background: White'
                             size_hint_y: None
                             height: "70dp"
                             on_release:
-                                dropdown.select('Background: White')
+                                background_dropdown.select('Background: White')
                                 root.current_settings['background_colour'] =  'White'
+                CustomDropDown:
+                    size_hint: (1, None)
+                    height: "70dp"
+                    Button:
+                        id: current_lang_btn
+                        text: 'Language: ' + root.current_settings['lang']
+                        on_parent: lang_dropdown.dismiss()
+                        on_release: lang_dropdown.open(self)
+                        size_hint_y: None
+                        height: "70dp"
 
+                    DropDown:
+                        id: lang_dropdown
+                        on_select: current_lang_btn.text = '{}'.format(args[1])
+                        Button:
+                            text: 'Lang: en'
+                            size_hint_y: None
+                            height: "70dp"
+                            on_release:
+                                lang_dropdown.select('Lang: en')
+                                root.current_settings['lang'] =  'en'
+                        Button:
+                            text: 'Lang: ru'
+                            size_hint_y: None
+                            height: "70dp"
+                            on_release:
+                                lang_dropdown.select('Lang: ru')
+                                root.current_settings['lang'] =  'ru'
 
         # bottom panel
         BoxLayout:
@@ -225,7 +252,7 @@
                 text: lang.get('back_btn')
                 height: "70dp"
                 on_release:
-                    root.set_default_settings()
+                    root.get_current_settings
                     root.manager.change_screen("lists_screen", "right")
 
             Button:

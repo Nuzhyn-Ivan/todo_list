@@ -184,6 +184,35 @@
                     size_hint: (1, None)
                     text : config.get('lists_font_size')
 
+                CustomDropDown:
+                    size_hint: (1, None)
+                    height: "70dp"
+                    Button:
+                        id: current_background_btn
+                        text: 'Background: ' + root.current_settings['background_colour']
+                        on_parent: dropdown.dismiss()
+                        on_release: dropdown.open(self)
+                        size_hint_y: None
+                        height: "70dp"
+
+                    DropDown:
+                        id: dropdown
+                        on_select: current_background_btn.text = '{}'.format(args[1])
+                        Button:
+                            text: 'Background: Orange'
+                            size_hint_y: None
+                            height: "70dp"
+                            on_release:
+                                dropdown.select('Background: Orange')
+                                root.current_settings['background_colour'] =  'Orange'
+                        Button:
+                            text: 'Background: White'
+                            size_hint_y: None
+                            height: "70dp"
+                            on_release:
+                                dropdown.select('Background: White')
+                                root.current_settings['background_colour'] =  'White'
+
 
         # bottom panel
         BoxLayout:
@@ -195,14 +224,17 @@
             Button:
                 text: lang.get('back_btn')
                 height: "70dp"
+                on_release:
+                    root.set_default_settings()
+                    root.manager.change_screen("lists_screen", "right")
 
-                on_release: root.manager.change_screen("lists_screen", "right")
             Button:
                 text: lang.get('save_btn')
                 height: "70dp"
                 on_release:
+                    root.apply_settings()
                     root.manager.change_screen("lists_screen", "right")
-                    root.save_settings()
+
 
 <ErrorPopup>:
     title: root.popup_title

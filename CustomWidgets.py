@@ -1,18 +1,30 @@
 from kivy.clock import Clock
 from kivy.properties import StringProperty, ObjectProperty, ListProperty, NumericProperty
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.bubble import Bubble
 from kivy.uix.button import Button
 from kivy.uix.dropdown import DropDown
+from kivy.uix.recycleview import RecycleView
 from kivy.uix.textinput import TextInput
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.textfield import MDTextField
 from kivy.factory import Factory
 
 
-import main
-import utils.ConfigParser as config
-from kivy.base import EventLoop
-from kivy.config import Config
+class CustomDropDown(BoxLayout):
+    # settings - background
+    pass
+
+
+# TODO https://www.reddit.com/r/kivy/comments/99n2ct/anyone_having_idea_for_autocomplete_feature_in/
+class DropDownWidget(BoxLayout):
+    txt_input = ObjectProperty()
+    rv = ObjectProperty()
+
+
+class RV(RecycleView):
+    def __init__(self, **kwargs):
+        super(RV, self).__init__(**kwargs)
 
 
 class TextInputCustomValidate(TextInput):

@@ -6,6 +6,7 @@ from kivy.graphics.vertex_instructions import Rectangle
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.dropdown import DropDown
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.properties import StringProperty, ObjectProperty, ListProperty, NumericProperty, BooleanProperty
@@ -22,8 +23,7 @@ import utils.DBLayer as db
 import utils.ConfigParser as config
 
 
-Window.softinput_mode = 'below_target'
-# https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
+
 
 
 class ScreenManagement(ScreenManager):
@@ -135,25 +135,27 @@ class EntriesScreen(Screen):
         return db.read_entries_by_name_part(self.list_id, text)
 
 
-# TODO https://www.reddit.com/r/kivy/comments/99n2ct/anyone_having_idea_for_autocomplete_feature_in/
-class DropDownWidget(BoxLayout):
-    txt_input = ObjectProperty()
-    rv = ObjectProperty()
-
-
-class RV(RecycleView):
-    def __init__(self, **kwargs):
-        super(RV, self).__init__(**kwargs)
-
-
 class SettingsScreen(Screen):
+    current_settings = {'background_colour': config.get('background_colour'),}
+
+    def __init__(self, **kwargs):
+        super(SettingsScreen, self).__init__(**kwargs)
+        self.get_current_settings()
+
+    def get_current_settings(self):
+        self.current_settings['background_colour'] = config.get('background_colour')
 
     @staticmethod
     def reset_db():
         db.recreate_database()
 
     # TODO implement
-    def save_settings(self):
+    def apply_settings(self):
+        for i in self.current_settings:
+            config.set(i, self.current_settings[i])
+        MainApp.build(self)
+
+    def set_default_settings(self):
         pass
 
 
@@ -166,12 +168,15 @@ class ErrorPopup(Popup):
 class MainApp(App):
 
     def build(self):
-        Window.clearcolor = utils.get_color_from_hex(config.get('background_colour'))
+        # TODO refactor backgroung
+        backgroung_dict = {'Orange': [0.8, 0.4, 0.0, 1], "White": [1.0, 1.0, 1.0, 1]}
+        Window.clearcolor = backgroung_dict[config.get('background_colour')]
+        Window.softinput_mode = 'below_target'
+        # TextInput keyboard position https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
         # TODO move ALL paths to system settings
         self.icon = 'images/icon.png'
         self.title = config.get('app_title') + '   ' + config.get('app_version')
         return ScreenManagement()
-        # TODO add background  https://kivy.org/doc/stable/guide/widgets.html
 
     def build_config(self, app_config):
         app_config.setdefaults('', {

@@ -157,12 +157,12 @@ class SettingsScreen(Screen):
     def reset_db():
         db.recreate_database()
 
-    # TODO implement
     def apply_settings(self):
         for i in self.current_settings:
             config.set(i, self.current_settings[i])
         # TODO lang reload doesnt work
         lang.reload_lang()
+        config.load_config()
         MainApp.build(self)
 
     def set_default_settings(self):
@@ -179,7 +179,6 @@ class MainApp(App):
 
     def build(self):
         # TODO refactor backgroung
-
         backgroung_dict = {'Orange': [0.8, 0.4, 0.0, 1], "White": [1.0, 1.0, 1.0, 1]}
         Window.clearcolor = backgroung_dict[config.get('background_colour')]
         Window.softinput_mode = 'below_target'

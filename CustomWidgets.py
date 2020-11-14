@@ -6,8 +6,6 @@ from kivy.uix.button import Button
 from kivy.uix.dropdown import DropDown
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.textinput import TextInput
-from kivymd.uix.button import MDFlatButton
-from kivymd.uix.textfield import MDTextField
 from kivy.factory import Factory
 
 

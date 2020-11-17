@@ -140,8 +140,8 @@ def delete_list_by_id(list_id):
 def create_entry(list_id, entry_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    query = "INSERT INTO 'Entries' ( 'list_id', 'name') VALUES (?, ? )"
-    cursor.execute(query, (list_id, entry_name))
+    query = "INSERT OR REPLACE INTO 'Entries' ( 'list_id', 'name', 'frequency') VALUES (?, ?, (SELECT frequency FROM 'Entries' WHERE name = ?)+1)"
+    cursor.execute(query, (list_id, entry_name, entry_name))
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()

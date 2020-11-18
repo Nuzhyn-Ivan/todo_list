@@ -158,11 +158,12 @@ def read_entries(list_id):
     return records
 
 
-def read_entries_by_name_part(list_id, name):
+def read_entries_by_name_part(list_id, name_part):
+    count = int(config.get('max_suggestions_count'))
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    query = '''SELECT name FROM `Entries` WHERE list_id = ? and name like ? and is_completed = 1'''
-    cursor.execute(query, (int(list_id), str(name)+'%'))
+    query = '''SELECT name FROM `Entries` WHERE list_id = ? and name like ? and is_completed = 1 ORDER BY frequency DESC LIMIT ?;'''
+    cursor.execute(query, (int(list_id), str(name_part)+'%', count))
     records = cursor.fetchall()
     cursor.close()
     sqlite_connection.close()

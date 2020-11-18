@@ -53,9 +53,9 @@
         BoxLayout:
             orientation: 'horizontal'
             height: 50
-            size_hint: 1, 0.1
+            size_hint: 1, 0.07
 
-            TextInputCustomValidate:
+            Chooser:
                 id: add_list_input_id
                 halign: "center"
                 valign: "middle"
@@ -75,7 +75,7 @@
     orientation: 'vertical'
     on_pre_enter:
         root.refresh_entries()
-        self.ids.current_list_lbl.text = "<--  " + root.list_name
+        self.ids.current_list_lbl.text = "<--  " + root.current_list_name
     on_pre_leave: self.ids.input_id.focus = False
 
     # Root
@@ -91,7 +91,7 @@
             size_hint: 1, 0.1
             Button:
                 id: current_list_lbl
-                text: "<-  " + root.list_name
+                text: "<-  " + root.current_list_name
                 size_hint: 0.6, 1
                 on_release: root.manager.change_screen("lists_screen", "right")
 
@@ -118,11 +118,11 @@
         DropDownWidget:
             orientation: 'vertical'
             height: 50
-            size_hint: 1, 0.1
+            size_hint: 1, 0.07
             spacing: 2
 #            txt_input: txt_input
 #            rv: rv
-            TextInputCustomValidate:
+            Chooser:
                 id: input_id
                 #font_size: self.height - 15
                 # hint_text_color: defaults  [0.5, 0.5, 0.5, 1.0] (grey).

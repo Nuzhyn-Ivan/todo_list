@@ -78,8 +78,8 @@ class ListsScreen(Screen):
             lists_panel.add_widget(list_btn)
 
     def open_entry(self, btn_obj):
-        EntriesScreen.list_id = btn_obj.id
-        EntriesScreen.list_name = db.get_list_name(btn_obj.id)
+        EntriesScreen.current_list_id = btn_obj.id
+        EntriesScreen.current_list_name = db.get_list_name(btn_obj.id)
         self.manager.transition = CardTransition(direction='left', duration=float(config.get('screen_transition_duration')))
         self.manager.current = "entries_screen"
 
@@ -97,8 +97,8 @@ class ListsScreen(Screen):
 
 
 class EntriesScreen(Screen):
-    list_id = StringProperty()
-    list_name = StringProperty()
+    current_list_id = StringProperty()
+    current_list_name = StringProperty()
 
     def add_entry(self, entry_id, text, index):
         entry = Button(
@@ -112,7 +112,7 @@ class EntriesScreen(Screen):
         self.ids.entries_panel_id.add_widget(entry, index)
 
     def refresh_entries(self):
-        entries_list = db.read_entries(self.list_id)
+        entries_list = db.read_entries(self.current_list_id)
         entries_count = len(entries_list)
         self.ids.entries_panel_id.clear_widgets()
         for entry_num in range(len(entries_list)):
@@ -128,22 +128,20 @@ class EntriesScreen(Screen):
     def create_entry(self, text):
         text = text.strip()
         if text:
-            db.create_entry(self.list_id, text)
+            db.create_entry(self.current_list_id, text)
             self.refresh_entries()
 
     # TODO implement auto-complete on entry
     def auto_complete(self, text):
-        return db.read_entries_by_name_part(self.list_id, text)
+        return db.read_entries_by_name_part(self.current_list_id, text)
 
 
 class SettingsScreen(Screen):
     # TODO move all kv strings to lang
-    current_settings = {}
-    current_settings['background_colour'] = config.get('background_colour')
-    current_settings['lang'] = config.get('lang')
-
-
-
+    current_settings = {
+        'background_colour': config.get('background_colour'),
+        'lang': config.get('lang')
+    }
 
     def __init__(self, **kwargs):
         super(SettingsScreen, self).__init__(**kwargs)

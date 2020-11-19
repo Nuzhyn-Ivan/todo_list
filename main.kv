@@ -171,6 +171,7 @@
                     height: "70dp"
                     size_hint: (1, None)
                     text : config.get('entries_font_size')
+                    on_text_validate: root.current_settings['entries_font_size'] =  self.text
 
                 TextInput:
                     halign: "center"
@@ -183,6 +184,7 @@
                     height: "70dp"
                     size_hint: (1, None)
                     text : config.get('lists_font_size')
+                    on_text_validate: root.current_settings['lists_font_size'] =  self.text
 
                 CustomDropDown:
                     size_hint: (1, None)

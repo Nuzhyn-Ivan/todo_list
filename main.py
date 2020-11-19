@@ -24,9 +24,6 @@ import utils.ConfigParser as config
 import lang.Localization as lang
 
 
-
-
-
 class ScreenManagement(ScreenManager):
 
     def __init__(self, **kwargs):
@@ -140,7 +137,9 @@ class SettingsScreen(Screen):
     # TODO move all kv strings to lang
     current_settings = {
         'background_colour': config.get('background_colour'),
-        'lang': config.get('lang')
+        'lang': config.get('lang'),
+        'entries_font_size': config.get('entries_font_size'),
+        'lists_font_size': config.get('lists_font_size'),
     }
 
     def __init__(self, **kwargs):
@@ -150,6 +149,8 @@ class SettingsScreen(Screen):
     def get_current_settings(self):
         self.current_settings['background_colour'] = config.get('background_colour')
         self.current_settings['lang'] = config.get('lang')
+        self.current_settings['entries_font_size'] = config.get('entries_font_size')
+        self.current_settings['lists_font_size'] = config.get('lists_font_size')
 
     @staticmethod
     def reset_db():
@@ -189,8 +190,8 @@ class MainApp(App):
     def build_config(self, app_config):
         app_config.setdefaults('', {
             'font_size': '15dp',
-            'entries_font_size': 42,
-            'lists_font_size': '15dp',
+            #'entries_font_size': 42,
+            #'lists_font_size': '15dp',
             'app_version': '0.0.20',
             'app_title': 'TODOit',
             'db_path': "..// TODO.db",

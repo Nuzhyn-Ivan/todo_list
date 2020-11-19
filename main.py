@@ -128,18 +128,19 @@ class EntriesScreen(Screen):
             db.create_entry(self.current_list_id, text)
             self.refresh_entries()
 
-    # TODO implement auto-complete on entry
-    def auto_complete(self, text):
-        return db.read_entries_by_name_part(self.current_list_id, text)
-
 
 class SettingsScreen(Screen):
+    # TODO fix bug with font_size not apply on save(same as lang)
     # TODO move all kv strings to lang
+
+    # TODo rewrite with direct main.ini work
     current_settings = {
         'background_colour': config.get('background_colour'),
         'lang': config.get('lang'),
         'entries_font_size': config.get('entries_font_size'),
         'lists_font_size': config.get('lists_font_size'),
+        'max_suggestions_count': config.get('max_suggestions_count'),
+        'font_size': config.get('font_size'),
     }
 
     def __init__(self, **kwargs):
@@ -147,25 +148,20 @@ class SettingsScreen(Screen):
         self.get_current_settings()
 
     def get_current_settings(self):
-        self.current_settings['background_colour'] = config.get('background_colour')
-        self.current_settings['lang'] = config.get('lang')
-        self.current_settings['entries_font_size'] = config.get('entries_font_size')
-        self.current_settings['lists_font_size'] = config.get('lists_font_size')
+        for key in self.current_settings:
+            self.current_settings[key] = config.get(key)
 
     @staticmethod
     def reset_db():
         db.recreate_database()
 
     def apply_settings(self):
-        for i in self.current_settings:
-            config.set(i, self.current_settings[i])
+        for key in self.current_settings:
+            config.set(key, self.current_settings[key])
         # TODO lang reload doesnt work
-        lang.reload_lang()
-        config.load_config()
+        # lang.reload_lang()
+        # config.load_config()
         MainApp.build(self)
-
-    def set_default_settings(self):
-        pass
 
 
 class ErrorPopup(Popup):
@@ -189,7 +185,7 @@ class MainApp(App):
 
     def build_config(self, app_config):
         app_config.setdefaults('', {
-            'font_size': '15dp',
+            #'font_size': '15dp',
             #'entries_font_size': 42,
             #'lists_font_size': '15dp',
             'app_version': '0.0.20',

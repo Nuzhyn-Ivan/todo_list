@@ -29,13 +29,16 @@
 
             Button:
                 text: lang.get('settings_btn')
+                font_size: config.get('font_size')
                 on_release: root.manager.change_screen("settings_screen", "left")
                 size_hint: 0.6, 1
             Button:
                 text: lang.get('edit_btn')
+                font_size: config.get('font_size')
                 size_hint: 0.2, 1
             Button:
                 text: lang.get('search_btn')
+                font_size: config.get('font_size')
                 size_hint: 0.2, 1
 
         ScrollView:
@@ -92,15 +95,18 @@
             Button:
                 id: current_list_lbl
                 text: "<-  " + root.current_list_name
+                font_size: config.get('font_size')
                 size_hint: 0.6, 1
                 on_release: root.manager.change_screen("lists_screen", "right")
 
             Button:
                 text: lang.get('edit_btn')
                 size_hint: 0.2, 1
+                font_size: config.get('font_size')
             Button:
                 text: lang.get('tags_btn')
                 size_hint: 0.2, 1
+                font_size: config.get('font_size')
 
         # Entries Panel
 
@@ -152,96 +158,89 @@
                 height: self.minimum_height
                 padding: 5
 
-
                 Button:
                     text: lang.get('reset_db_btn')
                     height: "70dp"
                     size_hint: (1, None)
+                    font_size: config.get('font_size')
                     on_release:
                         root.reset_db()
 
-                TextInput:
-                    halign: "center"
-                    valign: "middle"
-                    is_focusable: True
-                    hint_text: 'Entry font size'
-                    multiline: False
-                    write_tab: False
-                    font_size:  0.5 * self.height
+                Label:
+                    size_hint: (1, None)
+                    font_size: str(entries_font_size_slider_id.value) + 'dp'
+                    text: 'Text size for Entries: '  + str(int(entries_font_size_slider_id.value))
+                    height: "35dp"
+                Slider:
+                    size_hint: (1, None)
+                    height: "25dp"
+                    id: entries_font_size_slider_id
+                    value: int( config.get('entries_font_size')[:-2] )
+                    range: (10,40)
+                    step: 1
+                    on_value: root.current_settings['entries_font_size'] =  str(self.value) + 'dp'
+
+                Label:
+                    size_hint: (1, None)
+                    font_size: str(lists_font_size_slider_id.value) + 'dp'
+                    text: 'Text size for Lists: '  + str(int(lists_font_size_slider_id.value))
+                    height: "35dp"
+                Slider:
+                    size_hint: (1, None)
+                    height: "25dp"
+                    id: lists_font_size_slider_id
+                    value: int( config.get('lists_font_size')[:-2] )
+                    range: (10,40)
+                    step: 1
+                    on_value: root.current_settings['lists_font_size'] =  str(self.value) + 'dp'
+
+                Label:
+                    size_hint: (1, None)
+                    font_size: str(general_font_size_slider_id.value) + 'dp'
+                    text: 'General text size : '  + str(int(general_font_size_slider_id.value))
+                    height: "35dp"
+                Slider:
+                    size_hint: (1, None)
+                    height: "25dp"
+                    id: general_font_size_slider_id
+                    value: int( config.get('font_size')[:-2] )
+                    range: (10,40)
+                    step: 1
+                    on_value: root.current_settings['font_size'] =  str(self.value) + 'dp'
+
+                Label:
+                    size_hint: (1, None)
+                    text: 'Suggestions count for entries: ' + str(int(max_suggestions_count_slider_id.value))
+                    font_size: config.get('font_size')
+                    height: "35dp"
+                Slider:
+                    size_hint: (1, None)
+                    height: "30dp"
+                    id: max_suggestions_count_slider_id
+                    value: int(config.get('max_suggestions_count'))
+                    range: (0,10)
+                    step: 1
+                    on_value: root.current_settings['max_suggestions_count'] =  str(int(self.value))
+
+                Spinner:
                     height: "70dp"
                     size_hint: (1, None)
-                    text : config.get('entries_font_size')
-                    on_text_validate: root.current_settings['entries_font_size'] =  self.text
+                    font_size: config.get('font_size')
+                    text: 'Background: ' + root.current_settings['background_colour']
+                    values: 'Background: Orange', 'Background: White'
+                    on_text:  root.current_settings['background_colour'] =  (self.text).rsplit(' ', 1)[1]
 
-                TextInput:
-                    halign: "center"
-                    valign: "middle"
-                    is_focusable: True
-                    hint_text: 'Lists font size'
-                    multiline: False
-                    write_tab: False
-                    font_size:  0.5 * self.height
+                Spinner:
                     height: "70dp"
                     size_hint: (1, None)
-                    text : config.get('lists_font_size')
-                    on_text_validate: root.current_settings['lists_font_size'] =  self.text
+                    font_size: config.get('font_size')
+                    text: 'Language: ' + root.current_settings['lang']
+                    values: 'Language: en', 'Language: ru'
+                    on_text:  root.current_settings['lang']  =  (self.text).rsplit(' ', 1)[1]
 
-                CustomDropDown:
-                    size_hint: (1, None)
-                    height: "70dp"
-                    Button:
-                        id: current_background_btn
-                        text: 'Background: ' + root.current_settings['background_colour']
-                        on_parent: background_dropdown.dismiss()
-                        on_release: background_dropdown.open(self)
-                        size_hint_y: None
-                        height: "70dp"
 
-                    DropDown:
-                        id: background_dropdown
-                        on_select: current_background_btn.text = '{}'.format(args[1])
-                        Button:
-                            text: 'Background: Orange'
-                            size_hint_y: None
-                            height: "70dp"
-                            on_release:
-                                background_dropdown.select('Background: Orange')
-                                root.current_settings['background_colour'] =  'Orange'
-                        Button:
-                            text: 'Background: White'
-                            size_hint_y: None
-                            height: "70dp"
-                            on_release:
-                                background_dropdown.select('Background: White')
-                                root.current_settings['background_colour'] =  'White'
-                CustomDropDown:
-                    size_hint: (1, None)
-                    height: "70dp"
-                    Button:
-                        id: current_lang_btn
-                        text: 'Language: ' + root.current_settings['lang']
-                        on_parent: lang_dropdown.dismiss()
-                        on_release: lang_dropdown.open(self)
-                        size_hint_y: None
-                        height: "70dp"
 
-                    DropDown:
-                        id: lang_dropdown
-                        on_select: current_lang_btn.text = '{}'.format(args[1])
-                        Button:
-                            text: 'Lang: en'
-                            size_hint_y: None
-                            height: "70dp"
-                            on_release:
-                                lang_dropdown.select('Lang: en')
-                                root.current_settings['lang'] =  'en'
-                        Button:
-                            text: 'Lang: ru'
-                            size_hint_y: None
-                            height: "70dp"
-                            on_release:
-                                lang_dropdown.select('Lang: ru')
-                                root.current_settings['lang'] =  'ru'
+
 
         # bottom panel
         BoxLayout:
@@ -253,6 +252,7 @@
             Button:
                 text: lang.get('back_btn')
                 height: "70dp"
+                font_size: config.get('font_size')
                 on_release:
                     root.get_current_settings
                     root.manager.change_screen("lists_screen", "right")
@@ -260,6 +260,7 @@
             Button:
                 text: lang.get('save_btn')
                 height: "70dp"
+                font_size: config.get('font_size')
                 on_release:
                     root.apply_settings()
                     root.manager.change_screen("lists_screen", "right")
@@ -278,6 +279,7 @@
             text: root.error_text
         Button:
             text: lang.get('close_btn')
+            font_size: config.get('font_size')
             height: "70dp"
             size_hint:(1, None)
             on_release:

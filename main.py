@@ -1,27 +1,14 @@
-from kivy import utils
 from kivy.app import App
-from kivy.core.text import Label
-from kivy.graphics.context_instructions import Color
-from kivy.graphics.vertex_instructions import Rectangle
-from kivy.uix.behaviors import FocusBehavior
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.dropdown import DropDown
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
-from kivy.properties import StringProperty, ObjectProperty, ListProperty, NumericProperty, BooleanProperty, DictProperty
-from kivy.uix.recycleboxlayout import RecycleBoxLayout
-from kivy.uix.recycleview import RecycleView
-from kivy.uix.recycleview.layout import LayoutSelectionBehavior
-from kivy.uix.recycleview.views import RecycleDataViewBehavior
+from kivy.properties import StringProperty
 from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
 from kivy.core.window import Window
-from kivy.uix.textinput import TextInput
 
 import CustomWidgets
 import utils.DBLayer as db
 import utils.ConfigParser as config
-import lang.Localization as lang
 
 
 class ScreenManagement(ScreenManager):
@@ -98,7 +85,7 @@ class EntriesScreen(Screen):
     current_list_name = StringProperty()
 
     def add_entry(self, entry_id, text, index):
-        entry = Button(
+        entry = CustomWidgets.ButtonCustom(
             id=str(entry_id),
             text=str(text),
             size_hint=(1, None),
@@ -140,6 +127,8 @@ class SettingsScreen(Screen):
         'lists_font_size': config.get('lists_font_size'),
         'max_suggestions_count': config.get('max_suggestions_count'),
         'font_size': config.get('font_size'),
+        'padding': config.get('padding'),
+        'spacing': config.get('spacing'),
     }
 
     def __init__(self, **kwargs):

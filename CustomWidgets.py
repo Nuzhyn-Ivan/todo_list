@@ -1,16 +1,12 @@
 from kivy.clock import Clock
-from kivy.properties import StringProperty, ObjectProperty, ListProperty, NumericProperty
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.bubble import Bubble
+from kivy.properties import ListProperty
 from kivy.uix.button import Button
 from kivy.uix.dropdown import DropDown
-from kivy.uix.recycleview import RecycleView
 from kivy.uix.textinput import TextInput
 from kivy.factory import Factory
 
 import utils.DBLayer as db
 import main
-# TODO rewrite with https://kivy.org/doc/stable/api-kivy.uix.spinner.html
 
 
 class ButtonCustom(Button):

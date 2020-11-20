@@ -14,11 +14,9 @@
 <ListsScreen>:
     name: 'lists_screen'
     on_pre_enter: root.refresh_lists()
-    # on_pre_leave:
     # Main
     BoxLayout:
         orientation: 'vertical'
-        #space_x: self.size[0]/3
 
         # Upper Panel
         BoxLayout:
@@ -26,6 +24,7 @@
             size_hint_y: None
             height: 50
             size_hint: 1, 0.1
+            spacing: 2
 
             Button:
                 text: lang.get('settings_btn')
@@ -46,17 +45,17 @@
             GridLayout:
                 id: lists_panel_id
                 cols: 1
-                spacing: '5dp'
+                spacing: int(config.get('spacing'))
+                padding: int(config.get('padding'))
                 size_hint_y: None
                 height: self.minimum_height
-                padding: 10
-
 
         # Bottom panel
         BoxLayout:
             orientation: 'horizontal'
             height: 50
             size_hint: 1, 0.07
+            spacing: 2
 
             Chooser:
                 id: add_list_input_id
@@ -92,6 +91,7 @@
             size_hint_y: None
             height: 50
             size_hint: 1, 0.1
+            spacing: 2
             Button:
                 id: current_list_lbl
                 text: "<-  " + root.current_list_name
@@ -109,30 +109,24 @@
                 font_size: config.get('font_size')
 
         # Entries Panel
-
         ScrollView:
             BoxLayout:
                 id: entries_panel_id
                 size_hint: 1, None
                 orientation: 'vertical'
-                spacing: 5
+                spacing: int(config.get('spacing'))
+                padding: int(config.get('padding'))
                 height: self.minimum_height
-                padding: 5
                 size_hint_y: None
 
         # Bottom Panel
-        DropDownWidget:
+        BoxLayout:
             orientation: 'vertical'
             height: 50
             size_hint: 1, 0.07
             spacing: 2
-#            txt_input: txt_input
-#            rv: rv
             Chooser:
                 id: input_id
-                #font_size: self.height - 15
-                # hint_text_color: defaults  [0.5, 0.5, 0.5, 1.0] (grey).
-                #valign: "middle"
                 halign: "center"
                 is_focusable: True
                 hint_text: lang.get('entry_textinput_hint')
@@ -142,7 +136,6 @@
                 on_text_validate:
                     root.create_entry(self.text)
                     self.text = ''
-
 
 <SettingsScreen>:
     name: 'settings_screen'
@@ -154,9 +147,9 @@
                 id: settings_panel_id
                 size_hint: 1, None
                 orientation: 'vertical'
-                spacing: 2
+                spacing: int(config.get('spacing'))
+                padding: int(config.get('padding'))
                 height: self.minimum_height
-                padding: 5
 
                 Button:
                     text: lang.get('reset_db_btn')
@@ -171,6 +164,7 @@
                     font_size: str(entries_font_size_slider_id.value) + 'dp'
                     text: lang.get('text_size_for_entries') + ' ' + str(int(entries_font_size_slider_id.value))
                     height: "35dp"
+                    color: 0, 0, 0, 1
                 Slider:
                     size_hint: (1, None)
                     height: "25dp"
@@ -185,6 +179,7 @@
                     font_size: str(lists_font_size_slider_id.value) + 'dp'
                     text: lang.get('text_size_for_lists') + ' ' + str(int(lists_font_size_slider_id.value))
                     height: "35dp"
+                    color: 0, 0, 0, 1
                 Slider:
                     size_hint: (1, None)
                     height: "25dp"
@@ -199,6 +194,7 @@
                     font_size: str(general_font_size_slider_id.value) + 'dp'
                     text: lang.get('general_text_size') + ' ' + str(int(general_font_size_slider_id.value))
                     height: "35dp"
+                    color: 0, 0, 0, 1
                 Slider:
                     size_hint: (1, None)
                     height: "25dp"
@@ -213,6 +209,7 @@
                     text: lang.get('suggestions_count_for_entries') + ' '  + str(int(max_suggestions_count_slider_id.value))
                     font_size: config.get('font_size')
                     height: "35dp"
+                    color: 0, 0, 0, 1
                 Slider:
                     size_hint: (1, None)
                     height: "30dp"
@@ -221,6 +218,38 @@
                     range: (0,10)
                     step: 1
                     on_value: root.current_settings['max_suggestions_count'] =  str(int(self.value))
+
+                # Padding
+                Label:
+                    size_hint: (1, None)
+                    text: lang.get('padding')  + str(int(padding_slider_id.value))
+                    font_size: config.get('font_size')
+                    height: "35dp"
+                    color: 0, 0, 0, 1
+                Slider:
+                    size_hint: (1, None)
+                    height: "30dp"
+                    id: padding_slider_id
+                    value: int(config.get('padding'))
+                    range: (0,15)
+                    step: 1
+                    on_value: root.current_settings['padding'] =  str(int(self.value))
+
+                # Spacing
+                Label:
+                    size_hint: (1, None)
+                    text: lang.get('spacing') + ' '  + str(int(spacing_slider_id.value))
+                    font_size: config.get('font_size')
+                    height: "35dp"
+                    color: 0, 0, 0, 1
+                Slider:
+                    size_hint: (1, None)
+                    height: "30dp"
+                    id: spacing_slider_id
+                    value: int(config.get('spacing'))
+                    range: (0,15)
+                    step: 1
+                    on_value: root.current_settings['spacing'] =  str(int(self.value))
 
                 Spinner:
                     height: "70dp"

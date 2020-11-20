@@ -133,7 +133,6 @@ class SettingsScreen(Screen):
     # TODO fix bug with font_size not apply on save(same as lang)
     # TODO move all kv strings to lang
 
-    # TODo rewrite with direct main.ini work
     current_settings = {
         'background_colour': config.get('background_colour'),
         'lang': config.get('lang'),
@@ -176,8 +175,7 @@ class MainApp(App):
         # TODO refactor backgroung
         backgroung_dict = {'Orange': [0.8, 0.4, 0.0, 1], "White": [1.0, 1.0, 1.0, 1]}
         Window.clearcolor = backgroung_dict[config.get('background_colour')]
-        Window.softinput_mode = 'below_target'
-        # TextInput keyboard position https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
+        Window.softinput_mode = 'below_target'  # TextInput keyboard position https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
         # TODO move ALL paths to system settings
         self.icon = 'images/icon.png'
         self.title = config.get('app_title') + '   ' + config.get('app_version')

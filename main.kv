@@ -169,7 +169,7 @@
                 Label:
                     size_hint: (1, None)
                     font_size: str(entries_font_size_slider_id.value) + 'dp'
-                    text: 'Text size for Entries: '  + str(int(entries_font_size_slider_id.value))
+                    text: lang.get('text_size_for_entries') + ' ' + str(int(entries_font_size_slider_id.value))
                     height: "35dp"
                 Slider:
                     size_hint: (1, None)
@@ -183,7 +183,7 @@
                 Label:
                     size_hint: (1, None)
                     font_size: str(lists_font_size_slider_id.value) + 'dp'
-                    text: 'Text size for Lists: '  + str(int(lists_font_size_slider_id.value))
+                    text: lang.get('text_size_for_lists') + ' ' + str(int(lists_font_size_slider_id.value))
                     height: "35dp"
                 Slider:
                     size_hint: (1, None)
@@ -197,7 +197,7 @@
                 Label:
                     size_hint: (1, None)
                     font_size: str(general_font_size_slider_id.value) + 'dp'
-                    text: 'General text size : '  + str(int(general_font_size_slider_id.value))
+                    text: lang.get('general_text_size') + ' ' + str(int(general_font_size_slider_id.value))
                     height: "35dp"
                 Slider:
                     size_hint: (1, None)
@@ -210,7 +210,7 @@
 
                 Label:
                     size_hint: (1, None)
-                    text: 'Suggestions count for entries: ' + str(int(max_suggestions_count_slider_id.value))
+                    text: lang.get('suggestions_count_for_entries') + ' '  + str(int(max_suggestions_count_slider_id.value))
                     font_size: config.get('font_size')
                     height: "35dp"
                 Slider:
@@ -226,21 +226,16 @@
                     height: "70dp"
                     size_hint: (1, None)
                     font_size: config.get('font_size')
-                    text: 'Background: ' + root.current_settings['background_colour']
-                    values: 'Background: Orange', 'Background: White'
-                    on_text:  root.current_settings['background_colour'] =  (self.text).rsplit(' ', 1)[1]
-
+                    text: lang.get('background:') + ' ' + root.current_settings['background_colour']
+                    values: lang.get('background:') + ' ' + 'Orange', lang.get('background:') + ' ' + 'White'
+                    on_text:  root.current_settings['background_colour'] = (self.text).rsplit(' ', 1)[1]
                 Spinner:
                     height: "70dp"
                     size_hint: (1, None)
                     font_size: config.get('font_size')
-                    text: 'Language: ' + root.current_settings['lang']
-                    values: 'Language: en', 'Language: ru'
+                    text: lang.get('language:') + ' ' + root.current_settings['lang']
+                    values: lang.get('language:') + ' ' +  'en', lang.get('language:') + ' ' +  'ru',
                     on_text:  root.current_settings['lang']  =  (self.text).rsplit(' ', 1)[1]
-
-
-
-
 
         # bottom panel
         BoxLayout:
@@ -256,7 +251,6 @@
                 on_release:
                     root.get_current_settings
                     root.manager.change_screen("lists_screen", "right")
-
             Button:
                 text: lang.get('save_btn')
                 height: "70dp"
@@ -264,8 +258,6 @@
                 on_release:
                     root.apply_settings()
                     root.manager.change_screen("lists_screen", "right")
-
-
 <ErrorPopup>:
     title: root.popup_title
     id: error_popup_id

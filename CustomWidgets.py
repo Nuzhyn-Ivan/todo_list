@@ -11,25 +11,10 @@ from kivy.factory import Factory
 import utils.DBLayer as db
 import main
 # TODO rewrite with https://kivy.org/doc/stable/api-kivy.uix.spinner.html
-class CustomDropDown(BoxLayout):
-    # settings - background
-    pass
-
-
-# TODO https://www.reddit.com/r/kivy/comments/99n2ct/anyone_having_idea_for_autocomplete_feature_in/
-class DropDownWidget(BoxLayout):
-    txt_input = ObjectProperty()
-    rv = ObjectProperty()
-
-
-class RV(RecycleView):
-    def __init__(self, **kwargs):
-        super(RV, self).__init__(**kwargs)
 
 
 class ButtonCustom(Button):
     __events__ = ('on_long_press',)
-
     long_press_time = Factory.NumericProperty(1)
 
     def on_state(self, instance, value):
@@ -76,16 +61,6 @@ class Chooser(TextInput):
         for i in db.read_entries_by_name_part(main.EntriesScreen.current_list_id, entry_name_part):
             self.choiceslist.append(i)
 
-    # def keyboard_on_key_down(self, window, keycode, text, modifiers):
-    #     if self.suggestion_text and keycode[0] == ord('\r'):  # enter selects current suggestion
-    #         self.suggestion_text = ' '  # setting suggestion_text to '' screws everything
-    #         self.text = self.values[0]
-    #         if self.dropdown:
-    #             self.dropdown.dismiss()
-    #             self.dropdown = None
-    #     else:
-    #         super(Chooser, self).keyboard_on_key_down(window, keycode, text, modifiers)
-
     def on_text(self, chooser, text):
         if self.dropdown:
             self.dropdown.dismiss()
@@ -112,8 +87,3 @@ class Chooser(TextInput):
         if self.dropdown:
             self.dropdown.dismiss()
             self.dropdown = None
-
-
-
-
-

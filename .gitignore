@@ -104,3 +104,5 @@ venv.bak/
 .mypy_cache/
 /Database/TODO.db
 /prev_details.txt
+/idea - Copy/
+/.idea/

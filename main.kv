@@ -100,9 +100,12 @@
                 on_release: root.manager.change_screen("lists_screen", "right")
 
             Button:
-                text: lang.get('edit_btn')
+                id: revoke_btn_id
+                text: lang.get('revoke_btn')
                 size_hint: 0.2, 1
                 font_size: config.get('font_size')
+                disabled: True
+                on_release: root.revoke_entry()
             Button:
                 text: lang.get('tags_btn')
                 size_hint: 0.2, 1
@@ -139,6 +142,7 @@
 
 <SettingsScreen>:
     name: 'settings_screen'
+    on_pre_enter: root.get_current_settings()
     # Root
     BoxLayout:
         orientation: 'vertical'

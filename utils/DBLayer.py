@@ -31,6 +31,7 @@ def recreate_database():
     is_completed INTEGER DEFAULT 0,
     created_date datetime DEFAULT (datetime('now','localtime')),
     due_date datetime,
+    completed_date datetime,
     frequency INTEGER DEFAULT 0);
     '''
     sqlite_create_entry_name_index = 'CREATE UNIQUE INDEX entry_name ON Entries(name);'
@@ -169,6 +170,7 @@ def read_entries_by_name_part(list_id, name_part):
     sqlite_connection.close()
     return records
 
+
 # def read_all_entries():
 #     sqlite_connection = sqlite3.connect(db_path)
 #     cursor = sqlite_connection.cursor()
@@ -191,7 +193,7 @@ def read_entries_count(list_id):
     return str(records[0][0])
 
 
-def update_entry(entry_name, new_entry_name):
+def rename_entry(entry_name, new_entry_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """UPDATE `Entries` SET name = ? WHERE name = ?"""

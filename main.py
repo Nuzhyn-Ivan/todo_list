@@ -39,11 +39,10 @@ class ListsScreen(Screen):
         Clock.schedule_once(self._do_setup)
 
     def _do_setup(self, *l):
+        """
+        Initial build on lists screen
+        """
         self.refresh_lists()
-
-    @staticmethod
-    def read_entries_count(list_id):
-        return db.read_entries_count(list_id)
 
     def refresh_lists(self):
         lists = db.read_lists()
@@ -56,12 +55,12 @@ class ListsScreen(Screen):
                 font_size=config.get('lists_font_size'),
                 size_hint=(1, None),
             )
-            list_btn.bind(on_release=self.open_entry)
+            list_btn.bind(on_release=self.open_list)
             list_btn.bind(on_long_press=self.delete_list)
             lists_panel = self.ids.lists_panel_id
             lists_panel.add_widget(list_btn)
 
-    def open_entry(self, btn_obj):
+    def open_list(self, btn_obj):
         EntriesScreen.current_list_id = btn_obj.id
         EntriesScreen.current_list_name = db.get_list_name(btn_obj.id)
         self.manager.transition = CardTransition(direction='left', duration=float(config.get('screen_transition_duration')))
@@ -81,6 +80,10 @@ class ListsScreen(Screen):
 
 
 class EntriesScreen(Screen):
+    def __init__(self,  **kw):
+        super().__init__(**kw)
+        self.ready_to_revoke_entries = []
+
     current_list_id = StringProperty()
     current_list_name = StringProperty()
 
@@ -93,22 +96,25 @@ class EntriesScreen(Screen):
             font_size=config.get('entries_font_size'),
 
         )
-        entry.bind(on_release=self.done_entry)
+        entry.bind(on_release=self.complete_entry)
         self.ids.entries_panel_id.add_widget(entry, index)
 
     def refresh_entries(self):
+        # TODO fix defect - order of widgets is incorrect
         entries_list = db.read_entries(self.current_list_id)
         entries_count = len(entries_list)
         self.ids.entries_panel_id.clear_widgets()
-        for entry_num in range(len(entries_list)):
+        for entry_num in range(entries_count):
             self.add_entry(entries_list[entry_num][0], entries_list[entry_num][2], (entries_count - entry_num))
 
-    def done_entry(self, btn_obj):
+    def complete_entry(self, btn_obj):
         db.complete_entry(btn_obj.id)
+        self.ready_to_revoke_entries.append(btn_obj.text)
         self.ids.entries_panel_id.remove_widget(btn_obj)
+        self.ids.revoke_btn_id.disabled = False
 
-    def focus_entries_panel_id(self):
-        self.ids.entries_panel_id.focus = True
+    # def focus_entries_panel_id(self):
+    #     self.ids.entries_panel_id.focus = True
 
     def create_entry(self, text):
         text = text.strip()
@@ -116,25 +122,29 @@ class EntriesScreen(Screen):
             db.create_entry(self.current_list_id, text)
             self.refresh_entries()
 
+    def revoke_entry(self):
+        self.create_entry(self.ready_to_revoke_entries.pop())
+        if len(self.ready_to_revoke_entries) == 0:
+            self.ids.revoke_btn_id.disabled = True
+
 
 class SettingsScreen(Screen):
     # TODO fix bug with font_size not apply on save(same as lang)
     # TODO move all kv strings to lang
 
-    current_settings = {
-        'background_colour': config.get('background_colour'),
-        'lang': config.get('lang'),
-        'entries_font_size': config.get('entries_font_size'),
-        'lists_font_size': config.get('lists_font_size'),
-        'max_suggestions_count': config.get('max_suggestions_count'),
-        'font_size': config.get('font_size'),
-        'padding': config.get('padding'),
-        'spacing': config.get('spacing'),
-    }
-
     def __init__(self, **kwargs):
         super(SettingsScreen, self).__init__(**kwargs)
-        self.get_current_settings()
+
+    current_settings = {
+        'background_colour': '',
+        'lang': '',
+        'entries_font_size': '',
+        'lists_font_size': '',
+        'max_suggestions_count': '',
+        'font_size': '',
+        'padding': '',
+        'spacing': '',
+    }
 
     def get_current_settings(self):
         for key in self.current_settings:
@@ -162,7 +172,7 @@ class ErrorPopup(Popup):
 class MainApp(App):
 
     def build(self):
-        # TODO refactor backgroung
+        # TODO refactor backgroung - handle list type for config.get()
         backgroung_dict = {'Orange': [0.8, 0.4, 0.0, 1], "White": [1.0, 1.0, 1.0, 1]}
         Window.clearcolor = backgroung_dict[config.get('background_colour')]
         Window.softinput_mode = 'below_target'  # TextInput keyboard position https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs

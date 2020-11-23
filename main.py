@@ -44,6 +44,7 @@ class ListsScreen(Screen):
         """
         self.refresh_lists()
 
+    # TODO separate refresh_lists to add and create, and do not refrash all lists on create list (same as at EntriesScreen)
     def refresh_lists(self):
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
@@ -100,12 +101,10 @@ class EntriesScreen(Screen):
         self.ids.entries_panel_id.add_widget(entry, index)
 
     def refresh_entries(self):
-        # TODO fix defect - order of widgets is incorrect
         entries_list = db.read_entries(self.current_list_id)
-        entries_count = len(entries_list)
         self.ids.entries_panel_id.clear_widgets()
-        for entry_num in range(entries_count):
-            self.add_entry(entries_list[entry_num][0], entries_list[entry_num][2], (entries_count - entry_num))
+        for entry_num in range(len(entries_list)):
+            self.add_entry(entries_list[entry_num][0], entries_list[entry_num][2], 0)
 
     def complete_entry(self, btn_obj):
         db.complete_entry(btn_obj.id)
@@ -120,7 +119,8 @@ class EntriesScreen(Screen):
         text = text.strip()
         if text:
             db.create_entry(self.current_list_id, text)
-            self.refresh_entries()
+            last_entry = db.read_last_entry(self.current_list_id)[0]
+            self.add_entry(last_entry[0], last_entry[1], 0)
 
     def revoke_entry(self):
         self.create_entry(self.ready_to_revoke_entries.pop())

@@ -171,6 +171,17 @@ def read_entries_by_name_part(list_id, name_part):
     return records
 
 
+def read_last_entry(list_id):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = '''SELECT id, name FROM `Entries` WHERE list_id = ? ORDER BY id DESC LIMIT 1;'''
+    cursor.execute(query, (int(list_id), ))
+    records = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    return records
+
+
 # def read_all_entries():
 #     sqlite_connection = sqlite3.connect(db_path)
 #     cursor = sqlite_connection.cursor()

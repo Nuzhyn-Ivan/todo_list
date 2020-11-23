@@ -78,7 +78,8 @@
     on_pre_enter:
         root.refresh_entries()
         self.ids.current_list_lbl.text = "<--  " + root.current_list_name
-    on_pre_leave: self.ids.input_id.focus = False
+    # TODO why do I need it?
+    # on_pre_leave: self.ids.input_id.focus = False
 
     # Root
     BoxLayout:

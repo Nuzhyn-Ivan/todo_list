@@ -44,40 +44,43 @@ class ListsScreen(Screen):
         """
         self.refresh_lists()
 
-    # TODO separate refresh_lists to add and create, and do not refrash all lists on create list (same as at EntriesScreen)
+    def add_list(self, list_id, list_name):
+        list_btn = CustomWidgets.ButtonCustom(
+            id=str(list_id),
+            text=str(list_name + " (" + db.read_entries_count(list_id) + ")"),
+            long_press_time=1,
+            font_size=config.get('lists_font_size'),
+            size_hint=(1, None),
+        )
+        list_btn.bind(on_release=self.open_list)
+        list_btn.bind(on_long_press=self.delete_list)
+        self.ids.lists_panel_id.add_widget(list_btn)
+
     def refresh_lists(self):
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
         for i in lists:
-            list_btn = CustomWidgets.ButtonCustom(
-                id=str(i[0]),  # id
-                text=str(i[1] + " (" + db.read_entries_count(i[0]) + ")"),  # list name
-                long_press_time=1,
-                font_size=config.get('lists_font_size'),
-                size_hint=(1, None),
-            )
-            list_btn.bind(on_release=self.open_list)
-            list_btn.bind(on_long_press=self.delete_list)
-            lists_panel = self.ids.lists_panel_id
-            lists_panel.add_widget(list_btn)
+            self.add_list(i[0], i[1])
 
     def open_list(self, btn_obj):
         EntriesScreen.current_list_id = btn_obj.id
+        # TODO add entries counter to back button on EntriesScreen
         EntriesScreen.current_list_name = db.get_list_name(btn_obj.id)
         self.manager.transition = CardTransition(direction='left', duration=float(config.get('screen_transition_duration')))
         self.manager.current = "entries_screen"
 
-    @staticmethod
-    def create_list(text):
+    def create_list(self, text):
         text = text.strip()
         if text:
             result = db.create_list(text)
             if not result:
                 MainApp.open_error_popup('Database error')
+        last_list = db.read_last_list()[0]
+        self.add_list(last_list[0], last_list[1])
 
     def delete_list(self, btn_obj):
         db.delete_list_by_id(btn_obj.id)
-        self.refresh_lists()
+        self.ids.lists_panel_id.remove_widget(btn_obj)
 
 
 class EntriesScreen(Screen):
@@ -95,7 +98,6 @@ class EntriesScreen(Screen):
             size_hint=(1, None),
             height="70dp",
             font_size=config.get('entries_font_size'),
-
         )
         entry.bind(on_release=self.complete_entry)
         self.ids.entries_panel_id.add_widget(entry, index)
@@ -136,14 +138,14 @@ class SettingsScreen(Screen):
         super(SettingsScreen, self).__init__(**kwargs)
 
     current_settings = {
-        'background_colour': '',
-        'lang': '',
-        'entries_font_size': '',
-        'lists_font_size': '',
-        'max_suggestions_count': '',
-        'font_size': '',
-        'padding': '',
-        'spacing': '',
+        'background_colour': config.get('background_colour'),
+        'lang': config.get('lang'),
+        'entries_font_size': config.get('entries_font_size'),
+        'lists_font_size': config.get('lists_font_size'),
+        'max_suggestions_count': config.get('max_suggestions_count'),
+        'font_size': config.get('font_size'),
+        'padding': config.get('padding'),
+        'spacing': config.get('spacing'),
     }
 
     def get_current_settings(self):

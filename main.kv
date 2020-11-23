@@ -35,10 +35,13 @@
                 text: lang.get('edit_btn')
                 font_size: config.get('font_size')
                 size_hint: 0.2, 1
+                disabled: True
             Button:
                 text: lang.get('search_btn')
                 font_size: config.get('font_size')
                 size_hint: 0.2, 1
+                disabled: True
+
 
         ScrollView:
             # Lists panel
@@ -57,7 +60,7 @@
             size_hint: 1, 0.07
             spacing: 2
 
-            Chooser:
+            TextInput:
                 id: add_list_input_id
                 halign: "center"
                 valign: "middle"
@@ -69,7 +72,6 @@
 
                 on_text_validate:
                     root.create_list(self.text)
-                    root.refresh_lists()
                     self.text = ""
 
 <EntriesScreen>:
@@ -111,6 +113,7 @@
                 text: lang.get('tags_btn')
                 size_hint: 0.2, 1
                 font_size: config.get('font_size')
+                disabled: True
 
         # Entries Panel
         ScrollView:

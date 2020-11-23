@@ -91,6 +91,7 @@ class EntriesScreen(Screen):
             size_hint=(1, None),
             height="70dp",
             font_size=config.get('entries_font_size'),
+
         )
         entry.bind(on_release=self.done_entry)
         self.ids.entries_panel_id.add_widget(entry, index)

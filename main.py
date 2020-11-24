@@ -7,6 +7,7 @@ from kivy.core.window import Window
 
 import CustomWidgets
 import utils.DBLayer as db
+import lang.Localization as lang
 import utils.ConfigParser as config
 
 
@@ -60,7 +61,7 @@ class ListsScreen(Screen):
             list_btn.text = str(list_name + " (" + db.read_entries_count(list_id) + ")")
         self.ids.lists_panel_id.add_widget(list_btn)
 
-    def refresh_lists(self):
+    def refresh_lists(self, *l):
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
         for i in lists:
@@ -89,14 +90,21 @@ class ListsScreen(Screen):
     # TODO complete edit lists feature
     def change_edit_mode(self):
         self.edit_mode = not self.edit_mode  # change to opposite
+        if not self.edit_mode:
+            self.ids.lists_edit_btn.text = lang.get('edit_btn')
+        else:
+            self.ids.lists_edit_btn.text = lang.get('apply_edit_btn')
+            #  Clock.schedule_interval(self.refresh_lists, 0.5)
         self.refresh_lists()
 
-    def open_edit_popup(self, btn_obj):
+    @staticmethod
+    def open_edit_popup(btn_obj):
+        # TODO fix bug - Lists screen not refreshed after close pop-up
         list_edit_popup = CustomWidgets.ListEditPopup(
             title=btn_obj.text.replace('  - Tap to edit', ''),
         )
         list_edit_popup.list_name = btn_obj.text.replace('  - Tap to edit', '')
-        list_edit_popup.open(self)
+        list_edit_popup.open()
 
 
 class EntriesScreen(Screen):
@@ -202,7 +210,6 @@ class MainApp(App):
             'app_title': 'TODOit',
             'db_path': "..// TODO.db",
             'screen_transition_duration': 0,
-
         },
                                )
 

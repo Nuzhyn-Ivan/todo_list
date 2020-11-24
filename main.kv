@@ -32,6 +32,7 @@
                 on_release: root.manager.change_screen("settings_screen", "left")
                 size_hint: 0.6, 1
             Button:
+                id: lists_edit_btn
                 text: lang.get('edit_btn')
                 font_size: config.get('font_size')
                 size_hint: 0.2, 1
@@ -324,6 +325,7 @@
         orientation: 'vertical'
 
         TextInput:
+            id: list_name_id
             text: root.list_name
             halign: "center"
             is_focusable: True

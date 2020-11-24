@@ -96,4 +96,5 @@ class ListEditPopup(Popup):
     list_name = StringProperty()
 
     def rename_list(self):
-        print (self)
+        if self.ids.list_name_id.text != self.list_name:
+            db.rename_list(self.list_name, self.ids.list_name_id.text)

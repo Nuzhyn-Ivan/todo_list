@@ -127,7 +127,7 @@ def get_list_id(list_name):
     return records[0][0]
 
 
-def update_list(list_name, new_list_name):
+def rename_list(list_name, new_list_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """UPDATE `Lists` SET name = ? WHERE name = ?"""

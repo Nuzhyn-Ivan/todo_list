@@ -1,5 +1,4 @@
 from kivy.app import App
-from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.properties import StringProperty
@@ -37,6 +36,7 @@ class ListsScreen(Screen):
     def __init__(self,  **kw):
         super().__init__(**kw)
         Clock.schedule_once(self._do_setup)
+        self.edit_mode = False
 
     def _do_setup(self, *l):
         """
@@ -47,13 +47,17 @@ class ListsScreen(Screen):
     def add_list(self, list_id, list_name):
         list_btn = CustomWidgets.ButtonCustom(
             id=str(list_id),
-            text=str(list_name + " (" + db.read_entries_count(list_id) + ")"),
             long_press_time=1,
             font_size=config.get('lists_font_size'),
             size_hint=(1, None),
+            on_long_press=self.delete_list,
         )
-        list_btn.bind(on_release=self.open_list)
-        list_btn.bind(on_long_press=self.delete_list)
+        if self.edit_mode:
+            list_btn.bind(on_release=self.open_edit_popup)
+            list_btn.text = str(list_name + '  - Tap to edit')
+        else:
+            list_btn.bind(on_release=self.open_list)
+            list_btn.text = str(list_name + " (" + db.read_entries_count(list_id) + ")")
         self.ids.lists_panel_id.add_widget(list_btn)
 
     def refresh_lists(self):
@@ -81,6 +85,18 @@ class ListsScreen(Screen):
     def delete_list(self, btn_obj):
         db.delete_list_by_id(btn_obj.id)
         self.ids.lists_panel_id.remove_widget(btn_obj)
+
+    # TODO complete edit lists feature
+    def change_edit_mode(self):
+        self.edit_mode = not self.edit_mode  # change to opposite
+        self.refresh_lists()
+
+    def open_edit_popup(self, btn_obj):
+        list_edit_popup = CustomWidgets.ListEditPopup(
+            title=btn_obj.text.replace('  - Tap to edit', ''),
+        )
+        list_edit_popup.list_name = btn_obj.text.replace('  - Tap to edit', '')
+        list_edit_popup.open(self)
 
 
 class EntriesScreen(Screen):
@@ -165,12 +181,6 @@ class SettingsScreen(Screen):
         MainApp.build(self)
 
 
-class ErrorPopup(Popup):
-    # TODO implement exact error display
-    popup_title = 'some popup title'
-    error_text = "some error text"
-
-
 class MainApp(App):
 
     def build(self):
@@ -198,8 +208,8 @@ class MainApp(App):
 
     @staticmethod
     def open_error_popup(text):
-        ErrorPopup.error_text = text
-        ErrorPopup().open()
+        CustomWidgets.ErrorPopup.error_text = text
+        CustomWidgets.ErrorPopup().open()
 
 
 if __name__ == '__main__':

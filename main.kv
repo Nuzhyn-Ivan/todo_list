@@ -35,7 +35,8 @@
                 text: lang.get('edit_btn')
                 font_size: config.get('font_size')
                 size_hint: 0.2, 1
-                disabled: True
+                on_press: root.change_edit_mode()
+                #disabled: True
             Button:
                 text: lang.get('search_btn')
                 font_size: config.get('font_size')
@@ -306,6 +307,34 @@
         spacing: 10
         Label:
             text: root.error_text
+        Button:
+            text: lang.get('close_btn')
+            font_size: config.get('font_size')
+            height: "70dp"
+            size_hint:(1, None)
+            on_release:
+                root.dismiss()
+
+<ListEditPopup>
+    id: list_edit_popup_id
+    on_open: app.root.popupreference=self
+    size_hint: 1, 0.4
+    auto_dismiss: False
+    BoxLayout:
+        orientation: 'vertical'
+
+        TextInput:
+            text: root.list_name
+            halign: "center"
+            is_focusable: True
+            hint_text: lang.get('entry_textinput_hint')
+            font_size: 0.5 * self.height
+            write_tab: False
+            multiline: False
+            on_text_validate:
+                root.rename_list()
+                root.dismiss()
+
         Button:
             text: lang.get('close_btn')
             font_size: config.get('font_size')

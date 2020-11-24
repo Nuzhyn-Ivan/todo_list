@@ -1,7 +1,8 @@
 from kivy.clock import Clock
-from kivy.properties import ListProperty
+from kivy.properties import ListProperty, StringProperty
 from kivy.uix.button import Button
 from kivy.uix.dropdown import DropDown
+from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.factory import Factory
 
@@ -83,3 +84,16 @@ class Chooser(TextInput):
         if self.dropdown:
             self.dropdown.dismiss()
             self.dropdown = None
+
+
+class ErrorPopup(Popup):
+    # TODO implement exact error display
+    popup_title = 'some popup title'
+    error_text = "some error text"
+
+
+class ListEditPopup(Popup):
+    list_name = StringProperty()
+
+    def rename_list(self):
+        print (self)

@@ -336,6 +336,13 @@
             on_text_validate:
                 root.rename_list()
                 root.dismiss()
+        Button:
+            text: lang.get('delete_list')
+            font_size: config.get('font_size')
+            height: "70dp"
+            size_hint:(1, None)
+            on_release:
+                root.delete_list()
 
         Button:
             text: lang.get('close_btn')

@@ -1,1 +1,5 @@
 Kivy==1.11.1
+# https://kivy.org/doc/stable/installation/installation-windows.html
+KivyDnD==0.2
+#pip install -e git+https://github.com/EdvardasDlugauskas/KivyDnD#egg=KivyDnDegg
+# then open folder and 'python setup.py install'

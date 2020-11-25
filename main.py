@@ -1,14 +1,13 @@
 from kivy.app import App
-from kivy.uix.popup import Popup
 from kivy.clock import Clock
+from kivy.core.window import Window
 from kivy.properties import StringProperty
 from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
-from kivy.core.window import Window
 
 import CustomWidgets
-import utils.DBLayer as db
 import lang.Localization as lang
 import utils.ConfigParser as config
+import utils.DBLayer as db
 
 
 class ScreenManagement(ScreenManager):
@@ -46,12 +45,15 @@ class ListsScreen(Screen):
         self.refresh_lists()
 
     def add_list(self, list_id, list_name):
-        list_btn = CustomWidgets.ButtonCustom(
+        list_btn = CustomWidgets.DraggableButton(
             id=str(list_id),
-            long_press_time=1,
+
             font_size=config.get('lists_font_size'),
             size_hint=(1, None),
-            on_long_press=self.delete_list,
+
+            #drop_func= app.greet
+            #failed_drop_func= app.oops
+            #droppable_zone_objects=[self.ids.lists_panel_id]
         )
         if self.edit_mode:
             list_btn.bind(on_release=self.open_edit_popup)
@@ -87,7 +89,6 @@ class ListsScreen(Screen):
         db.delete_list_by_id(btn_obj.id)
         self.ids.lists_panel_id.remove_widget(btn_obj)
 
-    # TODO complete edit lists feature
     def change_edit_mode(self):
         self.edit_mode = not self.edit_mode  # change to opposite
         if not self.edit_mode:
@@ -116,7 +117,7 @@ class EntriesScreen(Screen):
     current_list_name = StringProperty()
 
     def add_entry(self, entry_id, text, index):
-        entry = CustomWidgets.ButtonCustom(
+        entry = CustomWidgets.DraggableButton(
             id=str(entry_id),
             text=str(text),
             size_hint=(1, None),

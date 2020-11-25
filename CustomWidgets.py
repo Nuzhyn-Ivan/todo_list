@@ -5,27 +5,32 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.factory import Factory
+from kivydnd.dragndropwidget import DragNDropWidget
 
 import utils.DBLayer as db
 import main
 
 
-class ButtonCustom(Button):
-    __events__ = ('on_long_press',)
-    long_press_time = Factory.NumericProperty(1)
-
-    def on_state(self, instance, value):
-        if value == 'down':
-            lpt = self.long_press_time
-            self._clockev = Clock.schedule_once(self._do_long_press, lpt)
-        else:
-            self._clockev.cancel()
-
-    def _do_long_press(self, dt):
-        self.dispatch('on_long_press')
-
-    def on_long_press(self, *largs):
-        pass
+# class ButtonCustom(Button, DragNDropWidget):
+#     #on_long_press=self.delete_list,
+#     #long_press_time=1,
+#     __events__ = ('on_long_press',)
+#     long_press_time = Factory.NumericProperty(1)
+#
+#     def on_state(self, instance, value):
+#         if value == 'down':
+#             lpt = self.long_press_time
+#             self._clockev = Clock.schedule_once(self._do_long_press, lpt)
+#         else:
+#             self._clockev.cancel()
+#
+#     def _do_long_press(self, dt):
+#         self.dispatch('on_long_press')
+#
+#     def on_long_press(self, *largs):
+#         pass
+class DraggableButton(Button, DragNDropWidget):
+    pass
 
 
 class Chooser(TextInput):
@@ -98,3 +103,9 @@ class ListEditPopup(Popup):
     def rename_list(self):
         if self.ids.list_name_id.text != self.list_name:
             db.rename_list(self.list_name, self.ids.list_name_id.text)
+
+    def delete_list(self):
+        list_id = db.get_list_id(self.ids.list_name_id.text)
+        db.delete_list_by_id(list_id)
+
+

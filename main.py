@@ -38,6 +38,7 @@ class ListsScreen(Screen):
         Clock.schedule_once(self._do_setup)
         self.edit_mode = False
 
+
     def _do_setup(self, *l):
         """
         Initial build on lists screen
@@ -91,12 +92,14 @@ class ListsScreen(Screen):
 
     def change_edit_mode(self):
         self.edit_mode = not self.edit_mode  # change to opposite
+        refresh_lists_timer = Clock.schedule_interval(self.refresh_lists, 0.5)
         if not self.edit_mode:
             self.ids.lists_edit_btn.text = lang.get('edit_btn')
+            refresh_lists_timer.cancel()
         else:
             self.ids.lists_edit_btn.text = lang.get('apply_edit_btn')
             #  Clock.schedule_interval(self.refresh_lists, 0.5)
-        self.refresh_lists()
+        refresh_lists_timer()
 
     @staticmethod
     def open_edit_popup(btn_obj):

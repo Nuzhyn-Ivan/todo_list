@@ -1,5 +1,5 @@
-import sqlite3
 import os.path
+import sqlite3
 
 import utils.ConfigParser as config
 
@@ -12,7 +12,6 @@ def create_db():
 
 
 def recreate_database():
-
     sqlite_connection = sqlite3.connect(db_path)
     sqlite_drop_lists = "DROP TABLE IF EXISTS Lists"
     sqlite_drop_entries = "DROP TABLE IF EXISTS Entries"
@@ -57,23 +56,14 @@ def recreate_database():
     sqlite_connection.close()
 
 
-# def execute_query(query):
-#     sqlite_connection = sqlite3.connect(db_path)
-#     cursor = sqlite_connection.cursor()
-#     cursor.execute(query)
-#     cursor.close()
-#     records = cursor.fetchall()
-#     return records
-
-
 # Lists CRUD
 
-def create_list(list_name):
+def create_list(list_name, order_id):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     try:
-        query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, 1 )"
-        cursor.execute(query, (list_name,))
+        query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, ? )"
+        cursor.execute(query, (list_name, order_id))
     except sqlite3.Error as e:
         return False
     finally:
@@ -124,7 +114,8 @@ def get_list_id(list_name):
     records = cursor.fetchall()
     cursor.close()
     sqlite_connection.close()
-    return records[0][0]
+    if len(records) > 0:
+        return records[0][0]
 
 
 def rename_list(list_name, new_list_name):
@@ -141,11 +132,15 @@ def delete_list_by_id(list_id):
     delete_entries(list_id)
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    query = """DELETE FROM `Lists` WHERE id = ? """
-    cursor.execute(query, (list_id,))
-    cursor.close()
-    sqlite_connection.commit()
-    sqlite_connection.close()
+    try:
+        query = """DELETE FROM `Lists` WHERE id = ? """
+        cursor.execute(query, (list_id,))
+    except sqlite3.Error as e:
+        return False
+    finally:
+        cursor.close()
+        sqlite_connection.commit()
+        sqlite_connection.close()
 
 
 # Entries CRUD
@@ -175,7 +170,7 @@ def read_entries_by_name_part(list_id, name_part):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = '''SELECT name FROM `Entries` WHERE list_id = ? and name like ? and is_completed = 1 ORDER BY frequency DESC LIMIT ?;'''
-    cursor.execute(query, (int(list_id), str(name_part)+'%', count))
+    cursor.execute(query, (int(list_id), str(name_part) + '%', count))
     records = cursor.fetchall()
     cursor.close()
     sqlite_connection.close()
@@ -186,7 +181,7 @@ def read_last_entry(list_id):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = '''SELECT id, name FROM `Entries` WHERE list_id = ? ORDER BY id DESC LIMIT 1;'''
-    cursor.execute(query, (int(list_id), ))
+    cursor.execute(query, (int(list_id),))
     records = cursor.fetchall()
     cursor.close()
     sqlite_connection.close()
@@ -215,14 +210,14 @@ def read_entries_count(list_id):
     return str(records[0][0])
 
 
-def rename_entry(entry_name, new_entry_name):
-    sqlite_connection = sqlite3.connect(db_path)
-    cursor = sqlite_connection.cursor()
-    query = """UPDATE `Entries` SET name = ? WHERE name = ?"""
-    cursor.execute(query, (new_entry_name, entry_name))
-    cursor.close()
-    sqlite_connection.commit()
-    sqlite_connection.close()
+# def rename_entry(entry_name, new_entry_name):
+#     sqlite_connection = sqlite3.connect(db_path)
+#     cursor = sqlite_connection.cursor()
+#     query = """UPDATE `Entries` SET name = ? WHERE name = ?"""
+#     cursor.execute(query, (new_entry_name, entry_name))
+#     cursor.close()
+#     sqlite_connection.commit()
+#     sqlite_connection.close()
 
 
 def complete_entry(entry_id):

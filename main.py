@@ -2,6 +2,7 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.properties import StringProperty
+from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
 
 import CustomWidgets
@@ -33,28 +34,17 @@ class ScreenManagement(ScreenManager):
 
 
 class ListsScreen(Screen):
-    def __init__(self,  **kw):
-        super().__init__(**kw)
-        Clock.schedule_once(self._do_setup)
+    def __init__(self, **kwargs):
+        super(ListsScreen, self).__init__(**kwargs)
         self.edit_mode = False
+        Clock.schedule_once(self.refresh_lists, 0.5)
 
-
-    def _do_setup(self, *l):
-        """
-        Initial build on lists screen
-        """
-        self.refresh_lists()
-
-    def add_list(self, list_id, list_name):
-        list_btn = CustomWidgets.DraggableButton(
+    def add_list(self, list_id, list_name, index):
+        list_btn = Button(
             id=str(list_id),
-
             font_size=config.get('lists_font_size'),
             size_hint=(1, None),
-
-            #drop_func= app.greet
-            #failed_drop_func= app.oops
-            #droppable_zone_objects=[self.ids.lists_panel_id]
+            height="70dp",
         )
         if self.edit_mode:
             list_btn.bind(on_release=self.open_edit_popup)
@@ -62,29 +52,40 @@ class ListsScreen(Screen):
         else:
             list_btn.bind(on_release=self.open_list)
             list_btn.text = str(list_name + " (" + db.read_entries_count(list_id) + ")")
-        self.ids.lists_panel_id.add_widget(list_btn)
+        self.ids.lists_panel_id.add_widget(list_btn, index)
 
     def refresh_lists(self, *l):
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
         for i in lists:
-            self.add_list(i[0], i[1])
+            self.add_list(
+                i[0],   # list id
+                i[1],   # list name
+                0,      # index
+            )
 
     def open_list(self, btn_obj):
         EntriesScreen.current_list_id = btn_obj.id
         # TODO add entries counter to back button on EntriesScreen
         EntriesScreen.current_list_name = db.get_list_name(btn_obj.id)
-        self.manager.transition = CardTransition(direction='left', duration=float(config.get('screen_transition_duration')))
+        self.manager.transition = CardTransition(direction='left',
+                                                 duration=float(config.get('screen_transition_duration'))
+                                                 )
         self.manager.current = "entries_screen"
 
     def create_list(self, text):
+        order_id_of_list = 1  # TODO - fix lists order display
         text = text.strip()
         if text:
-            result = db.create_list(text)
+            result = db.create_list(text, order_id_of_list)
             if not result:
                 MainApp.open_error_popup('Database error')
         last_list = db.read_last_list()[0]
-        self.add_list(last_list[0], last_list[1])
+        self.add_list(
+            last_list[0],    # list id
+            last_list[1],    # list name
+            0,               # index
+        )
 
     def delete_list(self, btn_obj):
         db.delete_list_by_id(btn_obj.id)
@@ -98,12 +99,10 @@ class ListsScreen(Screen):
             refresh_lists_timer.cancel()
         else:
             self.ids.lists_edit_btn.text = lang.get('apply_edit_btn')
-            #  Clock.schedule_interval(self.refresh_lists, 0.5)
         refresh_lists_timer()
 
     @staticmethod
     def open_edit_popup(btn_obj):
-        # TODO fix bug - Lists screen not refreshed after close pop-up
         list_edit_popup = CustomWidgets.ListEditPopup(
             title=btn_obj.text.replace('  - Tap to edit', ''),
         )
@@ -112,29 +111,33 @@ class ListsScreen(Screen):
 
 
 class EntriesScreen(Screen):
-    def __init__(self,  **kw):
+    def __init__(self, **kw):
         super().__init__(**kw)
         self.ready_to_revoke_entries = []
 
     current_list_id = StringProperty()
     current_list_name = StringProperty()
 
-    def add_entry(self, entry_id, text, index):
-        entry = CustomWidgets.DraggableButton(
+    def add_entry(self, entry_id, entry_name, index):
+        entry = Button(
             id=str(entry_id),
-            text=str(text),
+            text=str(entry_name),
             size_hint=(1, None),
             height="70dp",
             font_size=config.get('entries_font_size'),
+            on_release=self.complete_entry,
         )
-        entry.bind(on_release=self.complete_entry)
         self.ids.entries_panel_id.add_widget(entry, index)
 
     def refresh_entries(self):
         entries_list = db.read_entries(self.current_list_id)
         self.ids.entries_panel_id.clear_widgets()
         for entry_num in range(len(entries_list)):
-            self.add_entry(entries_list[entry_num][0], entries_list[entry_num][2], 0)
+            self.add_entry(
+                entries_list[entry_num][0],    # entry_id
+                entries_list[entry_num][2],    # entry_name
+                0,                             # index
+            )
 
     def complete_entry(self, btn_obj):
         db.complete_entry(btn_obj.id)
@@ -194,6 +197,8 @@ class SettingsScreen(Screen):
 
 
 class MainApp(App):
+    def __init__(self, **kwargs):
+        super(MainApp, self).__init__(**kwargs)
 
     def build(self):
         # TODO refactor backgroung - handle list type for config.get()
@@ -203,13 +208,16 @@ class MainApp(App):
         # TODO move ALL paths to system settings
         self.icon = 'images/icon.png'
         self.title = config.get('app_title') + '   ' + config.get('app_version')
+        config.load_config()
+        db.create_db()
+        lang.reload_lang()
         return ScreenManagement()
 
     def build_config(self, app_config):
         app_config.setdefaults('', {
-            #'font_size': '15dp',
-            #'entries_font_size': 42,
-            #'lists_font_size': '15dp',
+            # 'font_size': '15dp',
+            # 'entries_font_size': 42,
+            # 'lists_font_size': '15dp',
             'app_version': '0.0.20',
             'app_title': 'TODOit',
             'db_path': "..// TODO.db",
@@ -224,12 +232,5 @@ class MainApp(App):
 
 
 if __name__ == '__main__':
-    config.load_config()
-    db.create_db()
+    db.create_db()  # will create database at first start
     MainApp().run()
-
-
-
-
-
-

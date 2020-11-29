@@ -334,7 +334,7 @@
             write_tab: False
             multiline: False
             on_text_validate:
-                root.rename_list()
+                root.rename_list(self.text)
                 root.dismiss()
         Button:
             text: lang.get('delete_list')

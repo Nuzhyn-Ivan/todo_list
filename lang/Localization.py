@@ -7,6 +7,7 @@ lang_dict = {}
 
 def reload_lang():
     try:
+        # this var is not useless. If no lang key in main.ini - this row trigger exception
         system_language = config.get('lang')
     except:
         system_default_lang = locale.getdefaultlocale()[0][:2]
@@ -25,7 +26,6 @@ def reload_lang():
             lang_dict[name.strip()] = str(var).rstrip('\n')
 
 
-# TODO move to init
 reload_lang()
 
 

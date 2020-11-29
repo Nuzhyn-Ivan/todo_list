@@ -27,7 +27,7 @@ import utils.DBLayer as db
 #     def on_long_press(self, *largs):
 #         pass
 
-class Chooser(TextInput):
+class Chooser(TextInput, ):
 
     """
     TextInput with DropDown for 'suggestions' feature
@@ -79,9 +79,9 @@ class Chooser(TextInput):
             self.dropdown.open(self)
 
     def do_choose(self, butt):
-        self.text = butt.text
+        self.text = ''
+        self.parent.parent.parent.create_entry(butt.text)
         self.focused = True
-        self._trigger_refresh_text()
         # TODO press enter here
 
         if self.dropdown:

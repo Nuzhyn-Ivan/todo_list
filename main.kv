@@ -179,7 +179,7 @@
                     size_hint: (1, None)
                     height: "25dp"
                     id: entries_font_size_slider_id
-                    value: int( config.get('entries_font_size')[:-2] )
+                    value: int(root.current_settings['entries_font_size'][:-2] )
                     range: (10,40)
                     step: 1
                     on_value: root.current_settings['entries_font_size'] =  str(self.value) + 'dp'
@@ -194,7 +194,7 @@
                     size_hint: (1, None)
                     height: "25dp"
                     id: lists_font_size_slider_id
-                    value: int( config.get('lists_font_size')[:-2] )
+                    value: int(root.current_settings['lists_font_size'][:-2] )
                     range: (10,40)
                     step: 1
                     on_value: root.current_settings['lists_font_size'] =  str(self.value) + 'dp'
@@ -209,7 +209,7 @@
                     size_hint: (1, None)
                     height: "25dp"
                     id: general_font_size_slider_id
-                    value: int( config.get('font_size')[:-2] )
+                    value: int(root.current_settings['font_size'][:-2] )
                     range: (10,40)
                     step: 1
                     on_value: root.current_settings['font_size'] =  str(self.value) + 'dp'
@@ -224,7 +224,7 @@
                     size_hint: (1, None)
                     height: "30dp"
                     id: max_suggestions_count_slider_id
-                    value: int(config.get('max_suggestions_count'))
+                    value: int(root.current_settings['max_suggestions_count'])
                     range: (0,10)
                     step: 1
                     on_value: root.current_settings['max_suggestions_count'] =  str(int(self.value))
@@ -240,7 +240,7 @@
                     size_hint: (1, None)
                     height: "30dp"
                     id: padding_slider_id
-                    value: int(config.get('padding'))
+                    value: int(root.current_settings['padding'])
                     range: (0,15)
                     step: 1
                     on_value: root.current_settings['padding'] =  str(int(self.value))
@@ -256,7 +256,7 @@
                     size_hint: (1, None)
                     height: "30dp"
                     id: spacing_slider_id
-                    value: int(config.get('spacing'))
+                    value: int(root.current_settings['spacing'])
                     range: (0,15)
                     step: 1
                     on_value: root.current_settings['spacing'] =  str(int(self.value))
@@ -266,7 +266,7 @@
                     size_hint: (1, None)
                     font_size: config.get('font_size')
                     text: lang.get('background:') + ' ' + root.current_settings['background_colour']
-                    values: lang.get('background:') + ' ' + 'Orange', lang.get('background:') + ' ' + 'White'
+                    values: lang.get('background:') + ' ' + 'Orange', lang.get('background:') + ' ' + 'White', lang.get('background:') + ' ' + 'Black'
                     on_text:  root.current_settings['background_colour'] = (self.text).rsplit(' ', 1)[1]
                 Spinner:
                     height: "70dp"
@@ -288,7 +288,6 @@
                 height: "70dp"
                 font_size: config.get('font_size')
                 on_release:
-                    root.get_current_settings
                     root.manager.change_screen("lists_screen", "right")
             Button:
                 text: lang.get('save_btn')

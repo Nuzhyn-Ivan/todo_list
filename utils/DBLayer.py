@@ -10,7 +10,7 @@ def create_db():
     if not os.path.exists(db_path):
         recreate_database()
 
-
+# TODO default lists and entries - make it lang related
 def recreate_database():
     sqlite_connection = sqlite3.connect(db_path)
     sqlite_drop_lists = "DROP TABLE IF EXISTS Lists"
@@ -36,7 +36,7 @@ def recreate_database():
     sqlite_create_entry_name_index = 'CREATE UNIQUE INDEX entry_name ON Entries(name);'
 
     sqlite_insert_default_lists = '''
-    INSERT INTO 'Lists' ('name', 'order_id') VALUES ("Supermarket", 1 ), ("To Do", 2 ), ("Drag Store", 3 ), ("Movies to watch", 4 );
+    INSERT INTO 'Lists' ('name', 'order_id') VALUES ("Supermarket", 1 ), ("To Do", 2 ), ("Drug Store", 3 ), ("Movies to watch", 4 );
     '''
     sqlite_insert_default_entries = '''
     INSERT INTO 'Entries' ('list_id', 'name') VALUES (1, 'first' ), (1, 'first2' ), (1, 'first3' ), (1, 'first4' );

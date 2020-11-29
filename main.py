@@ -1,7 +1,7 @@
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, DictProperty
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
 
@@ -168,7 +168,7 @@ class SettingsScreen(Screen):
     def __init__(self, **kwargs):
         super(SettingsScreen, self).__init__(**kwargs)
 
-    current_settings = {
+    current_settings = DictProperty({
         'background_colour': config.get('background_colour'),
         'lang': config.get('lang'),
         'entries_font_size': config.get('entries_font_size'),
@@ -177,7 +177,7 @@ class SettingsScreen(Screen):
         'font_size': config.get('font_size'),
         'padding': config.get('padding'),
         'spacing': config.get('spacing'),
-    }
+    })
 
     def get_current_settings(self):
         for key in self.current_settings:
@@ -202,7 +202,11 @@ class MainApp(App):
 
     def build(self):
         # TODO refactor backgroung - handle list type for config.get()
-        backgroung_dict = {'Orange': [0.8, 0.4, 0.0, 1], "White": [1.0, 1.0, 1.0, 1]}
+        backgroung_dict = {
+            'Orange': [0.8, 0.4, 0.0, 1],
+            "White": [1.0, 1.0, 1.0, 1],
+            "Black": [0, 0, 0, 1],
+        }
         Window.clearcolor = backgroung_dict[config.get('background_colour')]
         Window.softinput_mode = 'below_target'  # TextInput keyboard position https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
         # TODO move ALL paths to system settings

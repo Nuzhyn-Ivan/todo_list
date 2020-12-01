@@ -81,7 +81,7 @@
     orientation: 'vertical'
     on_pre_enter:
         root.refresh_entries()
-        self.ids.current_list_lbl.text = "<--  " + root.current_list_name
+        self.ids.current_list_lbl.text = F"<--   {root.current_list_name}"
     # TODO why do I need it?
     # on_pre_leave: self.ids.input_id.focus = False
 
@@ -99,7 +99,6 @@
             spacing: 2
             Button:
                 id: current_list_lbl
-                text: "<-  " + root.current_list_name
                 font_size: config.get('font_size')
                 size_hint: 0.6, 1
                 on_release: root.manager.change_screen("lists_screen", "right")
@@ -111,11 +110,18 @@
                 font_size: config.get('font_size')
                 disabled: True
                 on_release: root.revoke_entry()
-            Button:
-                text: lang.get('tags_btn')
+
+            Spinner:
+                height: "70dp"
                 size_hint: 0.2, 1
                 font_size: config.get('font_size')
+                text: lang.get('tools_btn')
+                values: 'Tags', 'History'
+                on_text:
+                    root.manager.change_screen(self.text, "right")
+                    self.text = lang.get('tools_btn')
                 disabled: True
+
 
         # Entries Panel
         ScrollView:

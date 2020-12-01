@@ -2,6 +2,7 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.properties import StringProperty, DictProperty
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
 
@@ -32,6 +33,56 @@ class ScreenManagement(ScreenManager):
         self.transition = CardTransition(direction=direction, duration=float(config.get('screen_transition_duration')))
         self.current = screen_name
 
+    def _update_screens(self, new_screens):
+        """
+        Remove and re-adds screens to match the new configuration
+        """
+        # Prevent events from triggering and interfering with this update process
+        self._initialized = False
+        carousel = self.ids.carousel
+        current_screens = self._screens
+        loaded_screens = self._loaded_screens
+
+        new_screen_count = len(new_screens)
+        current_screen_count = len(current_screens)
+        original_screen_count = current_screen_count
+
+        # Note, our lazy loading scheme has the actual dashboard
+        # screens as part of the outer screen containers
+        # screen containers - placeholders.
+
+        # clear all of the dashboard screens from the outer container
+        for screen in loaded_screens.values():
+            parent = screen.parent
+            if parent is not None:
+                parent.remove_widget(screen)
+
+        # add more carousel panes as needed
+        while True:
+            if current_screen_count == new_screen_count:
+                break
+            if current_screen_count < new_screen_count:
+                carousel.add_widget(AnchorLayout())
+                current_screen_count += 1
+            if current_screen_count > new_screen_count:
+                carousel.remove_widget(carousel.slides[0])
+                current_screen_count -= 1
+
+        # Now re-add the screens for the new screen keys
+        for (screen_key, container) in zip(new_screens, carousel.slides):
+            screen = loaded_screens.get(screen_key)
+            if screen is not None:
+                container.add_widget(screen)
+
+        self._screens = new_screens
+
+        if original_screen_count == 0 and new_screen_count > original_screen_count:
+            carousel.index = 0
+
+        self._check_load_screen(carousel.current_slide)
+
+        self._initialized = True
+
 
 class ListsScreen(Screen):
     def __init__(self, **kwargs):
@@ -48,10 +99,10 @@ class ListsScreen(Screen):
         )
         if self.edit_mode:
             list_btn.bind(on_release=self.open_edit_popup)
-            list_btn.text = str(list_name + '  - Tap to edit')
+            list_btn.text = F"{list_name} - Tap to edit"
         else:
             list_btn.bind(on_release=self.open_list)
-            list_btn.text = str(list_name + " (" + db.read_entries_count(list_id) + ")")
+            list_btn.text = F"{list_name} ({db.read_entries_count(list_id)})"
         self.ids.lists_panel_id.add_widget(list_btn, index)
 
     def refresh_lists(self, *l):
@@ -153,7 +204,11 @@ class EntriesScreen(Screen):
         if text:
             db.create_entry(self.current_list_id, text)
             last_entry = db.read_last_entry(self.current_list_id)[0]
-            self.add_entry(last_entry[0], last_entry[1], 0)
+            self.add_entry(
+                last_entry[0],  # entry_id
+                last_entry[1],  # entry_name
+                0                # index
+            )
 
     def revoke_entry(self):
         self.create_entry(self.ready_to_revoke_entries.pop())
@@ -211,7 +266,7 @@ class MainApp(App):
         Window.softinput_mode = 'below_target'  # TextInput keyboard position https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
         # TODO move ALL paths to system settings
         self.icon = 'images/icon.png'
-        self.title = config.get('app_title') + '   ' + config.get('app_version')
+        self.title = F"{config.get('app_title')}  {config.get('app_version')}"
         config.load_config()
         db.create_db()
         lang.reload_lang()

@@ -105,3 +105,4 @@ class ListEditPopup(Popup):
     def delete_list(self):
         list_id = db.get_list_id(self.ids.list_name_id.text)
         db.delete_list_by_id(list_id)
+        self.dismiss()

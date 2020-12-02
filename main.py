@@ -215,6 +215,12 @@ class EntriesScreen(Screen):
         if len(self.ready_to_revoke_entries) == 0:
             self.ids.revoke_btn_id.disabled = True
 
+    def open_tools_screen(self, text):
+        pressed_button = lang.get_key_by_value(text)
+        screen_name_to_open = 'tags_screen' if pressed_button == 'tags_btn' else 'history_screen'
+        self.manager.change_screen(screen_name_to_open, "right")
+        self.ids.tools_btn_id.text = lang.get('tools_btn')
+
 
 class SettingsScreen(Screen):
     # TODO fix bug with font_size not apply on save(same as lang)
@@ -249,6 +255,14 @@ class SettingsScreen(Screen):
         # lang.reload_lang()
         # config.load_config()
         MainApp.build(self)
+
+
+class TagsScreen(Screen):
+    pass
+
+
+class HistoryScreen(Screen):
+    pass
 
 
 class MainApp(App):

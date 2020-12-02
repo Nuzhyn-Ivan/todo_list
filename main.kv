@@ -10,6 +10,9 @@
     ListsScreen:
     EntriesScreen:
     SettingsScreen:
+    TagsScreen:
+    HistoryScreen:
+
 
 <ListsScreen>:
     name: 'lists_screen'
@@ -112,14 +115,14 @@
                 on_release: root.revoke_entry()
 
             Spinner:
+                id: tools_btn_id
                 height: "70dp"
                 size_hint: 0.2, 1
                 font_size: config.get('font_size')
                 text: lang.get('tools_btn')
                 values: 'Tags', 'History'
                 on_text:
-                    root.manager.change_screen(self.text, "right")
-                    self.text = lang.get('tools_btn')
+                    root.open_tools_screen(self.text)
                 disabled: True
 
 
@@ -302,6 +305,43 @@
                 on_release:
                     root.apply_settings()
                     root.manager.change_screen("lists_screen", "right")
+
+<TagsScreen>:
+    name: 'tags_screen'
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+        Label:
+            size_hint: (1, None)
+            text: 'tags_screen'
+            font_size: config.get('font_size')
+            height: "35dp"
+            color: 0, 0, 0, 1
+        Button:
+            text: lang.get('back_btn')
+            height: "70dp"
+            font_size: config.get('font_size')
+            on_release:
+                root.manager.change_screen("lists_screen", "right")
+
+<HistoryScreen>:
+    name: 'history_screen'
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+        Label:
+            size_hint: (1, None)
+            text: 'history_screen'
+            font_size: config.get('font_size')
+            height: "35dp"
+            color: 0, 0, 0, 1
+        Button:
+            text: lang.get('back_btn')
+            height: "70dp"
+            font_size: config.get('font_size')
+            on_release:
+                root.manager.change_screen("lists_screen", "right")
+
 <ErrorPopup>:
     title: root.popup_title
     id: error_popup_id

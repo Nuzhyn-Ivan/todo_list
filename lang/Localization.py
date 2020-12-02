@@ -31,3 +31,9 @@ reload_lang()
 
 def get(string):
     return lang_dict[string]
+
+
+def get_key_by_value(value):
+    for key, val in lang_dict.items():
+        if val == value:
+            return key

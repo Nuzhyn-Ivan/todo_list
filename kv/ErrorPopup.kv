@@ -1,0 +1,18 @@
+<ErrorPopup>:
+    title: root.popup_title
+    id: error_popup_id
+    on_open: app.root.popupreference=self
+    size_hint: 1, 0.4
+    auto_dismiss: False
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+        Label:
+            text: root.error_text
+        Button:
+            text: lang.get('close_btn')
+            font_size: config.get('font_size')
+            height: "70dp"
+            size_hint:(1, None)
+            on_release:
+                root.dismiss()

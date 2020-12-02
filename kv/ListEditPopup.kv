@@ -1,0 +1,35 @@
+<ListEditPopup>
+    id: list_edit_popup_id
+    on_open: app.root.popupreference=self
+    size_hint: 1, 0.4
+    auto_dismiss: False
+    BoxLayout:
+        orientation: 'vertical'
+
+        TextInput:
+            id: list_name_id
+            text: root.list_name
+            halign: "center"
+            is_focusable: True
+            hint_text: lang.get('entry_textinput_hint')
+            font_size: 0.5 * self.height
+            write_tab: False
+            multiline: False
+            on_text_validate:
+                root.rename_list(self.text)
+                root.dismiss()
+        Button:
+            text: lang.get('delete_list')
+            font_size: config.get('font_size')
+            height: "70dp"
+            size_hint:(1, None)
+            on_release:
+                root.delete_list()
+
+        Button:
+            text: lang.get('close_btn')
+            font_size: config.get('font_size')
+            height: "70dp"
+            size_hint:(1, None)
+            on_release:
+                root.dismiss()

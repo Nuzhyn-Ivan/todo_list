@@ -1,0 +1,64 @@
+<ListsScreen>:
+    name: 'lists_screen'
+    on_pre_enter: root.refresh_lists()
+    # Main
+    BoxLayout:
+        orientation: 'vertical'
+
+        # Upper Panel
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 50
+            size_hint: 1, 0.1
+            spacing: 2
+
+            Button:
+                text: lang.get('settings_btn')
+                font_size: config.get('font_size')
+                on_release: root.manager.change_screen("settings_screen", "left")
+                size_hint: 0.6, 1
+            Button:
+                id: lists_edit_btn
+                text: lang.get('edit_btn')
+                font_size: config.get('font_size')
+                size_hint: 0.2, 1
+                on_press: root.change_edit_mode()
+                #disabled: True
+            Button:
+                text: lang.get('search_btn')
+                font_size: config.get('font_size')
+                size_hint: 0.2, 1
+                disabled: True
+
+
+        ScrollView:
+            # Lists panel
+            GridLayout:
+                id: lists_panel_id
+                cols: 1
+                spacing: int(config.get('spacing'))
+                padding: int(config.get('padding'))
+                size_hint_y: None
+                height: self.minimum_height
+
+        # Bottom panel
+        BoxLayout:
+            orientation: 'horizontal'
+            height: 50
+            size_hint: 1, 0.07
+            spacing: 2
+
+            TextInput:
+                id: add_list_input_id
+                halign: "center"
+                valign: "middle"
+                is_focusable: True
+                hint_text: lang.get('list_textinput_hint')
+                font_size: 0.5 * self.height
+                multiline: False
+                write_tab: False
+
+                on_text_validate:
+                    root.create_list(self.text)
+                    self.text = ""

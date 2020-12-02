@@ -1,0 +1,150 @@
+<SettingsScreen>:
+    name: 'settings_screen'
+    on_pre_enter: root.get_current_settings()
+    # Root
+    BoxLayout:
+        orientation: 'vertical'
+        ScrollView:
+            BoxLayout:
+                id: settings_panel_id
+                size_hint: 1, None
+                orientation: 'vertical'
+                spacing: int(config.get('spacing'))
+                padding: int(config.get('padding'))
+                height: self.minimum_height
+
+                Button:
+                    text: lang.get('reset_db_btn')
+                    height: "70dp"
+                    size_hint: (1, None)
+                    font_size: config.get('font_size')
+                    on_release:
+                        root.reset_db()
+
+                Label:
+                    size_hint: (1, None)
+                    font_size: str(entries_font_size_slider_id.value) + 'dp'
+                    text: lang.get('text_size_for_entries') + ' ' + str(int(entries_font_size_slider_id.value))
+                    height: "35dp"
+                    color: 0, 0, 0, 1
+                Slider:
+                    size_hint: (1, None)
+                    height: "25dp"
+                    id: entries_font_size_slider_id
+                    value: int(root.current_settings['entries_font_size'][:-2] )
+                    range: (10,40)
+                    step: 1
+                    on_value: root.current_settings['entries_font_size'] =  str(self.value) + 'dp'
+
+                Label:
+                    size_hint: (1, None)
+                    font_size: str(lists_font_size_slider_id.value) + 'dp'
+                    text: lang.get('text_size_for_lists') + ' ' + str(int(lists_font_size_slider_id.value))
+                    height: "35dp"
+                    color: 0, 0, 0, 1
+                Slider:
+                    size_hint: (1, None)
+                    height: "25dp"
+                    id: lists_font_size_slider_id
+                    value: int(root.current_settings['lists_font_size'][:-2] )
+                    range: (10,40)
+                    step: 1
+                    on_value: root.current_settings['lists_font_size'] =  str(self.value) + 'dp'
+
+                Label:
+                    size_hint: (1, None)
+                    font_size: str(general_font_size_slider_id.value) + 'dp'
+                    text: lang.get('general_text_size') + ' ' + str(int(general_font_size_slider_id.value))
+                    height: "35dp"
+                    color: 0, 0, 0, 1
+                Slider:
+                    size_hint: (1, None)
+                    height: "25dp"
+                    id: general_font_size_slider_id
+                    value: int(root.current_settings['font_size'][:-2] )
+                    range: (10,40)
+                    step: 1
+                    on_value: root.current_settings['font_size'] =  str(self.value) + 'dp'
+
+                Label:
+                    size_hint: (1, None)
+                    text: lang.get('suggestions_count_for_entries') + ' '  + str(int(max_suggestions_count_slider_id.value))
+                    font_size: config.get('font_size')
+                    height: "35dp"
+                    color: 0, 0, 0, 1
+                Slider:
+                    size_hint: (1, None)
+                    height: "30dp"
+                    id: max_suggestions_count_slider_id
+                    value: int(root.current_settings['max_suggestions_count'])
+                    range: (0,10)
+                    step: 1
+                    on_value: root.current_settings['max_suggestions_count'] =  str(int(self.value))
+
+                # Padding
+                Label:
+                    size_hint: (1, None)
+                    text: lang.get('padding')  + str(int(padding_slider_id.value))
+                    font_size: config.get('font_size')
+                    height: "35dp"
+                    color: 0, 0, 0, 1
+                Slider:
+                    size_hint: (1, None)
+                    height: "30dp"
+                    id: padding_slider_id
+                    value: int(root.current_settings['padding'])
+                    range: (0,15)
+                    step: 1
+                    on_value: root.current_settings['padding'] =  str(int(self.value))
+
+                # Spacing
+                Label:
+                    size_hint: (1, None)
+                    text: lang.get('spacing') + ' '  + str(int(spacing_slider_id.value))
+                    font_size: config.get('font_size')
+                    height: "35dp"
+                    color: 0, 0, 0, 1
+                Slider:
+                    size_hint: (1, None)
+                    height: "30dp"
+                    id: spacing_slider_id
+                    value: int(root.current_settings['spacing'])
+                    range: (0,15)
+                    step: 1
+                    on_value: root.current_settings['spacing'] =  str(int(self.value))
+
+                Spinner:
+                    height: "70dp"
+                    size_hint: (1, None)
+                    font_size: config.get('font_size')
+                    text: lang.get('background:') + ' ' + root.current_settings['background_colour']
+                    values: lang.get('background:') + ' ' + 'Orange', lang.get('background:') + ' ' + 'White', lang.get('background:') + ' ' + 'Black'
+                    on_text:  root.current_settings['background_colour'] = (self.text).rsplit(' ', 1)[1]
+                Spinner:
+                    height: "70dp"
+                    size_hint: (1, None)
+                    font_size: config.get('font_size')
+                    text: lang.get('language:') + ' ' + root.current_settings['lang']
+                    values: lang.get('language:') + ' ' +  'en', lang.get('language:') + ' ' +  'ru',
+                    on_text:  root.current_settings['lang']  =  (self.text).rsplit(' ', 1)[1]
+
+        # bottom panel
+        BoxLayout:
+            orientation: 'horizontal'
+            spacing: 2
+            height: 50
+            size_hint: 1, 0.1
+
+            Button:
+                text: lang.get('back_btn')
+                height: "70dp"
+                font_size: config.get('font_size')
+                on_release:
+                    root.manager.change_screen("lists_screen", "right")
+            Button:
+                text: lang.get('save_btn')
+                height: "70dp"
+                font_size: config.get('font_size')
+                on_release:
+                    root.apply_settings()
+                    root.manager.change_screen("lists_screen", "right")

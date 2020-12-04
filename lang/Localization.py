@@ -35,5 +35,5 @@ def get(string):
 
 def get_key_by_value(value):
     for key, val in lang_dict.items():
-        if val == value:
+        if val.replace('\r', '') == value:
             return key

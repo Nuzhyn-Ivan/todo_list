@@ -1,7 +1,7 @@
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
-from kivy.properties import StringProperty, DictProperty
+from kivy.properties import StringProperty, DictProperty, ListProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
@@ -215,11 +215,12 @@ class EntriesScreen(Screen):
         if len(self.ready_to_revoke_entries) == 0:
             self.ids.revoke_btn_id.disabled = True
 
-    def open_tools_screen(self, text):
-        pressed_button = lang.get_key_by_value(text)
-        screen_name_to_open = 'tags_screen' if pressed_button == 'tags_btn' else 'history_screen'
-        self.manager.change_screen(screen_name_to_open, "right")
-        self.ids.tools_btn_id.text = lang.get('tools_btn')
+    def open_tools_screen(self, btn_obj):
+        pressed_button = lang.get_key_by_value(btn_obj.text)
+        if pressed_button == 'tags_btn':
+            self.manager.change_screen('tags_screen', "right")
+        elif pressed_button == 'history_btn':
+            self.manager.change_screen('history_screen', "right")
 
 
 class SettingsScreen(Screen):
@@ -262,7 +263,67 @@ class TagsScreen(Screen):
 
 
 class HistoryScreen(Screen):
-    pass
+    def __init__(self, **kwargs):
+        super(HistoryScreen, self).__init__(**kwargs)
+        self.current_list_id = EntriesScreen.current_list_id
+        self.current_list_name = EntriesScreen.current_list_name
+        self.entries_list = []
+        self.entries_list_to_delete = []
+        self.sorting_type = config.get('history_sorting')
+
+    def apply_entries_sorting(self):
+        if self.sorting_type == 'az_sorting':
+            self.entries_list.sort(key=lambda x: x[2])
+        elif self.sorting_type == 'za_sorting':
+            self.entries_list.sort(key=lambda x: x[2], reverse=True)
+        elif self.sorting_type == 'min_max_usage_sorting':
+            self.entries_list.sort(key=lambda x: x[7])
+        elif self.sorting_type == 'max_min_usage_sorting':
+            self.entries_list.sort(key=lambda x: x[7], reverse=True)
+
+    def add_entry(self, entry_id, entry_name, index):
+        entry = Button(
+            id=str(entry_id),
+            text=str(entry_name),
+            size_hint=(1, None),
+            height="70dp",
+            font_size=config.get('entries_font_size'),
+            on_release=self.tag_entry_to_delete,
+        )
+        self.ids.history_panel_id.add_widget(entry, index)
+
+    def refresh_history(self):
+        self.current_list_id = EntriesScreen.current_list_id
+        self.current_list_name = EntriesScreen.current_list_name
+        self.entries_list = db.read_entries_history(self.current_list_id)
+        self.apply_entries_sorting()
+        self.entries_list_to_delete.clear()
+        self.ids.revoke_btn_id.disabled = True
+        self.ids.history_panel_id.clear_widgets()
+        for entry_num in range(len(self.entries_list)):
+            self.add_entry(
+                self.entries_list[entry_num][0],    # entry_id
+                self.entries_list[entry_num][2],    # entry_name
+                0,                                  # index
+            )
+
+    def search_entry(self):
+        pass
+
+    def tag_entry_to_delete(self, btn_obj):
+        self.ids.history_panel_id.remove_widget(btn_obj)
+        self.entries_list_to_delete.append([btn_obj.id, btn_obj.text])
+        self.ids.revoke_btn_id.disabled = False
+
+    def apply_delete_entry(self):
+        for i in self.entries_list_to_delete:
+            db.delete_entry(i[0])
+
+    def revoke_entry(self):
+        last_entry = self.entries_list_to_delete.pop(-1)
+        if len(self.entries_list_to_delete) == 0:
+            self.ids.revoke_btn_id.disabled = True
+        self.add_entry(last_entry[0], last_entry[1], 0)
 
 
 class MainApp(App):

@@ -147,17 +147,29 @@ def delete_list_by_id(list_id):
 def create_entry(list_id, entry_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    query = "INSERT OR REPLACE INTO 'Entries' ( 'list_id', 'name', 'frequency') VALUES (?, ?, (SELECT frequency FROM 'Entries' WHERE name = ?)+1)"
+    query = "INSERT OR REPLACE INTO 'Entries' ( 'list_id', 'name', 'frequency') VALUES (?, ?, (SELECT ifnull(frequency, 0) FROM 'Entries' WHERE name = ?)+1)"
     cursor.execute(query, (list_id, entry_name, entry_name))
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()
+    print(read_entries(list_id))
 
 
 def read_entries(list_id):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 0"""
+    cursor.execute(query, (int(list_id),))
+    records = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    return records
+
+
+def read_entries_history(list_id):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 1"""
     cursor.execute(query, (int(list_id),))
     records = cursor.fetchall()
     cursor.close()
@@ -224,6 +236,16 @@ def complete_entry(entry_id):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """UPDATE `Entries` SET is_completed = 1 WHERE id = ?"""
+    cursor.execute(query, (entry_id,))
+    cursor.close()
+    sqlite_connection.commit()
+    sqlite_connection.close()
+
+
+def delete_entry(entry_id):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """DELETE FROM `Entries` WHERE id = ? """
     cursor.execute(query, (entry_id,))
     cursor.close()
     sqlite_connection.commit()

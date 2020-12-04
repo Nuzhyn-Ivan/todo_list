@@ -3,7 +3,8 @@
     orientation: 'vertical'
     on_pre_enter:
         root.refresh_entries()
-        self.ids.current_list_lbl.text = F"<--   {root.current_list_name}"
+        self.ids.current_list_btn.text = F"<--   {root.current_list_name}"
+        self.ids.tools_btn_id.text = lang.get('tools_btn')
     # TODO why do I need it?
     # on_pre_leave: self.ids.input_id.focus = False
 
@@ -20,7 +21,7 @@
             size_hint: 1, 0.1
             spacing: 2
             Button:
-                id: current_list_lbl
+                id: current_list_btn
                 font_size: config.get('font_size')
                 size_hint: 0.6, 1
                 on_release: root.manager.change_screen("lists_screen", "right")
@@ -41,8 +42,9 @@
                 text: lang.get('tools_btn')
                 values: 'Tags', 'History'
                 on_text:
-                    root.open_tools_screen(self.text)
-                disabled: True
+                    root.open_tools_screen(self)
+
+                #disabled: True
 
 
         # Entries Panel

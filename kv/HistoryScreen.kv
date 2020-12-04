@@ -1,17 +1,76 @@
 <HistoryScreen>:
     name: 'history_screen'
+    on_pre_enter:
+        root.refresh_history()
+        self.ids.current_list_btn.text = F"<--   {root.current_list_name}"
+    on_pre_leave:
+        root.apply_delete_entry()
+    # Root
     BoxLayout:
         orientation: 'vertical'
-        spacing: 10
-        Label:
-            size_hint: (1, None)
-            text: 'history_screen'
-            font_size: config.get('font_size')
-            height: "35dp"
-            color: 0, 0, 0, 1
-        Button:
-            text: lang.get('back_btn')
-            height: "70dp"
-            font_size: config.get('font_size')
-            on_release:
-                root.manager.change_screen("lists_screen", "right")
+        # Upper panel
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 50
+            size_hint: 1, 0.1
+            spacing: 2
+            Button:
+                id: current_list_btn
+                height: "70dp"
+                font_size: config.get('font_size')
+                on_release:
+                    root.manager.change_screen("entries_screen", "left")
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 50
+            size_hint: 1, 0.1
+            spacing: 2
+            Spinner:
+                id: tools_btn_id
+                height: "70dp"
+                size_hint: 0.2, 1
+                font_size: config.get('font_size')
+                text: lang.get('sorting_btn')
+                values: lang.get('az_sorting'), lang.get('za_sorting'),lang.get('min_max_usage_sorting'),lang.get('max_min_usage_sorting')
+                on_text:
+                    root.sorting_type = lang.get_key_by_value(self.text)
+                    root.refresh_history()
+
+            Button:
+                id: revoke_btn_id
+                text: lang.get('revoke_btn')
+                size_hint: 0.2, 1
+                font_size: config.get('font_size')
+                disabled: True
+                on_release: root.revoke_entry()
+
+        # History Panel
+        ScrollView:
+            BoxLayout:
+                id: history_panel_id
+                size_hint: 1, None
+                orientation: 'vertical'
+                spacing: int(config.get('spacing'))
+                padding: int(config.get('padding'))
+                height: self.minimum_height
+                size_hint_y: None
+
+        # Bottom Panel
+        BoxLayout:
+            orientation: 'vertical'
+            height: 50
+            size_hint: 1, 0.07
+            spacing: 2
+            Chooser:
+                id: input_id
+                halign: "center"
+                is_focusable: True
+                hint_text: lang.get('history_search_hint')
+                font_size: 0.5 * self.height
+                write_tab: False
+                multiline: False
+                on_text_validate:
+                    root.search_entry(self.text)
+                    self.text = ''

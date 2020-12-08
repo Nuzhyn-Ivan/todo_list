@@ -18,4 +18,8 @@ def set(option, value):
 
 def load_config():
     if os.path.exists('../TODO_config.ini'):
-        shutil.copyfile('../TODO_config.ini', 'main.ini')
+        shutil.copyfile('../TODO_config.ini', 'main.ini')  # load saved config
+        __configfile.read('main.ini')  # refresh Kivy config
+        __configfile.write()  # save config to main.ini file
+        shutil.copyfile('main.ini', '../TODO_config.ini')
+

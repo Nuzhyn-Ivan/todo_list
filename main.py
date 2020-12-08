@@ -370,13 +370,6 @@ class MainApp(App):
             'app_version': '0.0.20',
             'app_title': 'TODOit',
             'db_path': "..// TODO.db",
-            'screen_transition_duration': 0,
-            'max_suggestions_count': 3,
-            'padding': 8,
-            'spacing': 13,
-            'lang': 'en',
-            'history_sorting': 'az_sorting,'
-
         },
                                )
 

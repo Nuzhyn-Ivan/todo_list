@@ -75,12 +75,12 @@ class Chooser(TextInput, ):
             self.dropdown = DropDown()
             for val in self.suggestions:
                 self.dropdown.add_widget(
-                    Button(text=str(val[0]), size_hint_y=None, height=48, on_release=self.do_choose))
+                    Button(text=str(val[0]), size_hint_y=None, height="60dp", on_release=self.do_choose))
             self.dropdown.open(self)
 
-    def do_choose(self, butt):
+    def do_choose(self, btn_obj):
         self.text = ''
-        self.parent.parent.parent.create_entry(butt.text)
+        self.parent.parent.parent.do_choose_text_input(btn_obj.text)
         self.focused = True
         # TODO press enter here
 

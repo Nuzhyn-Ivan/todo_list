@@ -1,7 +1,7 @@
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
-from kivy.properties import StringProperty, DictProperty, ListProperty
+from kivy.properties import DictProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
@@ -165,9 +165,8 @@ class EntriesScreen(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.ready_to_revoke_entries = []
-
-    current_list_id = StringProperty()
-    current_list_name = StringProperty()
+    current_list_id = None
+    current_list_name = None
 
     def add_entry(self, entry_id, entry_name, index):
         entry = Button(
@@ -190,6 +189,11 @@ class EntriesScreen(Screen):
                 0,                             # index
             )
 
+    def init_entries_screen(self):
+        self.refresh_entries()
+        self.ids.current_list_btn.text = F"<--   {self.current_list_name}"
+        self.ids.tools_btn_id.text = lang.get('tools_btn')
+
     def complete_entry(self, btn_obj):
         db.complete_entry(btn_obj.id)
         self.ready_to_revoke_entries.append(btn_obj.text)
@@ -204,11 +208,15 @@ class EntriesScreen(Screen):
         if text:
             db.create_entry(self.current_list_id, text)
             last_entry = db.read_last_entry(self.current_list_id)[0]
-            self.add_entry(
-                last_entry[0],  # entry_id
-                last_entry[1],  # entry_name
-                0                # index
-            )
+            self.refresh_entries()  # TODO check if entry with this name is exist and do not add it again
+            # self.add_entry(
+            #     last_entry[0],  # entry_id
+            #     last_entry[1],  # entry_name
+            #     0                # index
+            # )
+
+    def do_choose_text_input(self, text):
+        self.create_entry(text)
 
     def revoke_entry(self):
         self.create_entry(self.ready_to_revoke_entries.pop())
@@ -265,13 +273,15 @@ class TagsScreen(Screen):
 class HistoryScreen(Screen):
     def __init__(self, **kwargs):
         super(HistoryScreen, self).__init__(**kwargs)
-        self.current_list_id = EntriesScreen.current_list_id
-        self.current_list_name = EntriesScreen.current_list_name
+        # self.current_list_id = EntriesScreen.current_list_id
+        # self.current_list_name = EntriesScreen.current_list_name
         self.entries_list = []
         self.entries_list_to_delete = []
         self.sorting_type = config.get('history_sorting')
+        # print(self.sorting_type)
 
     def apply_entries_sorting(self):
+        # print(self.sorting_type)
         if self.sorting_type == 'az_sorting':
             self.entries_list.sort(key=lambda x: x[2])
         elif self.sorting_type == 'za_sorting':
@@ -293,12 +303,8 @@ class HistoryScreen(Screen):
         self.ids.history_panel_id.add_widget(entry, index)
 
     def refresh_history(self):
-        self.current_list_id = EntriesScreen.current_list_id
-        self.current_list_name = EntriesScreen.current_list_name
-        self.entries_list = db.read_entries_history(self.current_list_id)
+        self.entries_list = db.read_entries_history(EntriesScreen.current_list_id)
         self.apply_entries_sorting()
-        self.entries_list_to_delete.clear()
-        self.ids.revoke_btn_id.disabled = True
         self.ids.history_panel_id.clear_widgets()
         for entry_num in range(len(self.entries_list)):
             self.add_entry(
@@ -307,8 +313,15 @@ class HistoryScreen(Screen):
                 0,                                  # index
             )
 
-    def search_entry(self):
-        pass
+    def init_history_screen(self):
+        self.refresh_history()
+        self.ids.current_list_btn.text = F"<--   {EntriesScreen.current_list_name}"
+
+    # def do_choose_text_input(self, text):
+    #     print(self, text)
+    #     for i in self.ids.history_panel_id.children:
+    #         if i.text == text:
+    #             self.ids.history_panel_id.(i.id)
 
     def tag_entry_to_delete(self, btn_obj):
         self.ids.history_panel_id.remove_widget(btn_obj)
@@ -318,10 +331,12 @@ class HistoryScreen(Screen):
     def apply_delete_entry(self):
         for i in self.entries_list_to_delete:
             db.delete_entry(i[0])
+        self.entries_list_to_delete.clear()
+        self.ids.revoke_btn_id.disabled = True
 
     def revoke_entry(self):
-        last_entry = self.entries_list_to_delete.pop(-1)
-        if len(self.entries_list_to_delete) == 0:
+        last_entry = self.entries_list_to_delete.pop(-1)  # get the last
+        if len(self.entries_list_to_delete) == 0:  # no entries left to revoke
             self.ids.revoke_btn_id.disabled = True
         self.add_entry(last_entry[0], last_entry[1], 0)
 

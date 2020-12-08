@@ -2,11 +2,8 @@
     name: 'entries_screen'
     orientation: 'vertical'
     on_pre_enter:
-        root.refresh_entries()
-        self.ids.current_list_btn.text = F"<--   {root.current_list_name}"
-        self.ids.tools_btn_id.text = lang.get('tools_btn')
-    # TODO why do I need it?
-    # on_pre_leave: self.ids.input_id.focus = False
+        root.init_entries_screen()
+    # on_pre_leave:
 
     # Root
     BoxLayout:
@@ -45,7 +42,6 @@
                     root.open_tools_screen(self)
 
                 #disabled: True
-
 
         # Entries Panel
         ScrollView:

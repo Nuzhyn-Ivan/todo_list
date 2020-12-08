@@ -10,6 +10,7 @@ def create_db():
     if not os.path.exists(db_path):
         recreate_database()
 
+
 # TODO default lists and entries - make it lang related
 def recreate_database():
     sqlite_connection = sqlite3.connect(db_path)
@@ -31,7 +32,7 @@ def recreate_database():
     created_date datetime DEFAULT (datetime('now','localtime')),
     due_date datetime,
     completed_date datetime,
-    frequency INTEGER DEFAULT 0);
+    frequency INTEGER NOT NULL);
     '''
     sqlite_create_entry_name_index = 'CREATE UNIQUE INDEX entry_name ON Entries(name);'
 
@@ -39,7 +40,7 @@ def recreate_database():
     INSERT INTO 'Lists' ('name', 'order_id') VALUES ("Supermarket", 1 ), ("To Do", 2 ), ("Drug Store", 3 ), ("Movies to watch", 4 );
     '''
     sqlite_insert_default_entries = '''
-    INSERT INTO 'Entries' ('list_id', 'name') VALUES (1, 'first' ), (1, 'first2' ), (1, 'first3' ), (1, 'first4' );
+    INSERT INTO 'Entries' ('list_id', 'name', 'frequency') VALUES (1, 'first', 1 ), (1, 'first2', 1 ), (1, 'first3', 1 ), (1, 'first4', 1 );
     '''
 
     cursor = sqlite_connection.cursor()
@@ -144,15 +145,33 @@ def delete_list_by_id(list_id):
 
 
 # Entries CRUD
+
+def is_entry_exists(list_id, entry_name):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """SELECT * FROM `Entries` WHERE list_id = ? and name = ?"""
+    cursor.execute(query, (list_id, entry_name))
+    records = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    if records:
+        return True
+    else:
+        return False
+
+
 def create_entry(list_id, entry_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    query = "INSERT OR REPLACE INTO 'Entries' ( 'list_id', 'name', 'frequency') VALUES (?, ?, (SELECT ifnull(frequency, 0) FROM 'Entries' WHERE name = ?)+1)"
-    cursor.execute(query, (list_id, entry_name, entry_name))
+    if is_entry_exists(list_id, entry_name):
+        query = """UPDATE `Entries` SET is_completed = 0, frequency =  frequency + 1  WHERE name = ?"""
+        cursor.execute(query, entry_name)
+    else:
+        query = """INSERT INTO 'Entries' ( 'list_id', 'name', 'is_completed', 'created_date', 'frequency') VALUES (?, ?, 0, date(), 1)"""
+        cursor.execute(query, (int(list_id), entry_name))
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()
-    print(read_entries(list_id))
 
 
 def read_entries(list_id):

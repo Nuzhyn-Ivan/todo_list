@@ -6,6 +6,7 @@ lang_dict = {}
 
 
 def reload_lang():
+    lang_dict.clear()
     try:
         # this var is not useless. If no lang key in main.ini - this row trigger exception
         system_language = config.get('lang')
@@ -35,5 +36,6 @@ def get(string):
 
 def get_key_by_value(value):
     for key, val in lang_dict.items():
-        if val.replace('\r', '') == value:
+        # if val.replace('\r', '') == value:
+        if val.replace('\r', '') == value.replace('\r', ''):
             return key

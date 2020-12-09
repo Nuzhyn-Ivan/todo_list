@@ -88,7 +88,7 @@ class ListsScreen(Screen):
     def __init__(self, **kwargs):
         super(ListsScreen, self).__init__(**kwargs)
         self.edit_mode = False
-        Clock.schedule_once(self.refresh_lists, 0.5)
+        Clock.schedule_once(self.refresh_lists, 0.5)  # init Lists screen on open app
 
     def add_list(self, list_id, list_name, index):
         list_btn = Button(
@@ -99,7 +99,7 @@ class ListsScreen(Screen):
         )
         if self.edit_mode:
             list_btn.bind(on_release=self.open_edit_popup)
-            list_btn.text = F"{list_name} - Tap to edit"
+            list_btn.text = F"{list_name}{lang.get('tap_to_edit')}"
         else:
             list_btn.bind(on_release=self.open_list)
             list_btn.text = F"{list_name} ({db.read_entries_count(list_id)})"
@@ -117,7 +117,6 @@ class ListsScreen(Screen):
 
     def open_list(self, btn_obj):
         EntriesScreen.current_list_id = btn_obj.id
-        # TODO add entries counter to back button on EntriesScreen
         EntriesScreen.current_list_name = db.get_list_name(btn_obj.id)
         self.manager.transition = CardTransition(direction='left',
                                                  duration=float(config.get('screen_transition_duration'))
@@ -130,7 +129,7 @@ class ListsScreen(Screen):
         if text:
             result = db.create_list(text, order_id_of_list)
             if not result:
-                MainApp.open_error_popup('Database error')
+                MainApp.open_error_popup(lang.get('db_error'))
             else:
                 last_list = db.read_last_list()[0]
                 self.add_list(
@@ -156,18 +155,20 @@ class ListsScreen(Screen):
     @staticmethod
     def open_edit_popup(btn_obj):
         list_edit_popup = CustomWidgets.ListEditPopup(
-            title=btn_obj.text.replace(' - Tap to edit', ''),
+            title=btn_obj.text.replace(lang.get('tap_to_edit'), ''),
+            title_align='center',
         )
-        list_edit_popup.list_name = btn_obj.text.replace(' - Tap to edit', '')
+        list_edit_popup.list_name = btn_obj.text.replace(lang.get('tap_to_edit'), '')
         list_edit_popup.open()
 
 
 class EntriesScreen(Screen):
+    current_list_id = None
+    current_list_name = None
+
     def __init__(self, **kw):
         super().__init__(**kw)
         self.ready_to_revoke_entries = []
-    current_list_id = None
-    current_list_name = None
 
     def add_entry(self, entry_id, entry_name, index):
         entry = Button(
@@ -208,13 +209,7 @@ class EntriesScreen(Screen):
         text = text.strip()
         if text:
             db.create_entry(self.current_list_id, text)
-            last_entry = db.read_last_entry(self.current_list_id)[0]
-            self.refresh_entries()  # TODO check if entry with this name is exist and do not add it again
-            # self.add_entry(
-            #     last_entry[0],  # entry_id
-            #     last_entry[1],  # entry_name
-            #     0                # index
-            # )
+            self.refresh_entries()
 
     def do_choose_text_input(self, text):
         self.create_entry(text)
@@ -262,8 +257,6 @@ class SettingsScreen(Screen):
         for key in self.current_settings:
             config.set(key, self.current_settings[key])
         # TODO lang reload doesnt work
-        # lang.reload_lang()
-        # config.load_config()
         MainApp.build(self)
 
 
@@ -282,7 +275,6 @@ class HistoryScreen(Screen):
         # print(self.sorting_type)
 
     def apply_entries_sorting(self):
-        # print(self.sorting_type)
         if self.sorting_type == 'az_sorting':
             self.entries_list.sort(key=lambda x: x[2])
         elif self.sorting_type == 'za_sorting':

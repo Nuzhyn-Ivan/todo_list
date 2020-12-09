@@ -6,6 +6,7 @@ from kivy.uix.textinput import TextInput
 
 import main
 import utils.DBLayer as db
+import lang.Localization as lang
 
 
 # class ButtonCustom(Button, DragNDropWidget):
@@ -103,6 +104,6 @@ class ListEditPopup(Popup):
             db.rename_list(self.list_name, text)
 
     def delete_list(self):
-        list_id = db.get_list_id(self.ids.list_name_id.text.replace(' - Tap to edit', ''))
+        list_id = db.get_list_id(self.ids.list_name_id.text.replace(lang.get('tap_to_edit'), ''))
         db.delete_list_by_id(list_id)
         self.dismiss()

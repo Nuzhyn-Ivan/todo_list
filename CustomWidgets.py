@@ -103,6 +103,6 @@ class ListEditPopup(Popup):
             db.rename_list(self.list_name, text)
 
     def delete_list(self):
-        list_id = db.get_list_id(self.ids.list_name_id.text)
+        list_id = db.get_list_id(self.ids.list_name_id.text.replace(' - Tap to edit', ''))
         db.delete_list_by_id(list_id)
         self.dismiss()

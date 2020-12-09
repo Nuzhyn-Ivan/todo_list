@@ -155,9 +155,9 @@ class ListsScreen(Screen):
     @staticmethod
     def open_edit_popup(btn_obj):
         list_edit_popup = CustomWidgets.ListEditPopup(
-            title=btn_obj.text.replace('  - Tap to edit', ''),
+            title=btn_obj.text.replace(' - Tap to edit', ''),
         )
-        list_edit_popup.list_name = btn_obj.text.replace('  - Tap to edit', '')
+        list_edit_popup.list_name = btn_obj.text.replace(' - Tap to edit', '')
         list_edit_popup.open()
 
 

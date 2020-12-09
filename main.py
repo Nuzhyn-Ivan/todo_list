@@ -131,12 +131,13 @@ class ListsScreen(Screen):
             result = db.create_list(text, order_id_of_list)
             if not result:
                 MainApp.open_error_popup('Database error')
-        last_list = db.read_last_list()[0]
-        self.add_list(
-            last_list[0],    # list id
-            last_list[1],    # list name
-            0,               # index
-        )
+            else:
+                last_list = db.read_last_list()[0]
+                self.add_list(
+                    last_list[0],    # list id
+                    last_list[1],    # list name
+                    0,               # index
+                )
 
     def delete_list(self, btn_obj):
         db.delete_list_by_id(btn_obj.id)

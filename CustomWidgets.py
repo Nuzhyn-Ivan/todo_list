@@ -91,7 +91,7 @@ class Chooser(TextInput, ):
 
 class ErrorPopup(Popup):
     # TODO implement exact error display
-    popup_title = 'some popup title'
+    popup_title = ''
     error_text = "some error text"
 
 

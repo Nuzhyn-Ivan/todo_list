@@ -150,7 +150,7 @@ def is_entry_exists(list_id, entry_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT * FROM `Entries` WHERE list_id = ? and name = ?"""
-    cursor.execute(query, (list_id, entry_name))
+    cursor.execute(query, (list_id, entry_name,))
     records = cursor.fetchall()
     cursor.close()
     sqlite_connection.close()
@@ -165,10 +165,10 @@ def create_entry(list_id, entry_name):
     cursor = sqlite_connection.cursor()
     if is_entry_exists(list_id, entry_name):
         query = """UPDATE `Entries` SET is_completed = 0, frequency =  frequency + 1  WHERE name = ?"""
-        cursor.execute(query, entry_name)
+        cursor.execute(query, (entry_name,))
     else:
         query = """INSERT INTO 'Entries' ( 'list_id', 'name', 'is_completed', 'created_date', 'frequency') VALUES (?, ?, 0, date(), 1)"""
-        cursor.execute(query, (int(list_id), entry_name))
+        cursor.execute(query, (int(list_id), entry_name,))
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()

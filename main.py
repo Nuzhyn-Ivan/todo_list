@@ -4,6 +4,7 @@ from kivy.core.window import Window
 from kivy.properties import DictProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.button import Button
+from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
 
 import CustomWidgets
@@ -149,6 +150,7 @@ class ListsScreen(Screen):
             self.ids.lists_edit_btn.text = lang.get('edit_btn')
             refresh_lists_timer.cancel()
         else:
+            # TODO - text  out of button
             self.ids.lists_edit_btn.text = lang.get('apply_edit_btn')
         refresh_lists_timer()
 
@@ -183,13 +185,25 @@ class EntriesScreen(Screen):
 
     def refresh_entries(self):
         entries_list = db.read_entries(self.current_list_id)
+        entries_list_height = self.get_parent_window().height - self.ids.entries_upper_panel_id.height - self.ids.input_id.height
+        entry_height = 70 + (int(config.get('padding')))  # 70 - button size
+
         self.ids.entries_panel_id.clear_widgets()
+        if len(entries_list) > 0 and range(len(entries_list) < 9):
+
+            label = Label(
+                id='entries_label_id',
+                size=(1,   (entries_list_height - (len(entries_list) * entry_height))),
+                size_hint=(None, None),
+            )
+            self.ids.entries_panel_id.add_widget(label, 0)
         for entry_num in range(len(entries_list)):
             self.add_entry(
                 entries_list[entry_num][0],    # entry_id
                 entries_list[entry_num][2],    # entry_name
                 0,                             # index
             )
+
 
     def init_entries_screen(self):
         self.refresh_entries()

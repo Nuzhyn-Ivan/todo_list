@@ -146,11 +146,11 @@ def delete_list_by_id(list_id):
 
 # Entries CRUD
 
-def is_entry_exists(list_id, entry_name):
+def is_entry_exists(entry_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    query = """SELECT * FROM `Entries` WHERE list_id = ? and name = ?"""
-    cursor.execute(query, (list_id, entry_name,))
+    query = """SELECT * FROM `Entries` WHERE name = ?"""
+    cursor.execute(query, (entry_name,))
     records = cursor.fetchall()
     cursor.close()
     sqlite_connection.close()
@@ -163,9 +163,9 @@ def is_entry_exists(list_id, entry_name):
 def create_entry(list_id, entry_name):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
-    if is_entry_exists(list_id, entry_name):
-        query = """UPDATE `Entries` SET is_completed = 0, frequency =  frequency + 1  WHERE name = ?"""
-        cursor.execute(query, (entry_name,))
+    if is_entry_exists(entry_name):
+        query = """UPDATE `Entries` SET list_id = ?, is_completed = 0, frequency =  frequency + 1  WHERE name = ?"""
+        cursor.execute(query, (list_id, entry_name,))
     else:
         query = """INSERT INTO 'Entries' ( 'list_id', 'name', 'is_completed', 'created_date', 'frequency') VALUES (?, ?, 0, date(), 1)"""
         cursor.execute(query, (int(list_id), entry_name,))

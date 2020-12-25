@@ -117,8 +117,8 @@
                     height: "70dp"
                     size_hint: (1, None)
                     font_size: config.get('font_size')
-                    text: lang.get('background:') + ' ' + root.current_settings['background_colour']
-                    values: lang.get('background:') + ' ' + 'Orange', lang.get('background:') + ' ' + 'White', lang.get('background:') + ' ' + 'Black'
+                    text: lang.get('theme') + ' ' + root.current_settings['background_colour']
+                    values: lang.get('theme') + ' ' + 'Orange', lang.get('theme') + ' ' + 'White', lang.get('theme') + ' ' + 'Black'
                     on_text:  root.current_settings['background_colour'] = (self.text).rsplit(' ', 1)[1]
                 Spinner:
                     height: "70dp"

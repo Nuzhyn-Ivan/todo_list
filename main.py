@@ -177,7 +177,7 @@ class EntriesScreen(Screen):
             id=str(entry_id),
             text=str(entry_name),
             size_hint=(1, None),
-            height="70dp",
+            height=F"{config.get('entries_height')}dp",
             font_size=config.get('entries_font_size'),
             on_release=self.complete_entry,
         )
@@ -186,7 +186,7 @@ class EntriesScreen(Screen):
     def refresh_entries(self):
         entries_list = db.read_entries(self.current_list_id)
         entries_list_height = self.get_parent_window().height - self.ids.entries_upper_panel_id.height - self.ids.input_id.height
-        entry_height = 70 + (int(config.get('padding')))  # 70 - button size
+        entry_height = int(config.get('entries_height')) + int(config.get('padding'))
 
         self.ids.entries_panel_id.clear_widgets()
         if len(entries_list) > 0 and range(len(entries_list) < 9):
@@ -204,7 +204,6 @@ class EntriesScreen(Screen):
                 0,                             # index
             )
 
-
     def init_entries_screen(self):
         self.refresh_entries()
         self.ids.current_list_btn.text = F"<--   {self.current_list_name}"
@@ -215,6 +214,7 @@ class EntriesScreen(Screen):
         self.ready_to_revoke_entries.append(btn_obj.text)
         self.ids.entries_panel_id.remove_widget(btn_obj)
         self.ids.revoke_btn_id.disabled = False
+        self.refresh_entries()  # TODO remove and refactor label sizing in refresh_entries
 
     # def focus_entries_panel_id(self):
     #     self.ids.entries_panel_id.focus = True

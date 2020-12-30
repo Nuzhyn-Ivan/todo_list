@@ -5,12 +5,15 @@ import utils.ConfigParser as config
 
 db_path = config.get('db_path')
 
+migrations_list = {}
+
 
 def create_db():
     if not os.path.exists(db_path):
         recreate_database()
 
 
+# TODO add feature to backup db and load from backup
 # TODO default lists and entries - make it lang related
 def recreate_database():
     sqlite_connection = sqlite3.connect(db_path)
@@ -32,7 +35,9 @@ def recreate_database():
     created_date datetime DEFAULT (datetime('now','localtime')),
     due_date datetime,
     completed_date datetime,
-    frequency INTEGER NOT NULL);
+    frequency INTEGER NOT NULL,
+    note TEXT);
+    
     '''
     sqlite_create_entry_name_index = 'CREATE UNIQUE INDEX entry_name ON Entries(name);'
 
@@ -57,7 +62,18 @@ def recreate_database():
     sqlite_connection.close()
 
 
+def run_migrations():
+    sqlite_connection = sqlite3.connect(db_path)
+    for key, value in migrations_list.items():
+        if key > config.get('db_version'):
+            cursor = sqlite_connection.cursor()
+            cursor.execute(value)
+            cursor.close()
+    sqlite_connection.commit()
+    sqlite_connection.close()
+
 # Lists CRUD
+
 
 def create_list(list_name, order_id):
     sqlite_connection = sqlite3.connect(db_path)
@@ -145,6 +161,28 @@ def delete_list_by_id(list_id):
 
 
 # Entries CRUD
+
+def get_entry_name(entry_id):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """SELECT name FROM `Entries` where id = ? """
+    cursor.execute(query, (entry_id,))
+    records = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    return records[0][0]
+
+
+def get_entry_note(entry_id):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """SELECT note FROM `Entries` where id = ? """
+    cursor.execute(query, (entry_id,))
+    records = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    return '' if (records[0][0] is None) else records[0][0]
+
 
 def is_entry_exists(entry_name):
     sqlite_connection = sqlite3.connect(db_path)
@@ -256,6 +294,16 @@ def complete_entry(entry_id):
     cursor = sqlite_connection.cursor()
     query = """UPDATE `Entries` SET is_completed = 1 WHERE id = ?"""
     cursor.execute(query, (entry_id,))
+    cursor.close()
+    sqlite_connection.commit()
+    sqlite_connection.close()
+
+
+def set_entry_note(entry_id, note_text):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """UPDATE `Entries` SET note = ? WHERE id = ?"""
+    cursor.execute(query, (note_text, entry_id,))
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()

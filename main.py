@@ -3,6 +3,7 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.properties import DictProperty
 from kivy.uix.anchorlayout import AnchorLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
@@ -173,20 +174,35 @@ class EntriesScreen(Screen):
         self.ready_to_revoke_entries = []
 
     def add_entry(self, entry_id, entry_name, index):
+        container = BoxLayout(
+            orientation='horizontal',
+            size_hint=(1, None),
+            height=config.get('entries_height'),
+        )
+        entry_note = Button(
+            id=str(entry_id),
+            text=str(lang.get('open_entry_note')),
+            size_hint=(0.2, None),
+            height=config.get('entries_height'),
+            font_size=config.get('entries_font_size'),
+            on_release=self.open_notes_screen,
+        )
         entry = Button(
             id=str(entry_id),
             text=str(entry_name),
             size_hint=(1, None),
-            height=F"{config.get('entries_height')}dp",
+            height=config.get('entries_height'),
             font_size=config.get('entries_font_size'),
             on_release=self.complete_entry,
         )
-        self.ids.entries_panel_id.add_widget(entry, index)
+        container.add_widget(entry_note)
+        container.add_widget(entry)
+        self.ids.entries_panel_id.add_widget(container, index)
 
     def refresh_entries(self):
         entries_list = db.read_entries(self.current_list_id)
         entries_list_height = self.get_parent_window().height - self.ids.entries_upper_panel_id.height - self.ids.input_id.height
-        entry_height = int(config.get('entries_height')) + int(config.get('padding'))
+        entry_height = int(config.get('entries_height')[:-2]) + int(config.get('padding'))
 
         self.ids.entries_panel_id.clear_widgets()
         if len(entries_list) > 0 and range(len(entries_list) < 9):
@@ -240,6 +256,10 @@ class EntriesScreen(Screen):
         elif pressed_button == 'history_btn':
             self.manager.change_screen('history_screen', "right")
 
+    def open_notes_screen(self, btn_obj):
+        EntriesNotesScreen.entry_id = btn_obj.id
+        self.manager.change_screen('entries_notes_screen', "right")
+
 
 class SettingsScreen(Screen):
     # TODO fix bug with font_size not apply on save(same as lang)
@@ -276,6 +296,25 @@ class SettingsScreen(Screen):
 
 class TagsScreen(Screen):
     pass
+
+
+class EntriesNotesScreen(Screen):
+    entry_id = 1
+    entry_name = ''
+    note_text = ''
+
+    def save_note(self,):
+        self.manager.change_screen('entries_screen', "left")
+        db.set_entry_note(self.entry_id, self.ids.note_id.text)
+        self.ids.note_id.text = ''
+
+    def back(self):
+        self.manager.change_screen('entries_screen', "left")
+        self.ids.note_id.text = ''
+
+    def init_entries_notes_screen(self):
+        self.note_text = db.get_entry_note(self.entry_id)
+        self.ids.note_id.text = self.note_text
 
 
 class HistoryScreen(Screen):
@@ -387,5 +426,6 @@ class MainApp(App):
 
 
 if __name__ == '__main__':
-    db.create_db()  # will create database at first start
+    db.create_db()  # create database at first start
+    db.run_migrations()  # update db to the actual state
     MainApp().run()

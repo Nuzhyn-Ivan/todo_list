@@ -1,4 +1,6 @@
-from kivy.properties import ListProperty, StringProperty
+from kivy.clock import Clock
+from kivy.factory import Factory
+from kivy.properties import ListProperty, StringProperty, NumericProperty
 from kivy.uix.button import Button
 from kivy.uix.dropdown import DropDown
 from kivy.uix.popup import Popup
@@ -9,7 +11,7 @@ import utils.DBLayer as db
 import lang.Localization as lang
 
 
-# class ButtonCustom(Button, DragNDropWidget):
+# class ButtonCustom(Button):
 #     #on_long_press=self.delete_list,
 #     #long_press_time=1,
 #     __events__ = ('on_long_press',)
@@ -108,3 +110,16 @@ class ListEditPopup(Popup):
         list_id = db.get_list_id(self.ids.list_name_id.text.replace(lang.get('tap_to_edit'), ''))
         db.delete_list_by_id(list_id)
         self.dismiss()
+
+
+class EntriesNotesPopup(Popup):
+    entry_id = NumericProperty()
+    note_text = ''
+    popup_title = ''
+
+    def init_popup(self):
+        pass
+
+    def save_note(self):
+        self.dismiss()
+

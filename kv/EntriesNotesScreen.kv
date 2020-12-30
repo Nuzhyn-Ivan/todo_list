@@ -8,15 +8,16 @@
         ScrollView:
             size_hint: 1, 0.9
             id: entries_sw_id
+            bar_width: config.get('scrollview_size')
             TextInput:
                 id: note_id
                 text: root.note_text
+                size_hint_y: None
+                height: max(self.minimum_height, entries_sw_id.height)
                 halign: "center"
                 is_focusable: True
                 hint_text: lang.get('entry_note_textinput_hint')
                 font_size: config.get('font_size')
-                write_tab: False
-                multiline: True
         BoxLayout:
             orientation: 'horizontal'
             size_hint: 1, 0.1

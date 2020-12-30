@@ -277,6 +277,7 @@ class SettingsScreen(Screen):
         'font_size': config.get('font_size'),
         'padding': config.get('padding'),
         'spacing': config.get('spacing'),
+        'scrollview_size': config.get('scrollview_size'),
     })
 
     def get_current_settings(self):

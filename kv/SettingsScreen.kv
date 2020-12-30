@@ -5,6 +5,7 @@
     BoxLayout:
         orientation: 'vertical'
         ScrollView:
+            bar_width: config.get('scrollview_size')
             BoxLayout:
                 id: settings_panel_id
                 size_hint: 1, None
@@ -112,6 +113,23 @@
                     range: (0,15)
                     step: 1
                     on_value: root.current_settings['spacing'] =  str(int(self.value))
+
+                # ScrollView width
+                Label:
+                    size_hint: (1, None)
+                    text: lang.get('scrollview_size') + ' '  + str(int(spacing_slider_id.value))
+                    font_size: config.get('font_size')
+                    height: "35dp"
+                    color: 0, 0, 0, 1
+                Slider:
+                    size_hint: (1, None)
+                    height: "30dp"
+                    id: spacing_slider_id
+                    value: int(root.current_settings['scrollview_size'])
+                    range: (0,15)
+                    step: 1
+                    on_value: root.current_settings['scrollview_size'] =  str(int(self.value))
+
 
                 Spinner:
                     height: "70dp"

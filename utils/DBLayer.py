@@ -5,7 +5,9 @@ import utils.ConfigParser as config
 
 db_path = config.get('db_path')
 
-migrations_list = {}
+migrations_list = {
+ 1: '''ALTER TABLE `Entries` ADD COLUMN note TEXT;''',
+}
 
 
 def create_db():
@@ -37,7 +39,6 @@ def recreate_database():
     completed_date datetime,
     frequency INTEGER NOT NULL,
     note TEXT);
-    
     '''
     sqlite_create_entry_name_index = 'CREATE UNIQUE INDEX entry_name ON Entries(name);'
 
@@ -63,14 +64,19 @@ def recreate_database():
 
 
 def run_migrations():
-    sqlite_connection = sqlite3.connect(db_path)
-    for key, value in migrations_list.items():
-        if key > config.get('db_version'):
-            cursor = sqlite_connection.cursor()
-            cursor.execute(value)
-            cursor.close()
-    sqlite_connection.commit()
-    sqlite_connection.close()
+    current_db_version = int(config.get('db_version'))
+    available_db_version = int(config.get('available_db_version'))
+    if available_db_version > current_db_version:  # need to run migrations
+        sqlite_connection = sqlite3.connect(db_path)
+        for key, value in migrations_list.items():
+            if key > current_db_version:
+                cursor = sqlite_connection.cursor()
+                cursor.execute(value)
+                cursor.close()
+                current_db_version = key
+        sqlite_connection.commit()
+        sqlite_connection.close()
+        config.set('db_version', current_db_version)
 
 # Lists CRUD
 

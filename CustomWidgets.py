@@ -59,7 +59,7 @@ class Chooser(TextInput, ):
 
     def load_choices(self, entry_name_part):
         self.suggestions.clear()
-        for i in db.read_entries_by_name_part(main.EntriesScreen.current_list_id, entry_name_part):
+        for i in db.read_entries_by_name_part(int(main.EntriesScreen.current_list_id), entry_name_part):
             self.suggestions.append(i)
         self.suggestions.reverse()  # the first entry hast to be under TextInput - its the last position in suggestions
 

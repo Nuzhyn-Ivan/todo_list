@@ -3,7 +3,8 @@
     orientation: 'vertical'
     on_pre_enter:
         root.init_entries_screen()
-    # on_pre_leave:
+#    on_pre_leave:
+#        root.leave_entries_screen()
 
     # Root
     BoxLayout:
@@ -19,7 +20,7 @@
             spacing: 2
             Button:
                 id: current_list_btn
-                font_size: config.get('font_size')
+                font_size: config.get_option_value('font_size')
                 size_hint: 0.6, 1
                 on_release: root.manager.change_screen("lists_screen", "right")
 
@@ -27,7 +28,7 @@
                 id: revoke_btn_id
                 text: lang.get('revoke_btn')
                 size_hint: 0.2, 1
-                font_size: config.get('font_size')
+                font_size: config.get_option_value('font_size')
                 disabled: True
                 on_release: root.revoke_entry()
 
@@ -35,7 +36,7 @@
                 id: tools_btn_id
                 height: "70dp"
                 size_hint: 0.2, 1
-                font_size: config.get('font_size')
+                font_size: config.get_option_value('font_size')
                 text: lang.get('tools_btn')
                 values: 'Tags', 'History'
                 on_text:
@@ -46,13 +47,14 @@
         # Entries Panel
         ScrollView:
             id: entries_sw_id
-            bar_width: config.get('scrollview_size')
-            BoxLayout:
+            bar_width: config.get_option_value('scrollview_size')
+            GridLayout:
                 id: entries_panel_id
                 size_hint: 1, None
-                orientation: 'vertical'
-                spacing: int(config.get('spacing'))
-                padding: int(config.get('padding'))
+                cols: 2
+#                orientation: 'vertical'
+                spacing: int(config.get_option_value('spacing'))
+                padding: int(config.get_option_value('padding'))
                 height: self.minimum_height
                 size_hint_y: None
 

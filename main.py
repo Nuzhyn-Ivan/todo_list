@@ -32,7 +32,7 @@ class ScreenManagement(ScreenManager):
                 return True  # do not exit the app
 
     def change_screen(self, screen_name, direction):
-        self.transition = CardTransition(direction=direction, duration=float(config.get('screen_transition_duration')))
+        self.transition = CardTransition(direction=direction, duration=float(config.get_option_value('screen_transition_duration')))
         self.current = screen_name
 
     def _update_screens(self, new_screens):
@@ -95,7 +95,7 @@ class ListsScreen(Screen):
     def add_list(self, list_id, list_name, index):
         list_btn = Button(
             id=str(list_id),
-            font_size=config.get('lists_font_size'),
+            font_size=config.get_option_value('lists_font_size'),
             size_hint=(1, None),
             height="70dp",
         )
@@ -104,7 +104,7 @@ class ListsScreen(Screen):
             list_btn.text = F"{list_name}{lang.get('tap_to_edit')}"
         else:
             list_btn.bind(on_release=self.open_list)
-            list_btn.text = F"{list_name} ({db.read_entries_count(list_id)})"
+            list_btn.text = F"{list_name} ({str(db.read_entries_count(list_id))})"
         self.ids.lists_panel_id.add_widget(list_btn, index)
 
     def refresh_lists(self, *l):
@@ -112,16 +112,16 @@ class ListsScreen(Screen):
         self.ids.lists_panel_id.clear_widgets()
         for i in lists:
             self.add_list(
-                i[0],   # list id
-                i[1],   # list name
-                0,      # index
+                i[0],  # list id
+                i[1],  # list name
+                0,  # index
             )
 
     def open_list(self, btn_obj):
         EntriesScreen.current_list_id = btn_obj.id
         EntriesScreen.current_list_name = db.get_list_name(btn_obj.id)
         self.manager.transition = CardTransition(direction='left',
-                                                 duration=float(config.get('screen_transition_duration'))
+                                                 duration=float(config.get_option_value('screen_transition_duration'))
                                                  )
         self.manager.current = "entries_screen"
 
@@ -135,9 +135,9 @@ class ListsScreen(Screen):
             else:
                 last_list = db.read_last_list()[0]
                 self.add_list(
-                    last_list[0],    # list id
-                    last_list[1],    # list name
-                    0,               # index
+                    last_list[0],  # list id
+                    last_list[1],  # list name
+                    0,  # index
                 )
 
     def delete_list(self, btn_obj):
@@ -174,50 +174,55 @@ class EntriesScreen(Screen):
         self.ready_to_revoke_entries = []
 
     def add_entry(self, entry_id, entry_name, index):
-        container = BoxLayout(
-            orientation='horizontal',
-            size_hint=(1, None),
-            height=config.get('entries_height'),
-        )
+        # container = BoxLayout(
+        #     # id=F"{entry_id}c",
+        #     orientation='horizontal',
+        #     size_hint=(1, None),
+        #     height=config.get('entries_height'),
+        # )
         entry_note = Button(
-            id=str(entry_id),
+            id=F"{entry_id}e",
             text=str(lang.get('open_entry_note')),
             size_hint=(0.2, None),
-            height=config.get('entries_height'),
-            font_size=config.get('entries_font_size'),
+            height=config.get_option_value('entries_height'),
+            font_size=config.get_option_value('entries_font_size'),
             on_release=self.open_notes_screen,
         )
         entry = Button(
             id=str(entry_id),
             text=str(entry_name),
             size_hint=(1, None),
-            height=config.get('entries_height'),
-            font_size=config.get('entries_font_size'),
+            height=config.get_option_value('entries_height'),
+            font_size=config.get_option_value('entries_font_size'),
             on_release=self.complete_entry,
         )
-        container.add_widget(entry_note)
-        container.add_widget(entry)
-        self.ids.entries_panel_id.add_widget(container, index)
+        # container.add_widget(entry_note)
+        # container.add_widget(entry)
+        # self.ids.entries_panel_id.add_widget(container, index)
+        self.ids.entries_panel_id.add_widget(entry_note, index)
+        self.ids.entries_panel_id.add_widget(entry, index)
 
     def refresh_entries(self):
-        entries_list = db.read_entries(self.current_list_id)
-        entries_list_height = self.get_parent_window().height - self.ids.entries_upper_panel_id.height - self.ids.input_id.height
-        entry_height = int(config.get('entries_height')[:-2]) + int(config.get('padding'))
+        entries_list = db.read_entries(int(self.current_list_id))
+        # entries_list_height = self.get_parent_window().height - self.ids.entries_upper_panel_id.height - self.ids.input_id.height
+        # entry_height = int(config.get('entries_height')[:-2]) + int(config.get('padding'))
 
+        for i in self.ids.entries_panel_id.children:  # remove all entries buttons and entries note buttons
+            i.clear_widgets()
         self.ids.entries_panel_id.clear_widgets()
-        if len(entries_list) > 0 and range(len(entries_list) < 9):
-
-            label = Label(
-                id='entries_label_id',
-                size=(1,   (entries_list_height - (len(entries_list) * entry_height))),
-                size_hint=(None, None),
-            )
-            self.ids.entries_panel_id.add_widget(label, 0)
+        # if len(entries_list) > 0 and range(len(entries_list) < 9):
+        #
+        #     label = Label(
+        #         id='entries_label_id',
+        #         size=(1,   (entries_list_height - (len(entries_list) * entry_height))),
+        #         size_hint=(None, None),
+        #     )
+        #     self.ids.entries_panel_id.add_widget(label, 0)
         for entry_num in range(len(entries_list)):
             self.add_entry(
-                entries_list[entry_num][0],    # entry_id
-                entries_list[entry_num][2],    # entry_name
-                0,                             # index
+                entries_list[entry_num][0],  # entry_id
+                entries_list[entry_num][2],  # entry_name
+                0,  # index
             )
 
     def init_entries_screen(self):
@@ -238,7 +243,7 @@ class EntriesScreen(Screen):
     def create_entry(self, text):
         text = text.strip()
         if text:
-            db.create_entry(self.current_list_id, text)
+            db.create_entry(int(self.current_list_id), text)
             self.refresh_entries()
 
     def do_choose_text_input(self, text):
@@ -269,20 +274,20 @@ class SettingsScreen(Screen):
         super(SettingsScreen, self).__init__(**kwargs)
 
     current_settings = DictProperty({
-        'background_colour': config.get('background_colour'),
-        'lang': config.get('lang'),
-        'entries_font_size': config.get('entries_font_size'),
-        'lists_font_size': config.get('lists_font_size'),
-        'max_suggestions_count': config.get('max_suggestions_count'),
-        'font_size': config.get('font_size'),
-        'padding': config.get('padding'),
-        'spacing': config.get('spacing'),
-        'scrollview_size': config.get('scrollview_size'),
+        'background_colour': config.get_option_value('background_colour'),
+        'lang': config.get_option_value('lang'),
+        'entries_font_size': config.get_option_value('entries_font_size'),
+        'lists_font_size': config.get_option_value('lists_font_size'),
+        'max_suggestions_count': config.get_option_value('max_suggestions_count'),
+        'font_size': config.get_option_value('font_size'),
+        'padding': config.get_option_value('padding'),
+        'spacing': config.get_option_value('spacing'),
+        'scrollview_size': config.get_option_value('scrollview_size'),
     })
 
     def get_current_settings(self):
         for key in self.current_settings:
-            self.current_settings[key] = config.get(key)
+            self.current_settings[key] = config.get_option_value(key)
 
     @staticmethod
     def reset_db():
@@ -290,7 +295,7 @@ class SettingsScreen(Screen):
 
     def apply_settings(self):
         for key in self.current_settings:
-            config.set(key, self.current_settings[key])
+            config.set_option_value(key, self.current_settings[key])
         # TODO lang reload doesnt work
         MainApp.build(self)
 
@@ -300,13 +305,13 @@ class TagsScreen(Screen):
 
 
 class EntriesNotesScreen(Screen):
-    entry_id = 1
+    entry_id = ''
     entry_name = ''
     note_text = ''
 
-    def save_note(self,):
+    def save_note(self, ):
         self.manager.change_screen('entries_screen', "left")
-        db.set_entry_note(self.entry_id, self.ids.note_id.text)
+        db.set_entry_note(self.entry_id[:-1], self.ids.note_id.text)
         self.ids.note_id.text = ''
 
     def back(self):
@@ -314,7 +319,7 @@ class EntriesNotesScreen(Screen):
         self.ids.note_id.text = ''
 
     def init_entries_notes_screen(self):
-        self.note_text = db.get_entry_note(self.entry_id)
+        self.note_text = db.get_entry_note(self.entry_id[:-1])
         self.ids.note_id.text = self.note_text
 
 
@@ -325,7 +330,7 @@ class HistoryScreen(Screen):
         # self.current_list_name = EntriesScreen.current_list_name
         self.entries_list = []
         self.entries_list_to_delete = []
-        self.sorting_type = config.get('history_sorting')
+        self.sorting_type = config.get_option_value('history_sorting')
         # print(self.sorting_type)
 
     def apply_entries_sorting(self):
@@ -344,20 +349,20 @@ class HistoryScreen(Screen):
             text=str(entry_name),
             size_hint=(1, None),
             height="70dp",
-            font_size=config.get('entries_font_size'),
+            font_size=config.get_option_value('entries_font_size'),
             on_release=self.tag_entry_to_delete,
         )
         self.ids.history_panel_id.add_widget(entry, index)
 
     def refresh_history(self):
-        self.entries_list = db.read_entries_history(EntriesScreen.current_list_id)
+        self.entries_list = db.read_entries_history(int(EntriesScreen.current_list_id))
         self.apply_entries_sorting()
         self.ids.history_panel_id.clear_widgets()
         for entry_num in range(len(self.entries_list)):
             self.add_entry(
-                self.entries_list[entry_num][0],    # entry_id
-                self.entries_list[entry_num][2],    # entry_name
-                0,                                  # index
+                self.entries_list[entry_num][0],  # entry_id
+                self.entries_list[entry_num][2],  # entry_name
+                0,  # index
             )
 
     def init_history_screen(self):
@@ -399,11 +404,11 @@ class MainApp(App):
             "White": [1.0, 1.0, 1.0, 1],
             "Black": [0, 0, 0, 1],
         }
-        Window.clearcolor = backgroung_dict[config.get('background_colour')]
+        Window.clearcolor = backgroung_dict[config.get_option_value('background_colour')]
         Window.softinput_mode = 'below_target'  # TextInput keyboard position https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
         # TODO move ALL paths to system settings
         self.icon = 'images/icon.png'
-        self.title = F"{config.get('app_title')}  {config.get('app_version')}"
+        self.title = F"{config.get_option_value('app_title')}  {config.get_option_value('app_version')}"
         config.load_config()
         db.create_db()
         lang.reload_lang()

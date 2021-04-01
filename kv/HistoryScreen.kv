@@ -17,7 +17,7 @@
             Button:
                 id: current_list_btn
                 height: "70dp"
-                font_size: config.get('font_size')
+                font_size: config.get_option_value('font_size')
                 on_release:
                     root.manager.change_screen("entries_screen", "left")
         BoxLayout:
@@ -30,8 +30,8 @@
                 id: tools_btn_id
                 height: "70dp"
                 size_hint: 0.2, 1
-                font_size: config.get('font_size')
-                text: lang.get(config.get('history_sorting'))
+                font_size: config.get_option_value('font_size')
+                text: lang.get(config.get_option_value('history_sorting'))
                 values: lang.get('az_sorting'), lang.get('za_sorting'), lang.get('min_max_usage_sorting'), lang.get('max_min_usage_sorting')
                 on_text:
                     root.sorting_type = lang.get_key_by_value(self.text)
@@ -41,19 +41,19 @@
                 id: revoke_btn_id
                 text: lang.get('revoke_btn')
                 size_hint: 0.2, 1
-                font_size: config.get('font_size')
+                font_size: config.get_option_value('font_size')
                 disabled: True
                 on_release: root.revoke_entry()
 
         # History Panel
         ScrollView:
-            bar_width: config.get('scrollview_size')
+            bar_width: config.get_option_value('scrollview_size')
             BoxLayout:
                 id: history_panel_id
                 size_hint: 1, None
                 orientation: 'vertical'
-                spacing: int(config.get('spacing'))
-                padding: int(config.get('padding'))
+                spacing: int(config.get_option_value('spacing'))
+                padding: int(config.get_option_value('padding'))
                 height: self.minimum_height
                 size_hint_y: None
 

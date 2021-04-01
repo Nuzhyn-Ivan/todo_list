@@ -9,17 +9,17 @@ def reload_lang():
     lang_dict.clear()
     try:
         # this var is not useless. If no lang key in main.ini - this row trigger exception
-        system_language = config.get('lang')
+        system_language = config.get_option_value('lang')
     except:
         system_default_lang = locale.getdefaultlocale()[0][:2]
         if system_default_lang in ('EN', 'en'):
-            config.set('lang', 'en')
+            config.set_option_value('lang', 'en')
         elif system_default_lang in ('RU', 'ru'):
-            config.set('lang', 'ru')
+            config.set_option_value('lang', 'ru')
         else:
-            config.set('lang', 'en')
+            config.set_option_value('lang', 'en')
     finally:
-        system_language = config.get('lang')
+        system_language = config.get_option_value('lang')
 
     with codecs.open("lang/{}.ini".format(system_language), encoding='utf-8') as myfile:
         for line in myfile:

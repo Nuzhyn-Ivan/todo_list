@@ -5,20 +5,20 @@
     BoxLayout:
         orientation: 'vertical'
         ScrollView:
-            bar_width: config.get('scrollview_size')
+            bar_width: config.get_option_value('scrollview_size')
             BoxLayout:
                 id: settings_panel_id
                 size_hint: 1, None
                 orientation: 'vertical'
-                spacing: int(config.get('spacing'))
-                padding: int(config.get('padding'))
+                spacing: int(config.get_option_value('spacing'))
+                padding: int(config.get_option_value('padding'))
                 height: self.minimum_height
 
                 Button:
                     text: lang.get('reset_db_btn')
                     height: "70dp"
                     size_hint: (1, None)
-                    font_size: config.get('font_size')
+                    font_size: config.get_option_value('font_size')
                     on_release:
                         root.reset_db()
 
@@ -70,7 +70,7 @@
                 Label:
                     size_hint: (1, None)
                     text: lang.get('suggestions_count_for_entries') + ' '  + str(int(max_suggestions_count_slider_id.value))
-                    font_size: config.get('font_size')
+                    font_size: config.get_option_value('font_size')
                     height: "35dp"
                     color: 0, 0, 0, 1
                 Slider:
@@ -86,7 +86,7 @@
                 Label:
                     size_hint: (1, None)
                     text: lang.get('padding')  + str(int(padding_slider_id.value))
-                    font_size: config.get('font_size')
+                    font_size: config.get_option_value('font_size')
                     height: "35dp"
                     color: 0, 0, 0, 1
                 Slider:
@@ -102,7 +102,7 @@
                 Label:
                     size_hint: (1, None)
                     text: lang.get('spacing') + ' '  + str(int(spacing_slider_id.value))
-                    font_size: config.get('font_size')
+                    font_size: config.get_option_value('font_size')
                     height: "35dp"
                     color: 0, 0, 0, 1
                 Slider:
@@ -118,7 +118,7 @@
                 Label:
                     size_hint: (1, None)
                     text: lang.get('scrollview_size') + ': '  + str(int(spacing_slider_id.value))
-                    font_size: config.get('font_size')
+                    font_size: config.get_option_value('font_size')
                     height: "35dp"
                     color: 0, 0, 0, 1
                 Slider:
@@ -134,14 +134,14 @@
                 Spinner:
                     height: "70dp"
                     size_hint: (1, None)
-                    font_size: config.get('font_size')
+                    font_size: config.get_option_value('font_size')
                     text: lang.get('theme') + ' ' + root.current_settings['background_colour']
                     values: lang.get('theme') + ' ' + 'Orange', lang.get('theme') + ' ' + 'White', lang.get('theme') + ' ' + 'Black'
                     on_text:  root.current_settings['background_colour'] = (self.text).rsplit(' ', 1)[1]
                 Spinner:
                     height: "70dp"
                     size_hint: (1, None)
-                    font_size: config.get('font_size')
+                    font_size: config.get_option_value('font_size')
                     text: lang.get('language:') + ' ' + root.current_settings['lang']
                     values: lang.get('language:') + ' ' +  'en', lang.get('language:') + ' ' +  'ru',
                     on_text:  root.current_settings['lang']  =  (self.text).rsplit(' ', 1)[1]
@@ -156,13 +156,13 @@
             Button:
                 text: lang.get('back_btn')
                 height: "70dp"
-                font_size: config.get('font_size')
+                font_size: config.get_option_value('font_size')
                 on_release:
                     root.manager.change_screen("lists_screen", "right")
             Button:
                 text: lang.get('save_btn')
                 height: "70dp"
-                font_size: config.get('font_size')
+                font_size: config.get_option_value('font_size')
                 on_release:
                     root.apply_settings()
                     root.manager.change_screen("lists_screen", "right")

@@ -94,11 +94,11 @@ class ListsScreen(Screen):
 
     def add_list(self, list_id, list_name, index):
         list_btn = Button(
-            id=str(list_id),
             font_size=config.get_option_value('lists_font_size'),
             size_hint=(1, None),
             height="70dp",
         )
+        list_btn.id = str(list_id)
         if self.edit_mode:
             list_btn.bind(on_release=self.open_edit_popup)
             list_btn.text = F"{list_name}{lang.get('tap_to_edit')}"
@@ -181,21 +181,22 @@ class EntriesScreen(Screen):
         #     height=config.get('entries_height'),
         # )
         entry_note = Button(
-            id=F"{entry_id}e",
             text=str(lang.get('open_entry_note')),
             size_hint=(0.2, None),
             height=config.get_option_value('entries_height'),
             font_size=config.get_option_value('entries_font_size'),
             on_release=self.open_notes_screen,
         )
+        entry_note.id = F"{entry_id}e"
+
         entry = Button(
-            id=str(entry_id),
             text=str(entry_name),
             size_hint=(1, None),
             height=config.get_option_value('entries_height'),
             font_size=config.get_option_value('entries_font_size'),
             on_release=self.complete_entry,
         )
+        entry.id = str(entry_id)
         # container.add_widget(entry_note)
         # container.add_widget(entry)
         # self.ids.entries_panel_id.add_widget(container, index)

@@ -168,7 +168,7 @@ def delete_list_by_id(list_id: int):
 
 # Entries CRUD
 
-def get_entry_name(entry_id: int) -> str:
+def get_entry_name(entry_id: int or str) -> str:
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT name FROM `Entries` where id = ? """
@@ -179,7 +179,7 @@ def get_entry_name(entry_id: int) -> str:
     return records[0][0]
 
 
-def get_entry_note(entry_id: int) -> str:
+def get_entry_note(entry_id: int or str) -> str:
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT note FROM `Entries` where id = ? """

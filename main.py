@@ -176,7 +176,7 @@ class EntriesScreen(Screen):
 
     def add_entry(self, entry_id, entry_name, index):
         entry_note = Button(
-            text=str(lang.get('open_entry_note')),
+            text=str(lang.get('open_entry_info')),
             size_hint=(0.2, None),
             height=config.get_option_value('entries_height'),
             font_size=config.get_option_value('entries_font_size'),
@@ -300,9 +300,9 @@ class TagsScreen(Screen):
     pass
 
 
-class EntryNotesScreen(Screen):
+class EntryInfoScreen(Screen):
     def __init__(self, **kwargs):
-        super(EntryNotesScreen, self).__init__(**kwargs)
+        super(EntryInfoScreen, self).__init__(**kwargs)
         self.note_text = ''
         self.entry_id = ''
 
@@ -323,12 +323,9 @@ class EntryNotesScreen(Screen):
 class HistoryScreen(Screen):
     def __init__(self, **kwargs):
         super(HistoryScreen, self).__init__(**kwargs)
-        # self.current_list_id = EntriesScreen.current_list_id
-        # self.current_list_name = EntriesScreen.current_list_name
         self.entries_list = []
         self.entries_list_to_delete = []
         self.sorting_type = config.get_option_value('history_sorting')
-        # print(self.sorting_type)
 
     def apply_entries_sorting(self):
         if self.sorting_type == 'az_sorting':
@@ -342,17 +339,18 @@ class HistoryScreen(Screen):
 
     def add_entry(self, entry_id, entry_name, index):
         entry = Button(
-            id=str(entry_id),
             text=str(entry_name),
             size_hint=(1, None),
             height="70dp",
             font_size=config.get_option_value('entries_font_size'),
             on_release=self.tag_entry_to_delete,
         )
+        entry.id = str(entry_id)
         self.ids.history_panel_id.add_widget(entry, index)
 
     def refresh_history(self):
-        self.entries_list = db.read_entries_history(int(EntriesScreen.current_list_id))
+        entries_screen_instance = self.manager.get_screen('entries_screen')
+        self.entries_list = db.read_entries_history(int(entries_screen_instance.current_list_id))
         self.apply_entries_sorting()
         self.ids.history_panel_id.clear_widgets()
         for entry_num in range(len(self.entries_list)):
@@ -363,14 +361,9 @@ class HistoryScreen(Screen):
             )
 
     def init_history_screen(self):
+        entries_screen_instance = self.manager.get_screen('entries_screen')
         self.refresh_history()
-        self.ids.current_list_btn.text = F"<--   {EntriesScreen.current_list_name}"
-
-    # def do_choose_text_input(self, text):
-    #     print(self, text)
-    #     for i in self.ids.history_panel_id.children:
-    #         if i.text == text:
-    #             self.ids.history_panel_id.(i.id)
+        self.ids.current_list_btn.text = F"<--   {entries_screen_instance.current_list_name}"
 
     def tag_entry_to_delete(self, btn_obj):
         self.ids.history_panel_id.remove_widget(btn_obj)
@@ -385,7 +378,8 @@ class HistoryScreen(Screen):
 
     def revoke_entry(self):
         last_entry = self.entries_list_to_delete.pop(-1)  # get the last
-        if len(self.entries_list_to_delete) == 0:  # no entries left to revoke
+        # Disable 'revoke' button if no entries left to revoke
+        if len(self.entries_list_to_delete) == 0:
             self.ids.revoke_btn_id.disabled = True
         self.add_entry(last_entry[0], last_entry[1], 0)
 
@@ -395,13 +389,13 @@ class MainApp(App):
         super(MainApp, self).__init__(**kwargs)
 
     def build(self):
-        # TODO refactor backgroung - handle list type for config.get()
-        backgroung_dict = {
+        # TODO refactor background - handle list type for config.get()
+        background_dict = {
             'Orange': [0.8, 0.4, 0.0, 1],
             "White": [1.0, 1.0, 1.0, 1],
             "Black": [0, 0, 0, 1],
         }
-        Window.clearcolor = backgroung_dict[config.get_option_value('background_colour')]
+        Window.clearcolor = background_dict[config.get_option_value('background_colour')]
         Window.softinput_mode = 'below_target'  # TextInput keyboard position https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
         # TODO move ALL paths to system settings
         self.icon = 'images/icon.png'
@@ -419,8 +413,7 @@ class MainApp(App):
             'app_version': '0.0.20',
             'app_title': 'TODOit',
             'db_path': "..//TODO.db",
-        },
-                               )
+        },)
 
     @staticmethod
     def open_error_popup(text):
@@ -429,6 +422,6 @@ class MainApp(App):
 
 
 if __name__ == '__main__':
-    db.create_db()  # create database at first start
+    db.create_db()  # create database at the first start
     db.run_migrations()  # update db to the actual state
     MainApp().run()

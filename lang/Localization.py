@@ -15,8 +15,8 @@ def reload_lang():
         system_default_lang = locale.getdefaultlocale()[0][:2]
         if system_default_lang in ('EN', 'en'):
             config.set_option_value('lang', 'en')
-        elif system_default_lang in ('RU', 'ru'):
-            config.set_option_value('lang', 'ru')
+        elif system_default_lang in ('UA', 'ua'):
+            config.set_option_value('lang', 'ua')
         else:
             config.set_option_value('lang', 'en')
     finally:

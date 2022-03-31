@@ -1,10 +1,13 @@
-<EntryNotesScreen>:
+<EntryInfoScreen>:
     name: 'entry_notes_screen'
     on_pre_enter:
         root.init_entry_notes_screen()
     # on_pre_leave:
+
     BoxLayout:
         orientation: 'vertical'
+        BoxLayout:
+            orientation: 'vertical'
         ScrollView:
             size_hint: 1, 0.9
             id: entries_sw_id

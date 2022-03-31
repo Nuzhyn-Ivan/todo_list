@@ -1,5 +1,3 @@
-from kivy.clock import Clock
-from kivy.factory import Factory
 from kivy.properties import ListProperty, StringProperty, NumericProperty
 from kivy.uix.button import Button
 from kivy.uix.dropdown import DropDown
@@ -8,30 +6,9 @@ from kivy.uix.textinput import TextInput
 
 import main
 import utils.DBLayer as db
-import lang.Localization as lang
 
 
-# class ButtonCustom(Button):
-#     #on_long_press=self.delete_list,
-#     #long_press_time=1,
-#     __events__ = ('on_long_press',)
-#     long_press_time = Factory.NumericProperty(1)
-#
-#     def on_state(self, instance, value):
-#         if value == 'down':
-#             lpt = self.long_press_time
-#             self._clockev = Clock.schedule_once(self._do_long_press, lpt)
-#         else:
-#             self._clockev.cancel()
-#
-#     def _do_long_press(self, dt):
-#         self.dispatch('on_long_press')
-#
-#     def on_long_press(self, *largs):
-#         pass
-
-class Chooser(TextInput, ):
-
+class Chooser(TextInput):
     """
     TextInput with DropDown for 'suggestions' feature
     https://stackoverflow.com/questions/59779143/is-there-a-way-to-have-a-textinput-box-that-searches-automatically-searches-a-li
@@ -40,28 +17,26 @@ class Chooser(TextInput, ):
     suggestions = ListProperty([])
 
     def __init__(self, **kwargs):
-        self.suggestions = kwargs.pop('suggestions', [])  # list of suggestions
         super(Chooser, self).__init__(**kwargs)
+        self.suggestions = kwargs.pop('suggestions', [])  # list of suggestions
         self.text_validate_unfocus = False
         self.multiline = False
         self.halign = 'left'
-        # self.bind(choicesfile=self.load_choices)
         self.bind(text=self.on_text)
-        # self.load_choices()
         self.dropdown = None
+        self.suggestion_text = ' '
 
     def on_touch_down(self, touch):
         super(Chooser, self).on_touch_down(touch)
 
-    def open_dropdown(self, *args):
-        if self.dropdown:
-            self.dropdown.open(self)
+    def load_choices(self, entry_name_part, chooser):
+        entries_screen_instance = main.MainApp.get_running_app().root.get_screen('entries_screen')
 
-    def load_choices(self, entry_name_part):
         self.suggestions.clear()
-        for i in db.read_entries_by_name_part(int(main.EntriesScreen.current_list_id), entry_name_part):
+        for i in db.read_entries_by_name_part(int(entries_screen_instance.current_list_id), entry_name_part):
             self.suggestions.append(i)
-        self.suggestions.reverse()  # the first entry hast to be under TextInput - its the last position in suggestions
+        # the first entry has to be under TextInput - this is the last position in suggestions
+        self.suggestions.reverse()
 
     def on_text(self, chooser, text):
         if self.dropdown:
@@ -69,7 +44,7 @@ class Chooser(TextInput, ):
             self.dropdown = None
         if text == '':
             return
-        self.load_choices(text)
+        self.load_choices(text, chooser)
 
         if len(self.suggestions) > 0:
             if len(self.text) < len(self.suggestions[0]):
@@ -84,10 +59,9 @@ class Chooser(TextInput, ):
 
     def do_choose(self, btn_obj):
         self.text = ''
-        self.parent.parent.parent.do_choose_text_input(btn_obj.text)
+        self.parent.parent.parent.create_entry(btn_obj.text)
         self.focused = True
         # TODO press enter here
-
         if self.dropdown:
             self.dropdown.dismiss()
             self.dropdown = None
@@ -107,7 +81,8 @@ class ListEditPopup(Popup):
             db.rename_list(self.list_name, text)
 
     def delete_list(self):
-        list_id = db.get_list_id(self.ids.list_name_id.text.replace(lang.get('tap_to_edit'), ''))
+        list_name = self.ids.list_name_id.text
+        list_id = db.get_list_id(list_name)
         db.delete_list_by_id(list_id)
         self.dismiss()
 
@@ -122,4 +97,3 @@ class EntriesNotesPopup(Popup):
 
     def save_note(self):
         self.dismiss()
-

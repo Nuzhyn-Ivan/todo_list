@@ -118,8 +118,11 @@ class ListsScreen(Screen):
             )
 
     def open_list(self, btn_obj):
-        EntriesScreen.current_list_id = btn_obj.id
-        EntriesScreen.current_list_name = db.get_list_name(btn_obj.id)
+        entries_screen_instance = self.manager.get_screen('entries_screen')
+        list_id_to_open = btn_obj.id
+        list_name_to_open = db.get_list_name(btn_obj.id)
+        entries_screen_instance.current_list_id = list_id_to_open
+        entries_screen_instance.current_list_name = list_name_to_open
         self.manager.transition = CardTransition(direction='left',
                                                  duration=float(config.get_option_value('screen_transition_duration'))
                                                  )
@@ -166,20 +169,13 @@ class ListsScreen(Screen):
 
 
 class EntriesScreen(Screen):
-    current_list_id = None
-    current_list_name = None
-
-    def __init__(self, **kw):
-        super().__init__(**kw)
+    def __init__(self, **kwargs):
+        super(EntriesScreen, self).__init__(**kwargs)
         self.ready_to_revoke_entries = []
+        self.current_list_id = None
+        self.current_list_name = None
 
     def add_entry(self, entry_id, entry_name, index):
-        # container = BoxLayout(
-        #     # id=F"{entry_id}c",
-        #     orientation='horizontal',
-        #     size_hint=(1, None),
-        #     height=config.get('entries_height'),
-        # )
         entry_note = Button(
             text=str(lang.get('open_entry_note')),
             size_hint=(0.2, None),
@@ -187,7 +183,7 @@ class EntriesScreen(Screen):
             font_size=config.get_option_value('entries_font_size'),
             on_release=self.open_notes_screen,
         )
-        entry_note.id = F"{entry_id}"
+        entry_note.id = entry_id
 
         entry = Button(
             text=str(entry_name),
@@ -204,6 +200,7 @@ class EntriesScreen(Screen):
         self.ids.entries_panel_id.add_widget(entry, index)
 
     def refresh_entries(self):
+        # TODO remove and refactor label sizing
         entries_list = db.read_entries(int(self.current_list_id))
         # entries_list_height = self.get_parent_window().height - self.ids.entries_upper_panel_id.height - self.ids.input_id.height
         # entry_height = int(config.get('entries_height')[:-2]) + int(config.get('padding'))
@@ -236,19 +233,13 @@ class EntriesScreen(Screen):
         self.ready_to_revoke_entries.append(btn_obj.text)
         self.ids.entries_panel_id.remove_widget(btn_obj)
         self.ids.revoke_btn_id.disabled = False
-        self.refresh_entries()  # TODO remove and refactor label sizing in refresh_entries
-
-    # def focus_entries_panel_id(self):
-    #     self.ids.entries_panel_id.focus = True
+        self.refresh_entries()
 
     def create_entry(self, text):
         text = text.strip()
         if text:
             db.create_entry(int(self.current_list_id), text)
             self.refresh_entries()
-
-    def do_choose_text_input(self, text):
-        self.create_entry(text)
 
     def revoke_entry(self):
         self.create_entry(self.ready_to_revoke_entries.pop())
@@ -261,10 +252,15 @@ class EntriesScreen(Screen):
             self.manager.change_screen('tags_screen', "right")
         elif pressed_button == 'history_btn':
             self.manager.change_screen('history_screen', "right")
+        else:
+            # TODO: add exception handling
+            pass
 
     def open_notes_screen(self, btn_obj):
-        EntryNotesScreen.entry_id = btn_obj.id
-        self.manager.change_screen('entries_notes_screen', "right")
+        entry_notes_screen_instance = self.manager.get_screen('entry_notes_screen')
+        entry_id = btn_obj.id
+        entry_notes_screen_instance.entry_id = entry_id
+        self.manager.change_screen('entry_notes_screen', "right")
 
 
 class SettingsScreen(Screen):
@@ -308,12 +304,10 @@ class TagsScreen(Screen):
 class EntryNotesScreen(Screen):
     def __init__(self, **kwargs):
         super(EntryNotesScreen, self).__init__(**kwargs)
+        self.note_text = ''
+        self.entry_id = ''
 
-    entry_id = ''
-    entry_name = ''
-    note_text = ''
-
-    def save_note(self, ):
+    def save_note(self):
         self.manager.change_screen('entries_screen', "left")
         db.set_entry_note(self.entry_id, self.ids.note_id.text)
         self.ids.note_id.text = ''
@@ -322,7 +316,7 @@ class EntryNotesScreen(Screen):
         self.manager.change_screen('entries_screen', "left")
         self.ids.note_id.text = ''
 
-    def init_entries_notes_screen(self):
+    def init_entry_notes_screen(self):
         self.note_text = db.get_entry_note(self.entry_id)
         self.ids.note_id.text = self.note_text
 

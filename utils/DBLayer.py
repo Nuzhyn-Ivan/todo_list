@@ -78,9 +78,8 @@ def run_migrations():
         sqlite_connection.close()
         config.set_option_value('db_version', current_db_version)
 
+
 # Lists CRUD
-
-
 def create_list(list_name: str, order_id: int) -> bool:
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
@@ -167,7 +166,6 @@ def delete_list_by_id(list_id: int):
 
 
 # Entries CRUD
-
 def get_entry_name(entry_id: int or str) -> str:
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()

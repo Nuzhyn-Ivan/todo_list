@@ -187,7 +187,7 @@ class EntriesScreen(Screen):
             font_size=config.get_option_value('entries_font_size'),
             on_release=self.open_notes_screen,
         )
-        entry_note.id = F"{entry_id}e"
+        entry_note.id = F"{entry_id}"
 
         entry = Button(
             text=str(entry_name),
@@ -263,7 +263,7 @@ class EntriesScreen(Screen):
             self.manager.change_screen('history_screen', "right")
 
     def open_notes_screen(self, btn_obj):
-        EntriesNotesScreen.entry_id = btn_obj.id
+        EntryNotesScreen.entry_id = btn_obj.id
         self.manager.change_screen('entries_notes_screen', "right")
 
 
@@ -305,14 +305,17 @@ class TagsScreen(Screen):
     pass
 
 
-class EntriesNotesScreen(Screen):
+class EntryNotesScreen(Screen):
+    def __init__(self, **kwargs):
+        super(EntryNotesScreen, self).__init__(**kwargs)
+
     entry_id = ''
     entry_name = ''
     note_text = ''
 
     def save_note(self, ):
         self.manager.change_screen('entries_screen', "left")
-        db.set_entry_note(self.entry_id[:-1], self.ids.note_id.text)
+        db.set_entry_note(self.entry_id, self.ids.note_id.text)
         self.ids.note_id.text = ''
 
     def back(self):
@@ -320,7 +323,7 @@ class EntriesNotesScreen(Screen):
         self.ids.note_id.text = ''
 
     def init_entries_notes_screen(self):
-        self.note_text = db.get_entry_note(self.entry_id[:-1])
+        self.note_text = db.get_entry_note(self.entry_id)
         self.ids.note_id.text = self.note_text
 
 

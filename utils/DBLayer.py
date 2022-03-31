@@ -6,7 +6,7 @@ import utils.ConfigParser as config
 db_path = config.get_option_value('db_path')
 
 migrations_list = {
- 1: '''ALTER TABLE `Entries` ADD COLUMN note TEXT;''',
+    1: '''ALTER TABLE `Entries` ADD COLUMN note TEXT;''',
 }
 
 

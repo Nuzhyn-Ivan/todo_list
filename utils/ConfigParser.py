@@ -1,6 +1,7 @@
-from kivy.config import ConfigParser
 import os
 import shutil
+
+from kivy.config import ConfigParser
 
 __configfile = ConfigParser(interpolation=None)
 __configfile.read('main.ini')
@@ -39,4 +40,3 @@ def load_config():
         __configfile.read('main.ini')  # refresh Kivy config
         __configfile.write()  # save config to main.ini file # todo - is this step needed?
         shutil.copyfile('main.ini', '../TODO_config.ini')
-

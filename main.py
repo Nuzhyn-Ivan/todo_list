@@ -3,9 +3,7 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.properties import DictProperty
 from kivy.uix.anchorlayout import AnchorLayout
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager, CardTransition, Screen
 
 import CustomWidgets
@@ -32,7 +30,8 @@ class ScreenManagement(ScreenManager):
                 return True  # do not exit the app
 
     def change_screen(self, screen_name, direction):
-        self.transition = CardTransition(direction=direction, duration=float(config.get_option_value('screen_transition_duration')))
+        self.transition = CardTransition(direction=direction,
+                                         duration=float(config.get_option_value('screen_transition_duration')))
         self.current = screen_name
 
     def _update_screens(self, new_screens):

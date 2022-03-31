@@ -1,6 +1,7 @@
-import utils.ConfigParser as config
 import codecs
 import locale
+
+import utils.ConfigParser as config
 
 lang_dict = {}
 
@@ -36,6 +37,5 @@ def get(string):
 
 def get_key_by_value(value):
     for key, val in lang_dict.items():
-        # if val.replace('\r', '') == value:
         if val.replace('\r', '') == value.replace('\r', ''):
             return key

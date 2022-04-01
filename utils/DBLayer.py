@@ -26,7 +26,7 @@ def recreate_database():
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL,
     order_id INTEGER,
-    created_date datetime DEFAULT (datetime('now','localtime'))); 
+    created_date datetime DEFAULT (datetime('now','localtime')));
     '''
     sqlite_create_entries = '''
     CREATE TABLE Entries (
@@ -38,8 +38,27 @@ def recreate_database():
     due_date datetime,
     completed_date datetime,
     frequency INTEGER NOT NULL,
-    note TEXT);
+    note TEXT,
+    FOREIGN KEY(list_id) REFERENCES Lists(id));
     '''
+
+    sqlite_create_entries_source = '''
+    CREATE TABLE EntriesSource (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL);
+    '''
+
+    sqlite_create_entries_history = '''
+    CREATE TABLE EntriesHistory (
+    entry_id INTEGER PRIMARY KEY,
+    source_id INTEGER PRIMARY KEY,
+    price INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+    special_price INTEGER NOT NULL,
+    FOREIGN KEY(entry_id) REFERENCES Entries(id),
+    FOREIGN KEY(source_id) REFERENCES EntriesSource(id));
+    '''
+
     sqlite_create_entry_name_index = 'CREATE UNIQUE INDEX entry_name ON Entries(name);'
 
     sqlite_insert_default_lists = '''

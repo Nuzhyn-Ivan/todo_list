@@ -13,23 +13,40 @@ import utils.DBLayer as db
 
 
 class ScreenManagement(ScreenManager):
-
     def __init__(self, **kwargs):
         super(ScreenManagement, self).__init__(**kwargs)
         Window.bind(on_keyboard=self.on_key)
+        self.screen_title = {
+            'lists': "lists_screen",
+            'entries': "entries_screen",
+            'settings': 'settings_screen',
+        }
 
     def on_key(self, window, key, *args):
-        if key == 27:  # the esc key or 'Back' key on phone
-            if self.current_screen.name == "lists_screen":
+        """
+        Method to handle 'key pressed' events
+        Full list of key codes:
+        https://gist.github.com/Enteleform/a2e4daf9c302518bf31fcc2b35da4661
+        """
+        if key == 27:  # the 'ESC' key on win or 'Back' key on phone
+            if self.current_screen.name == self.screen_title['lists']:
                 return False  # exit the app from this page
-            elif self.current_screen.name == "settings_screen":
-                self.change_screen("lists_screen", 'right')
+            elif self.current_screen.name == self.screen_title['settings']:
+                self.change_screen(self.screen_title['lists'], 'right')
                 return True  # do not exit the app
-            elif self.current_screen.name == "entries_screen":
-                self.change_screen("lists_screen", 'right')
+            elif self.current_screen.name == self.screen_title['entries']:
+                self.change_screen(self.screen_title['lists'], 'right')
                 return True  # do not exit the app
 
-    def change_screen(self, screen_name, direction):
+    def change_screen(self, screen_name: str, direction: str):
+        """
+        Method to change app screen.
+        Screen title its 'name' param from kv screen file. Screens list can be found in self.screen_title.
+
+        :param screen_name: title of screen to open.
+        :param direction: Direction of screen change(left, right, up, down)
+        :return:
+        """
         self.transition = CardTransition(direction=direction,
                                          duration=float(config.get_option_value('screen_transition_duration')))
         self.current = screen_name
@@ -49,10 +66,9 @@ class ScreenManagement(ScreenManager):
         original_screen_count = current_screen_count
 
         # Note, our lazy loading scheme has the actual dashboard
-        # screens as part of the outer screen containers
-        # screen containers - placeholders.
+        # screens as part of the outer screen containers - placeholders.
 
-        # clear all of the dashboard screens from the outer container
+        # clear all the dashboard screens from the outer container
         for screen in loaded_screens.values():
             parent = screen.parent
             if parent is not None:

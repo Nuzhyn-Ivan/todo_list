@@ -105,9 +105,16 @@ class ListsScreen(Screen):
     def __init__(self, **kwargs):
         super(ListsScreen, self).__init__(**kwargs)
         self.edit_mode = False
-        Clock.schedule_once(self.refresh_lists, 0.5)  # init Lists screen on open app
+        Clock.schedule_once(self.refresh_lists, 0.5)  # Add lists to Lists screen on app start
 
-    def add_list(self, list_id, list_name, index):
+    def add_list(self, list_id: int, list_name: str, index: int):
+        """
+        Method to add List on Lists screen.
+        :param list_id: List ID
+        :param list_name: List name
+        :param index: Index of exact list on Lists screen.
+        :return:
+        """
         list_btn = Button(
             font_size=config.get_option_value('lists_font_size'),
             size_hint=(1, None),
@@ -122,41 +129,61 @@ class ListsScreen(Screen):
             list_btn.text = F"{list_name} ({str(db.read_entries_count(list_id))})"
         self.ids.lists_panel_id.add_widget(list_btn, index)
 
-    def refresh_lists(self, *l):
+    def refresh_lists(self, *delta_time: float):
+        """
+        Method to remove all lists from Lists screen and add them again from database.
+        :param delta_time: Time in sec for Clock.schedule_once(). See ListsScreen __init__
+        :return:
+        """
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
-        for i in lists:
+        for list in lists:
             self.add_list(
-                i[0],  # list id
-                i[1],  # list name
+                list[0],  # list id
+                list[1],  # list name
                 0,  # index
             )
 
     def open_list(self, btn_obj):
+        """
+        Method to change screen to 'Entries', and add entries of exact list
+        :param btn_obj: Object of pressed list button from Lists screen. Contain 'id' and 'name' of list
+        :return:
+        """
         entries_screen_instance = self.manager.get_screen('entries_screen')
         list_id_to_open = btn_obj.id
         list_name_to_open = db.get_list_name(btn_obj.id)
         entries_screen_instance.current_list_id = list_id_to_open
         entries_screen_instance.current_list_name = list_name_to_open
-        self.manager.transition = CardTransition(direction='left',
-                                                 duration=float(config.get_option_value('screen_transition_duration'))
-                                                 )
+        self.manager.transition = CardTransition(
+            direction='left',
+            duration=float(config.get_option_value('screen_transition_duration'))
+            )
         self.manager.current = "entries_screen"
 
-    def create_list(self, text):
-        order_id_of_list = 1  # TODO - fix lists order display
-        text = text.strip()
-        if text:
-            result = db.create_list(text, order_id_of_list)
-            if not result:
-                MainApp.open_error_popup(lang.get('db_error'))
-            else:
+    def create_list(self, list_name: str):
+        """
+        Method to add list to database and Lists screen
+        :param list_name: Name of list to create
+        :return:
+        """
+        # TODO - implement lists order display
+        order_id_of_list = 1
+        list_name = list_name.strip()
+        if len(list_name) == 0:
+            # TODO - move to lang
+            MainApp.open_error_popup('List name cant be empty')
+        else:
+            result, error = db.create_list(list_name, order_id_of_list)
+            if result:
                 last_list = db.read_last_list()[0]
                 self.add_list(
                     last_list[0],  # list id
                     last_list[1],  # list name
                     0,  # index
                 )
+            elif error.args[0]:  # TODO - handle all errors
+                MainApp.open_error_popup(error.args[0])
 
     def delete_list(self, btn_obj):
         db.delete_list_by_id(btn_obj.id)

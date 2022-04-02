@@ -1,5 +1,7 @@
 import os.path
 import sqlite3
+from sqlite3 import Error
+from typing import Union, Tuple
 
 import utils.ConfigParser as config
 
@@ -99,19 +101,19 @@ def run_migrations():
 
 
 # Lists CRUD
-def create_list(list_name: str, order_id: int) -> bool:
+def create_list(list_name: str, order_id: int) -> tuple[bool, Error or None]:
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     try:
         query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, ? )"
         cursor.execute(query, (list_name, order_id))
-    except sqlite3.Error as e:
-        return False
+        return True, None
+    except sqlite3.Error as error:
+        return False, error
     finally:
         cursor.close()
         sqlite_connection.commit()
         sqlite_connection.close()
-    return True
 
 
 def read_lists() -> list:

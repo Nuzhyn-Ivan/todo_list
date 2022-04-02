@@ -48,15 +48,16 @@
         ScrollView:
             id: entries_sw_id
             bar_width: config.get_option_value('scrollview_size')
-            GridLayout:
+            MDGridLayout:
                 id: entries_panel_id
-                size_hint: 1, None
+                #adaptive_size: True
+                size_hint_y: None
+                height: 50
+                #size_hint: 1, None
                 cols: 2
-#                orientation: 'vertical'
                 spacing: int(config.get_option_value('spacing'))
                 padding: int(config.get_option_value('padding'))
-                height: self.minimum_height
-                size_hint_y: None
+                #height: self.minimum_height
 
         # Bottom Panel
         BoxLayout:
@@ -64,7 +65,7 @@
             height: 50
             size_hint: 1, 0.07
             spacing: 2
-            Chooser:
+            TextInputWithDropDown:
                 id: input_id
                 halign: "center"
                 is_focusable: True

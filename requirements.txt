@@ -1,2 +1,4 @@
 Kivy==1.11.1
 # https://kivy.org/doc/stable/installation/installation-windows.html
+KivyMD==0.104.2
+# https://kivymd.readthedocs.io/en/latest/getting-started/

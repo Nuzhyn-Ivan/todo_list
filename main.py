@@ -182,16 +182,18 @@ class EntriesScreen(Screen):
             font_size=config.get_option_value('entries_font_size'),
             on_release=self.open_notes_screen,
         )
-        entry_note.id = entry_id
+        entry_note.id = str(entry_id)
 
-        entry = Button(
+        entry = CustomWidgets.Button(
             text=str(entry_name),
-            size_hint=(1, None),
+            size_hint=(0.6, None),
             height=config.get_option_value('entries_height'),
             font_size=config.get_option_value('entries_font_size'),
             on_release=self.complete_entry,
+            duration_long_touch=0.4,
         )
         entry.id = str(entry_id)
+
         # container.add_widget(entry_note)
         # container.add_widget(entry)
         # self.ids.entries_panel_id.add_widget(container, index)
@@ -228,11 +230,17 @@ class EntriesScreen(Screen):
         self.ids.tools_btn_id.text = lang.get('tools_btn')
 
     def complete_entry(self, btn_obj):
+        Clock.unschedule(self.complete_entry_with_details)
         db.complete_entry(btn_obj.id)
         self.ready_to_revoke_entries.append(btn_obj.text)
         self.ids.entries_panel_id.remove_widget(btn_obj)
         self.ids.revoke_btn_id.disabled = False
         self.refresh_entries()
+
+    def complete_entry_with_details(self, btn_obj):
+
+        print("complete_entry_with_details")
+        print(self )
 
     def create_entry(self, text):
         text = text.strip()

@@ -2,9 +2,8 @@
     name: 'entries_screen'
     orientation: 'vertical'
     on_pre_enter:
-        root.init_entries_screen()
+        root.refresh_entries(True)
 #    on_pre_leave:
-#        root.leave_entries_screen()
 
     # Root
     BoxLayout:
@@ -48,7 +47,7 @@
         ScrollView:
             id: entries_sw_id
             bar_width: config.get_option_value('scrollview_size')
-            MDGridLayout:
+            GridLayout:
                 id: entries_panel_id
                 #adaptive_size: True
                 size_hint_y: None
@@ -65,7 +64,7 @@
             height: 50
             size_hint: 1, 0.07
             spacing: 2
-            TextInputWithDropDown:
+            TextInputWithEntriesDropDown:
                 id: input_id
                 halign: "center"
                 is_focusable: True

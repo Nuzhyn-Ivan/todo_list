@@ -1,0 +1,78 @@
+<EntryDetailsScreen>:
+    name: 'entry_details_screen'
+    orientation: 'vertical'
+    on_pre_enter:
+    on_pre_leave:
+    # Root
+    BoxLayout:
+        orientation: 'vertical'
+
+        # Entry details panel
+        ScrollView:
+            bar_width: config.get_option_value('scrollview_size')
+            GridLayout:
+                id: entry_details_panel_id
+                size_hint_y: None
+                height: 50
+                cols: 3
+                spacing: int(config.get_option_value('spacing'))
+                padding: int(config.get_option_value('padding'))
+
+        # Separator
+        BoxLayout:
+            size_hint_y: None
+            size_hint: 1, 0.01
+
+        # Input details Panel
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            size_hint: 1, 0.2
+            BoxLayout:
+                size_hint_y: None
+                size_hint: 1, 0.5
+                TextInputWithSourcesDropDown:
+                    id: source_id
+                    halign: "center"
+                    is_focusable: True
+                    hint_text: lang.get('entry_source_textinput_hint')
+                    font_size: 0.5 * self.height
+                    size_hint: 1, 1
+                    write_tab: False
+                    multiline: False
+                    on_text_validate:
+                        root.create_entry(self.text)
+                        self.text = ''
+            GridLayout:
+                size_hint_y: None
+                size_hint: 1, 0.5
+                cols: 4
+
+                TextInput:
+                    id: price_id
+                    size_hint: 0.3, 1
+                TextInput:
+                    id: qty_id
+                    size_hint: 0.2, 1
+                Label:
+                    id: price_label_id
+                    size_hint: 0.2, 1
+                Button:
+                    id: add_entry_details_id
+                    size_hint: 0.3, 1
+                    text:lang.get('save_btn')
+                    on_release: root.save()
+
+        # Separator
+        BoxLayout:
+            size_hint_y: None
+            size_hint: 1, 0.01
+
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            size_hint: 1, 0.1
+            Button:
+                id: add_entry_details_id
+                text: lang.get('complete_without_details')
+                on_release: root.manager.change_screen("entries_screen", "down")

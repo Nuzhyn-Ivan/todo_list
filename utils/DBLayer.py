@@ -23,6 +23,9 @@ def recreate_database():
     sqlite_connection = sqlite3.connect(db_path)
     sqlite_drop_lists = "DROP TABLE IF EXISTS Lists"
     sqlite_drop_entries = "DROP TABLE IF EXISTS Entries"
+    sqlite_drop_entries_source = "DROP TABLE IF EXISTS EntriesSource"
+    sqlite_drop_entries_history = "DROP TABLE IF EXISTS EntriesHistory"
+
     sqlite_create_lists = '''
     CREATE TABLE Lists (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -52,11 +55,13 @@ def recreate_database():
 
     sqlite_create_entries_history = '''
     CREATE TABLE EntriesHistory (
-    entry_id INTEGER PRIMARY KEY,
-    source_id INTEGER PRIMARY KEY,
+    entry_id INTEGER,
+    source_id INTEGER,
     price INTEGER NOT NULL,
     quantity INTEGER NOT NULL,
     special_price INTEGER NOT NULL,
+    PRIMARY KEY (entry_id, source_id, price),
+    UNIQUE(entry_id, source_id, price),
     FOREIGN KEY(entry_id) REFERENCES Entries(id),
     FOREIGN KEY(source_id) REFERENCES EntriesSource(id));
     '''
@@ -71,11 +76,20 @@ def recreate_database():
     '''
 
     cursor = sqlite_connection.cursor()
+    # Drop tables
     cursor.execute(sqlite_drop_lists)
     cursor.execute(sqlite_drop_entries)
+    cursor.execute(sqlite_drop_entries_history)
+    cursor.execute(sqlite_drop_entries_source)
+
+    # Create tables
     cursor.execute(sqlite_create_lists)
     cursor.execute(sqlite_create_entries)
     cursor.execute(sqlite_create_entry_name_index)
+    cursor.execute(sqlite_create_entries_history)
+    cursor.execute(sqlite_create_entries_source)
+
+    # Insert default values
     cursor.execute(sqlite_insert_default_lists)
     cursor.execute(sqlite_insert_default_entries)
 
@@ -352,3 +366,89 @@ def delete_entries(list_id: int or str):
     cursor.close()
     sqlite_connection.commit()
     sqlite_connection.close()
+
+
+# Sources CRUD
+
+
+def create_source(source_name):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    if not is_source_exist(source_name):
+        query = """INSERT INTO 'EntriesSource' ( 'name') VALUES (?);"""
+        cursor.execute(query, (source_name,))
+    cursor.close()
+    sqlite_connection.commit()
+    sqlite_connection.close()
+
+
+def read_sources_by_name_part(list_id: int, name_part: str) -> list:
+    count = int(config.get_option_value('max_suggestions_count'))
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = '''SELECT EntriesSource.name FROM `EntriesHistory` INNER JOIN 'EntriesSource' on EntriesHistory.source_id = EntriesSource.id INNER JOIN  'Entries' on Entries.id = EntriesHistory.entry_id WHERE Entries.list_id = ? and EntriesSource.name like ? ORDER BY quantity DESC LIMIT ?;'''
+    cursor.execute(query, (list_id, name_part + '%', count))
+    records = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    return records
+
+
+def is_source_exist(source_name):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """SELECT id FROM `EntriesSource` WHERE name = ?;"""
+    cursor.execute(query, (source_name,))
+    source = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    if len(source) > 0:
+        return True
+    else:
+        return False
+
+
+def get_source_id(source_name):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = '''SELECT id FROM `EntriesSource` WHERE name like ?;'''
+    cursor.execute(query, (source_name + '%',))
+    records = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    return records[0][0]
+
+
+# update
+
+# delete
+
+
+# CRUD EntriesHistory
+
+def create_entries_history(source_id, entry_id, price, quantity):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    if is_entry_history_exists(source_id, entry_id, price):
+        query = """UPDATE `EntriesHistory` SET quantity = quantity + ?, special_price = 0, WHERE entry_id = ? and source_id = ? and price = ? """
+        cursor.execute(query, (quantity, entry_id, source_id, price))
+    else:
+        query = """INSERT INTO 'EntriesHistory' ( 'entry_id', 'source_id', 'price', 'quantity', 'special_price') VALUES (?, ?, ?, ?, 0)"""
+        cursor.execute(query, (entry_id, source_id, price, quantity, ))
+    cursor.close()
+    sqlite_connection.commit()
+    sqlite_connection.close()
+
+
+def is_entry_history_exists(source_id, entry_id, price):
+    sqlite_connection = sqlite3.connect(db_path)
+    cursor = sqlite_connection.cursor()
+    query = """SELECT * FROM `EntriesHistory` WHERE source_id = ? and entry_id = ? and price = ?;"""
+    cursor.execute(query, (source_id, entry_id, price,))
+    source = cursor.fetchall()
+    cursor.close()
+    sqlite_connection.close()
+    if len(source) > 0:
+        return True
+    else:
+        return False

@@ -10,7 +10,7 @@ import main
 import utils.DBLayer as db
 
 
-class TextInputWithDropDown(TextInput):
+class TextInputWithEntriesDropDown(TextInput):
     """
     TextInput with DropDown for 'suggestions' feature
     https://stackoverflow.com/questions/59779143/is-there-a-way-to-have-a-textinput-box-that-searches-automatically-searches-a-li
@@ -19,7 +19,7 @@ class TextInputWithDropDown(TextInput):
     suggestions = ListProperty([])
 
     def __init__(self, **kwargs):
-        super(TextInputWithDropDown, self).__init__(**kwargs)
+        super(TextInputWithEntriesDropDown, self).__init__(**kwargs)
         self.suggestions = kwargs.pop('suggestions', [])  # list of suggestions
         self.text_validate_unfocus = False
         self.multiline = False
@@ -29,7 +29,7 @@ class TextInputWithDropDown(TextInput):
         self.suggestion_text = ' '
 
     def on_touch_down(self, touch):
-        super(TextInputWithDropDown, self).on_touch_down(touch)
+        super(TextInputWithEntriesDropDown, self).on_touch_down(touch)
 
     def load_choices(self, entry_name_part, chooser):
         entries_screen_instance = main.MainApp.get_running_app().root.get_screen('entries_screen')
@@ -60,7 +60,70 @@ class TextInputWithDropDown(TextInput):
 
     def do_choose(self, btn_obj):
         self.text = ''
+        # TODO replace with instance method
         self.parent.parent.parent.create_entry(btn_obj.text)
+        self.focused = True
+        # TODO press enter here
+        if self.dropdown:
+            self.dropdown.dismiss()
+            self.dropdown = None
+
+
+class TextInputWithSourcesDropDown(TextInput):
+    """
+    TextInput with DropDown for 'suggestions' feature
+    https://stackoverflow.com/questions/59779143/is-there-a-way-to-have-a-textinput-box-that-searches-automatically-searches-a-li
+    """
+
+    suggestions = ListProperty([])
+
+    def __init__(self, **kwargs):
+        super(TextInputWithSourcesDropDown, self).__init__(**kwargs)
+        self.suggestions = kwargs.pop('suggestions', [])  # list of suggestions
+        self.text_validate_unfocus = False
+        self.multiline = False
+        self.halign = 'left'
+        self.bind(text=self.on_text)
+        self.dropdown = None
+        self.suggestion_text = ' '
+
+    def on_touch_down(self, touch):
+        super(TextInputWithSourcesDropDown, self).on_touch_down(touch)
+        self.text = ''
+
+    def load_choices(self, entry_name_part, chooser):
+        entry_details_screen_instance = main.MainApp.get_running_app().root.get_screen('entries_screen')
+        self.suggestions.clear()
+        suggestions_list = db.read_sources_by_name_part(int(entry_details_screen_instance.current_list_id), entry_name_part)
+        for suggestion in suggestions_list:
+            self.suggestions.append(suggestion)
+        # the first entry has to be next to TextInput - this is the last position in suggestions
+        self.suggestions.reverse()
+
+    def on_text(self, chooser, text):
+        if self.dropdown:
+            self.dropdown.dismiss()
+            self.dropdown = None
+        if text == '':
+            return
+        self.load_choices(text, chooser)
+
+        if len(self.suggestions) > 0:
+            if len(self.text) < len(self.suggestions[0]):
+                self.suggestion_text = self.suggestions[0][len(self.text):]
+            else:
+                self.suggestion_text = ' '  # setting suggestion_text to '' screws everything
+            self.dropdown = DropDown()
+            for val in self.suggestions:
+                self.dropdown.add_widget(
+                    Button(text=str(val[0]), size_hint_y=None, height="60dp", on_release=self.do_choose))
+            self.dropdown.open(self)
+
+    def do_choose(self, btn_obj):
+        self.text = ''
+        # TODO replace with instance method
+        entry_details_screen_instance = main.MainApp.get_running_app().root.get_screen('entry_details_screen')
+        entry_details_screen_instance.ids.source_id.text = btn_obj.text
         self.focused = True
         # TODO press enter here
         if self.dropdown:
@@ -76,7 +139,8 @@ class Button(Button, TouchBehavior):
 
     def on_long_touch(self, *args):
         entries_screen_instance = main.MainApp.get_running_app().root.get_screen('entries_screen')
-        entries_screen_instance.complete_entry_with_details(self,)
+        entries_screen_instance.complete_entry_with_details(self)
+        entry_details_screen_instance = main.MainApp.get_running_app().root.get_screen('entries_screen')
 
     def on_double_tap(self, *args):
         pass

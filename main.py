@@ -420,6 +420,7 @@ class EntryDetailsScreen(Screen):
         self.ids.source_id.text = ""
 
     def save(self):
+        # TODO - add validation(empty, int only for qty, float for price )
         source_name = self.ids.source_id.text
         price = self.ids.price_id.text
         quantity = self.ids.qty_id.text

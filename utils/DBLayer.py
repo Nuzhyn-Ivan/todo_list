@@ -370,6 +370,7 @@ def delete_entries(list_id: int or str):
 
 # Sources CRUD
 
+# TODO update documentation, refactor DBLayer
 
 def create_source(source_name):
     sqlite_connection = sqlite3.connect(db_path)

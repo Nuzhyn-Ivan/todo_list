@@ -1,5 +1,5 @@
 <HistoryScreen>:
-    name: 'history_screen'
+    name: root.manager.history_screen
     on_pre_enter:
         root.init_history_screen()
     on_pre_leave:
@@ -19,7 +19,7 @@
                 height: "70dp"
                 font_size: config.get_option_value('font_size')
                 on_release:
-                    root.manager.change_screen("entries_screen", "left")
+                    root.manager.change_screen(root.manager.entries_screen, "left")
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
@@ -36,7 +36,6 @@
                 on_text:
                     root.sorting_type = lang.get_key_by_value(self.text)
                     root.refresh_history()
-
             Button:
                 id: revoke_btn_id
                 text: lang.get('revoke_btn')
@@ -44,7 +43,6 @@
                 font_size: config.get_option_value('font_size')
                 disabled: True
                 on_release: root.revoke_entry()
-
         # History Panel
         ScrollView:
             bar_width: config.get_option_value('scrollview_size')
@@ -56,21 +54,3 @@
                 padding: int(config.get_option_value('padding'))
                 height: self.minimum_height
                 size_hint_y: None
-
-        # Bottom Panel
-#        BoxLayout:
-#            orientation: 'vertical'
-#            height: 50
-#            size_hint: 1, 0.07
-#            spacing: 2
-#            Chooser:
-#                id: input_id
-#                halign: "center"
-#                is_focusable: True
-#                hint_text: lang.get('history_search_hint')
-#                font_size: 0.5 * self.height
-#                write_tab: False
-#                multiline: False
-#                on_text_validate:
-#                    root.search_entry(self.text)
-#                    self.text = ''

@@ -1,5 +1,6 @@
 <TagsScreen>:
-    name: 'tags_screen'
+    name: root.manager.tags_screen
+    # Root
     BoxLayout:
         orientation: 'vertical'
         spacing: 10
@@ -14,4 +15,4 @@
             height: "70dp"
             font_size: config.get_option_value('font_size')
             on_release:
-                root.manager.change_screen("entries_screen", "right")
+                root.manager.change_screen(root.manager.entries_screen, "right")

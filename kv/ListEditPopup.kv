@@ -3,9 +3,9 @@
     on_open: app.root.popupreference=self
     size_hint: 1, 0.4
     auto_dismiss: False
+    # Root
     BoxLayout:
         orientation: 'vertical'
-
         TextInput:
             id: list_name_id
             text: root.list_name
@@ -25,7 +25,6 @@
             size_hint:(1, None)
             on_release:
                 root.delete_list()
-
         Button:
             text: lang.get('close_btn')
             font_size: config.get_option_value('font_size')

@@ -1,5 +1,5 @@
 <SettingsScreen>:
-    name: 'settings_screen'
+    name: root.manager.settings_screen
     on_pre_enter: root.get_current_settings()
     # Root
     BoxLayout:
@@ -22,6 +22,7 @@
                     on_release:
                         root.reset_db()
 
+                # Text size for Entries on Entries Screen
                 Label:
                     size_hint: (1, None)
                     font_size: str(entries_font_size_slider_id.value) + 'dp'
@@ -37,6 +38,7 @@
                     step: 1
                     on_value: root.current_settings['entries_font_size'] =  str(self.value) + 'dp'
 
+                # Text size for lists on Lists Screen
                 Label:
                     size_hint: (1, None)
                     font_size: str(lists_font_size_slider_id.value) + 'dp'
@@ -52,6 +54,7 @@
                     step: 1
                     on_value: root.current_settings['lists_font_size'] =  str(self.value) + 'dp'
 
+                # General font size
                 Label:
                     size_hint: (1, None)
                     font_size: str(general_font_size_slider_id.value) + 'dp'
@@ -67,6 +70,7 @@
                     step: 1
                     on_value: root.current_settings['font_size'] =  str(self.value) + 'dp'
 
+                # Suggestions count for entries
                 Label:
                     size_hint: (1, None)
                     text: lang.get('suggestions_count_for_entries') + ' '  + str(int(max_suggestions_count_slider_id.value))
@@ -129,8 +133,7 @@
                     range: (0,15)
                     step: 1
                     on_value: root.current_settings['scrollview_size'] =  str(int(self.value))
-
-
+                # Background colour
                 Spinner:
                     height: "70dp"
                     size_hint: (1, None)
@@ -145,24 +148,22 @@
                     text: lang.get('language:') + ' ' + root.current_settings['lang']
                     values: lang.get('language:') + ' ' +  'en', lang.get('language:') + ' ' +  'ua',
                     on_text:  root.current_settings['lang']  =  (self.text).rsplit(' ', 1)[1]
-
-        # bottom panel
+        # Bottom panel
         BoxLayout:
             orientation: 'horizontal'
             spacing: 2
             height: 50
             size_hint: 1, 0.1
-
             Button:
                 text: lang.get('back_btn')
                 height: "70dp"
                 font_size: config.get_option_value('font_size')
                 on_release:
-                    root.manager.change_screen("lists_screen", "right")
+                    root.manager.change_screen(root.manager.lists_screen, "right")
             Button:
                 text: lang.get('save_btn')
                 height: "70dp"
                 font_size: config.get_option_value('font_size')
                 on_release:
                     root.apply_settings()
-                    root.manager.change_screen("lists_screen", "right")
+                    root.manager.change_screen(root.manager.lists_screen, "right")

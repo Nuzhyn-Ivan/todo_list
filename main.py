@@ -14,15 +14,16 @@ import utils.DBLayer as db
 
 
 class ScreenManagement(ScreenManager):
+    lists_screen = 'lists_screen'
+    entries_screen = 'entries_screen'
+    entry_details_screen = 'entry_details_screen'
+    entry_notes_screen = 'entry_notes_screen'
+    settings_screen = 'settings_screen'
+    history_screen = 'history_screen'
+
     def __init__(self, **kwargs):
         super(ScreenManagement, self).__init__(**kwargs)
         Window.bind(on_keyboard=self.on_key)
-        self.screen_title = {
-            'lists': "lists_screen",
-            'entries': "entries_screen",
-            'entry_details': "entry_details_screen",
-            'settings': 'settings_screen',
-        }
 
     def on_key(self, window, key, *args):
         """
@@ -31,13 +32,13 @@ class ScreenManagement(ScreenManager):
         https://gist.github.com/Enteleform/a2e4daf9c302518bf31fcc2b35da4661
         """
         if key == 27:  # the 'ESC' key on win or 'Back' key on phone
-            if self.current_screen.name == self.screen_title['lists']:
+            if self.current_screen.name == self.lists_screen:
                 return False  # exit the app from this page
-            elif self.current_screen.name == self.screen_title['settings']:
-                self.change_screen(self.screen_title['lists'], 'right')
+            elif self.current_screen.name == self.settings_screen:
+                self.change_screen(self.lists_screen, 'right')
                 return True  # do not exit the app
-            elif self.current_screen.name == self.screen_title['entries']:
-                self.change_screen(self.screen_title['lists'], 'right')
+            elif self.current_screen.name == self.entries_screen:
+                self.change_screen(self.lists_screen, 'right')
                 return True  # do not exit the app
 
     def change_screen(self, screen_name: str, direction: str):

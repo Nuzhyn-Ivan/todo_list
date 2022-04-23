@@ -1,10 +1,9 @@
 <ListsScreen>:
-    name: 'lists_screen'
+    name: root.manager.lists_screen
     on_pre_enter: root.refresh_lists()
-    # Main
+    # Root
     BoxLayout:
         orientation: 'vertical'
-
         # Upper Panel
         BoxLayout:
             orientation: 'horizontal'
@@ -16,7 +15,7 @@
             Button:
                 text: lang.get('settings_btn')
                 font_size: config.get_option_value('font_size')
-                on_release: root.manager.change_screen("settings_screen", "left")
+                on_release: root.manager.change_screen(root.manager.settings_screen, "left")
                 size_hint: 0.6, 1
             Button:
                 id: lists_edit_btn
@@ -30,8 +29,6 @@
                 font_size: config.get_option_value('font_size')
                 size_hint: 0.2, 1
                 disabled: True
-
-
         ScrollView:
             bar_width: config.get_option_value('scrollview_size')
             # Lists panel
@@ -42,14 +39,12 @@
                 padding: int(config.get_option_value('padding'))
                 size_hint_y: None
                 height: self.minimum_height
-
         # Bottom panel
         BoxLayout:
             orientation: 'horizontal'
             height: 50
             size_hint: 1, 0.07
             spacing: 2
-
             TextInput:
                 id: add_list_input_id
                 halign: "center"
@@ -59,7 +54,6 @@
                 font_size: 0.5 * self.height
                 multiline: False
                 write_tab: False
-
                 on_text_validate:
                     root.create_list(self.text)
                     self.text = ""

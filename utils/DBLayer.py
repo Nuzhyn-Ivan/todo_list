@@ -12,6 +12,7 @@ migrations_list = {
 }
 
 
+# TODO add errors handling with open error popup in app
 def create_db():
     if not os.path.exists(db_path):
         recreate_database()

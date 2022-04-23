@@ -1,14 +1,11 @@
 <EntriesScreen>:
-    name: 'entries_screen'
+    name: root.manager.entries_screen
     orientation: 'vertical'
     on_pre_enter:
         root.refresh_entries(True)
-#    on_pre_leave:
-
     # Root
     BoxLayout:
         orientation: 'vertical'
-
         # Upper panel
         BoxLayout:
             id: entries_upper_panel_id
@@ -21,8 +18,7 @@
                 id: current_list_btn
                 font_size: config.get_option_value('font_size')
                 size_hint: 0.6, 1
-                on_release: root.manager.change_screen("lists_screen", "right")
-
+                on_release: root.manager.change_screen(root.manager.lists_screen, "right")
             Button:
                 id: revoke_btn_id
                 text: lang.get('revoke_btn')
@@ -30,7 +26,6 @@
                 font_size: config.get_option_value('font_size')
                 disabled: True
                 on_release: root.revoke_entry()
-
             Spinner:
                 id: tools_btn_id
                 height: "70dp"
@@ -40,9 +35,6 @@
                 values: 'Tags', 'History'
                 on_text:
                     root.open_tools_screen(self)
-
-                #disabled: True
-
         # Entries Panel
         ScrollView:
             id: entries_sw_id
@@ -57,7 +49,6 @@
                 spacing: int(config.get_option_value('spacing'))
                 padding: int(config.get_option_value('padding'))
                 #height: self.minimum_height
-
         # Bottom Panel
         BoxLayout:
             orientation: 'vertical'

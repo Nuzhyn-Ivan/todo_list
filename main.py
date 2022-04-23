@@ -14,12 +14,16 @@ import utils.DBLayer as db
 
 
 class ScreenManagement(ScreenManager):
+    """
+    Class to handle all screens in app
+    """
     lists_screen = 'lists_screen'
     entries_screen = 'entries_screen'
     entry_details_screen = 'entry_details_screen'
     entry_notes_screen = 'entry_notes_screen'
     settings_screen = 'settings_screen'
     history_screen = 'history_screen'
+    tags_screen = 'tags_screen'
 
     def __init__(self, **kwargs):
         super(ScreenManagement, self).__init__(**kwargs)
@@ -41,16 +45,16 @@ class ScreenManagement(ScreenManager):
                 self.change_screen(self.lists_screen, 'right')
                 return True  # do not exit the app
 
-    def change_screen(self, screen_name: str, direction: str):
+    def change_screen(self, screen_name: str, transition_direction: str):
         """
         Method to change app screen.
         Screen title its 'name' param from kv screen file. Screens list can be found in self.screen_title.
 
         :param screen_name: title of screen to open.
-        :param direction: Direction of screen change(left, right, up, down)
+        :param transition_direction: Direction of screen change(left, right, up, down)
         :return:
         """
-        self.transition = CardTransition(direction=direction,
+        self.transition = CardTransition(direction=transition_direction,
                                          duration=float(config.get_option_value('screen_transition_duration')))
         self.current = screen_name
 
@@ -154,23 +158,18 @@ class ListsScreen(Screen):
         :return:
         """
         # Add list info to Entries screen
-        entries_screen_instance = self.manager.get_screen('entries_screen')
+        entries_screen_instance = self.manager.get_screen(self.manager.entries_screen)
         list_id_to_open = btn_obj.id
         list_name_to_open = db.get_list_name(btn_obj.id)
         entries_screen_instance.current_list_id = list_id_to_open
         entries_screen_instance.current_list_name = list_name_to_open
 
         # Clear source field on entry_details_screen
-        entry_details_screen_instance = self.manager.get_screen('entry_details_screen')
+        entry_details_screen_instance = self.manager.get_screen(self.manager.entry_details_screen)
         entry_details_screen_instance.clear_source()
 
         # Open entries_screen
-        # TODO move transition prop to ScreenManager
-        self.manager.transition = CardTransition(
-            direction='left',
-            duration=float(config.get_option_value('screen_transition_duration'))
-            )
-        self.manager.current = "entries_screen"
+        self.manager.change_screen(self.manager.entries_screen, 'left')
 
     def create_list(self, list_name: str):
         """
@@ -324,7 +323,7 @@ class EntriesScreen(Screen):
         #  Now entry completed even if close app on entry_details_screen without save
         entry_details_screen_instance = self.manager.get_screen('entry_details_screen')
         entry_details_screen_instance.entry_id = btn_obj.id
-        self.manager.change_screen("entry_details_screen", "up")
+        self.manager.change_screen(self.manager.entry_details_screen, "up")
 
     def create_entry(self, text: str):
         """
@@ -356,9 +355,9 @@ class EntriesScreen(Screen):
         """
         pressed_button = lang.get_key_by_value(btn_obj.text)
         if pressed_button == 'tags_btn':
-            self.manager.change_screen('tags_screen', "right")
+            self.manager.change_screen(self.manager.tags_screen, "right")
         elif pressed_button == 'history_btn':
-            self.manager.change_screen('history_screen', "right")
+            self.manager.change_screen(self.manager.history_screen, "right")
         else:
             # TODO: add exception handling
             pass
@@ -372,7 +371,7 @@ class EntriesScreen(Screen):
         entry_notes_screen_instance = self.manager.get_screen('entry_notes_screen')
         entry_id = btn_obj.id
         entry_notes_screen_instance.entry_id = entry_id
-        self.manager.change_screen('entry_notes_screen', "right")
+        self.manager.change_screen(self.manager.entry_notes_screen, "right")
 
 
 class EntryInfoScreen(Screen):
@@ -387,7 +386,7 @@ class EntryInfoScreen(Screen):
         :param:
         :return:
         """
-        self.manager.change_screen('entries_screen', "left")
+        self.manager.change_screen(self.manager.entries_screen, "left")
         db.set_entry_note(self.entry_id, self.ids.note_id.text)
         self.ids.note_id.text = ''
 
@@ -397,7 +396,7 @@ class EntryInfoScreen(Screen):
         :param:
         :return:
         """
-        self.manager.change_screen('entries_screen', "left")
+        self.manager.change_screen(self.manager.entries_screen, "left")
         self.ids.note_id.text = ''
 
     def init_entry_notes_screen(self):
@@ -435,7 +434,7 @@ class EntryDetailsScreen(Screen):
 
         self.ids.qty_id.text = ""
         self.ids.price_id.text = ""
-        self.manager.change_screen("entries_screen", "down")
+        self.manager.change_screen(self.manager.entries_screen, "down")
 
 
 class SettingsScreen(Screen):

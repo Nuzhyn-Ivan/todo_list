@@ -3,7 +3,6 @@ from kivy.uix.button import Button
 from kivy.uix.dropdown import DropDown
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
-
 from kivymd.uix.behaviors import TouchBehavior
 
 import main
@@ -32,11 +31,15 @@ class TextInputWithEntriesDropDown(TextInput):
         super(TextInputWithEntriesDropDown, self).on_touch_down(touch)
 
     def load_choices(self, entry_name_part, chooser):
-        entries_screen_instance = main.MainApp.get_running_app().root.get_screen('entries_screen')
+        screen_manager = main.MainApp.get_running_app().root
+        entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
         self.suggestions.clear()
-        for i in db.read_entries_by_name_part(int(entries_screen_instance.current_list_id), entry_name_part):
-            self.suggestions.append(i)
-        # the first entry has to be under TextInput - this is the last position in suggestions
+        suggestions_list = db.read_entries_by_name_part(int(entries_screen_instance.current_list_id), entry_name_part)
+        # TODO list comprehensions?
+        for suggestion in suggestions_list:
+            self.suggestions.append(suggestion)
+
+        # The first entry has to be under TextInput - this is the last position in suggestions
         self.suggestions.reverse()
 
     def on_text(self, chooser, text):
@@ -53,15 +56,21 @@ class TextInputWithEntriesDropDown(TextInput):
             else:
                 self.suggestion_text = ' '  # setting suggestion_text to '' screws everything
             self.dropdown = DropDown()
-            for val in self.suggestions:
-                self.dropdown.add_widget(
-                    Button(text=str(val[0]), size_hint_y=None, height="60dp", on_release=self.do_choose))
+            for each_suggestion in self.suggestions:
+                button = Button(text=str(each_suggestion[0]),
+                                size_hint_y=None,
+                                height="60dp",
+                                on_release=self.do_choose,
+                                )
+                self.dropdown.add_widget(button)
             self.dropdown.open(self)
 
     def do_choose(self, btn_obj):
         self.text = ''
         # TODO replace with instance method
-        self.parent.parent.parent.create_entry(btn_obj.text)
+        screen_manager = main.MainApp.get_running_app().root
+        entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
+        entries_screen_instance.create_entry(btn_obj.text)
         self.focused = True
         # TODO press enter here
         if self.dropdown:
@@ -92,12 +101,17 @@ class TextInputWithSourcesDropDown(TextInput):
         self.text = ''
 
     def load_choices(self, entry_name_part, chooser):
-        entry_details_screen_instance = main.MainApp.get_running_app().root.get_screen('entries_screen')
+        screen_manager = main.MainApp.get_running_app().root
+        entry_details_screen_instance = screen_manager.get_screen(screen_manager.entry_details_screen)
         self.suggestions.clear()
-        suggestions_list = db.read_sources_by_name_part(int(entry_details_screen_instance.current_list_id), entry_name_part)
+        suggestions_list = db.read_sources_by_name_part(int(entry_details_screen_instance.entry_id),
+                                                        entry_name_part,
+                                                        )
+        # TODO try list comprehensions here
         for suggestion in suggestions_list:
             self.suggestions.append(suggestion)
-        # the first entry has to be next to TextInput - this is the last position in suggestions
+
+        # The first entry has to be next to TextInput - this is the last position in suggestions
         self.suggestions.reverse()
 
     def on_text(self, chooser, text):
@@ -113,16 +127,24 @@ class TextInputWithSourcesDropDown(TextInput):
                 self.suggestion_text = self.suggestions[0][len(self.text):]
             else:
                 self.suggestion_text = ' '  # setting suggestion_text to '' screws everything
+
             self.dropdown = DropDown()
-            for val in self.suggestions:
-                self.dropdown.add_widget(
-                    Button(text=str(val[0]), size_hint_y=None, height="60dp", on_release=self.do_choose))
+            for each_suggestion in self.suggestions:
+                button = Button(text=str(each_suggestion[0]),
+                                size_hint_y=None,
+                                height="60dp",
+                                on_release=self.do_choose,
+                                )
+                self.dropdown.add_widget(button)
             self.dropdown.open(self)
 
     def do_choose(self, btn_obj):
+        """
+        Set text of chosen suggestion as a source InputLine text
+        """
         self.text = ''
-        # TODO replace with instance method
-        entry_details_screen_instance = main.MainApp.get_running_app().root.get_screen('entry_details_screen')
+        screen_manager = main.MainApp.get_running_app().root
+        entry_details_screen_instance = screen_manager.get_screen(screen_manager.entry_details_screen)
         entry_details_screen_instance.ids.source_id.text = btn_obj.text
         self.focused = True
         # TODO press enter here
@@ -138,9 +160,9 @@ class Button(Button, TouchBehavior):
     """
 
     def on_long_touch(self, *args):
-        entries_screen_instance = main.MainApp.get_running_app().root.get_screen('entries_screen')
+        screen_manager = main.MainApp.get_running_app().root
+        entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
         entries_screen_instance.complete_entry_with_details(self)
-        entry_details_screen_instance = main.MainApp.get_running_app().root.get_screen('entries_screen')
 
     def on_double_tap(self, *args):
         pass

@@ -35,7 +35,9 @@ class ScreenManagement(ScreenManager):
         Full list of key codes:
         https://gist.github.com/Enteleform/a2e4daf9c302518bf31fcc2b35da4661
         """
-        if key == 27:  # the 'ESC' key on win or 'Back' key on phone
+        back_key = 27  # the 'ESC' key on win or 'Back' key on phone
+
+        if key == back_key:
             if self.current_screen.name == self.lists_screen:
                 return False  # exit the app from this page
             elif self.current_screen.name == self.settings_screen:
@@ -107,14 +109,18 @@ class ScreenManagement(ScreenManager):
 
         self._initialized = True
 
+    def refresh_screens(self):
+        pass
+        # TODO remove all and add again
+
 
 class ListsScreen(Screen):
     def __init__(self, **kwargs):
         super(ListsScreen, self).__init__(**kwargs)
-        self.edit_mode = False
+        self.is_edit_mode = False
         Clock.schedule_once(self.refresh_lists, 0.5)  # Add lists to Lists screen on app start
 
-    def add_list(self, list_id: int, list_name: str, index: int):
+    def add_list(self, list_id: str, list_name: str, index: int):
         """
         Method to add List on Lists screen.
         :param list_id: List ID
@@ -127,13 +133,16 @@ class ListsScreen(Screen):
             size_hint=(1, None),
             height="70dp",
         )
-        list_btn.id = str(list_id)
-        if self.edit_mode:
+        list_btn.id = list_id
+        list_btn.name = list_name
+        list_btn.entries_count = db.read_entries_count(list_id)
+
+        if self.is_edit_mode:
             list_btn.bind(on_release=self.open_edit_popup)
-            list_btn.text = F"{list_name}{lang.get('tap_to_edit')}"
+            list_btn.text = F"{list_btn.name}{lang.get('tap_to_edit')}"
         else:
             list_btn.bind(on_release=self.open_list)
-            list_btn.text = F"{list_name} ({str(db.read_entries_count(list_id))})"
+            list_btn.text = F"{ list_btn.name} ({list_btn.entries_count})"
         self.ids.lists_panel_id.add_widget(list_btn, index)
 
     def refresh_lists(self, *delta_time: float):
@@ -205,10 +214,10 @@ class ListsScreen(Screen):
         self.ids.lists_panel_id.remove_widget(btn_obj)
 
     def change_edit_mode(self):
-        self.edit_mode = not self.edit_mode
+        self.is_edit_mode = not self.is_edit_mode
         # TODO replace with 'refresh_list' using Lists instance
         refresh_lists_timer = Clock.schedule_interval(self.refresh_lists, 0.5)
-        if not self.edit_mode:
+        if not self.is_edit_mode:
             self.ids.lists_edit_btn.text = lang.get('edit_btn')
             refresh_lists_timer.cancel()
         else:
@@ -268,10 +277,10 @@ class EntriesScreen(Screen):
         self.ids.entries_panel_id.add_widget(entry_note, index)
         self.ids.entries_panel_id.add_widget(entry, index)
 
-    def refresh_entries(self, refresh_all=False):
+    def refresh_entries_screen(self):
         """
         Method to refresh EntriesScreen
-        :param refresh_all: Show do we need to refresh all list-depended data on screen(True) or just entries(False)
+        :param:
         :return:
         """
         # TODO remove and refactor label sizing
@@ -290,15 +299,17 @@ class EntriesScreen(Screen):
         #         size_hint=(None, None),
         #     )
         #     self.ids.entries_panel_id.add_widget(label, 0)
+        # TODO replace range(len()) with enumerate(), compare memory
         for entry in range(len(entries_list)):
             self.add_entry(
                 entries_list[entry][0],  # entry_id
                 entries_list[entry][2],  # entry_name
                 0,  # index
             )
-        if refresh_all:
-            self.ids.current_list_btn.text = F"<--   {self.current_list_name}"
-            self.ids.tools_btn_id.text = lang.get('tools_btn')
+
+        # Add actual list name to 'Back' button
+        self.ids.current_list_btn.text = F"<--   {self.current_list_name}"
+        self.ids.tools_btn_id.text = lang.get('tools_btn')
 
     def complete_entry(self, btn_obj):
         """
@@ -310,7 +321,7 @@ class EntriesScreen(Screen):
         self.ready_to_revoke_entries.append(btn_obj.text)
         self.ids.entries_panel_id.remove_widget(btn_obj)
         self.ids.revoke_btn_id.disabled = False
-        self.refresh_entries()
+        self.refresh_entries_screen()
 
     def complete_entry_with_details(self, btn_obj):
         """
@@ -321,7 +332,7 @@ class EntriesScreen(Screen):
         self.complete_entry(btn_obj)
         # TODO complete_entry have to be in EntryDetailsScreen.save
         #  Now entry completed even if close app on entry_details_screen without save
-        entry_details_screen_instance = self.manager.get_screen('entry_details_screen')
+        entry_details_screen_instance = self.manager.get_screen(self.manager.entry_details_screen)
         entry_details_screen_instance.entry_id = btn_obj.id
         self.manager.change_screen(self.manager.entry_details_screen, "up")
 
@@ -335,7 +346,7 @@ class EntriesScreen(Screen):
         # TODO add error handling same with add_list
         if text:
             db.create_entry(int(self.current_list_id), text)
-            self.refresh_entries()
+            self.refresh_entries_screen()
 
     def revoke_entry(self):
         """
@@ -368,7 +379,7 @@ class EntriesScreen(Screen):
         :param btn_obj: Object of pressed button.
         :return:
         """
-        entry_notes_screen_instance = self.manager.get_screen('entry_notes_screen')
+        entry_notes_screen_instance = self.manager.get_screen(self.manager.entry_notes_screen)
         entry_id = btn_obj.id
         entry_notes_screen_instance.entry_id = entry_id
         self.manager.change_screen(self.manager.entry_notes_screen, "right")
@@ -483,7 +494,7 @@ class SettingsScreen(Screen):
         for key in self.current_settings:
             config.set_option_value(key, self.current_settings[key])
         # TODO lang reload doesnt work
-        MainApp.build(self)
+        self.manager.refresh_screens()
 
 
 class TagsScreen(Screen):
@@ -530,32 +541,30 @@ class HistoryScreen(Screen):
         entry.id = entry_id
         self.ids.history_panel_id.add_widget(entry, index)
 
-    def refresh_history(self):
+    def refresh_history_screen(self):
         """
-        Method to refresh HistoryScreen
+        Method to refresh History Screen
         :param:
         :return:
         """
-        entries_screen_instance = self.manager.get_screen('entries_screen')
+        entries_screen_instance = self.manager.get_screen(self.manager.entries_screen)
+
+        # Remove all
+        self.ids.history_panel_id.clear_widgets()
+
+        # Add actual list name to 'Back' button
+        self.ids.back_btn.text = F"<--   {entries_screen_instance.current_list_name}"
+
+        # Add properly sorted entries
         self.entries_list = db.read_entries_history(int(entries_screen_instance.current_list_id))
         self.apply_entries_sorting(self.sorting_type)
-        self.ids.history_panel_id.clear_widgets()
+        # TODO replace range(len()) with enumerate(), compare memory
         for entry_num in range(len(self.entries_list)):
             self.add_entry(
                 self.entries_list[entry_num][0],  # entry_id
                 self.entries_list[entry_num][2],  # entry_name
                 0,  # index
             )
-
-    def init_history_screen(self):
-        """
-        Method to
-        :param:
-        :return:
-        """
-        entries_screen_instance = self.manager.get_screen('entries_screen')
-        self.refresh_history()
-        self.ids.current_list_btn.text = F"<--   {entries_screen_instance.current_list_name}"
 
     def tag_entry_to_delete(self, btn_obj):
         """
@@ -612,9 +621,10 @@ class MainApp(App):
         # TODO move ALL paths to system settings
         self.icon = 'images/icon.png'
         self.title = F"{config.get_option_value('app_title')}  {config.get_option_value('app_version')}"
+        lang.reload_lang()
         config.load_config()
         db.create_db()
-        lang.reload_lang()
+
         return ScreenManagement()
 
     def build_config(self, app_config: kivy.config.ConfigParser):

@@ -1,7 +1,7 @@
 <HistoryScreen>:
     name: root.manager.history_screen
     on_pre_enter:
-        root.init_history_screen()
+        root.refresh_history_screen()
     on_pre_leave:
         root.apply_delete_entry()
     # Root
@@ -15,7 +15,7 @@
             size_hint: 1, 0.1
             spacing: 2
             Button:
-                id: current_list_btn
+                id: back_btn
                 height: "70dp"
                 font_size: config.get_option_value('font_size')
                 on_release:

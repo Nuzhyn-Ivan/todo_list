@@ -28,9 +28,6 @@ def reload_lang():
             lang_dict[name.strip()] = str(var).rstrip('\n')
 
 
-reload_lang()
-
-
 def get(string):
     return lang_dict[string]
 

@@ -36,7 +36,6 @@
                     write_tab: False
                     multiline: False
                     on_text_validate:
-                        root.create_entry(self.text)
                         self.text = ''
             GridLayout:
                 size_hint_y: None
@@ -67,4 +66,6 @@
             Button:
                 id: add_entry_details_id
                 text: lang.get('complete_without_details')
-                on_release: root.manager.change_screen(root.manager.entries_screen, "down")
+                on_release:
+                    root.manager.change_screen(root.manager.entries_screen, "down")
+                    # TODO clear price_id, qty_id

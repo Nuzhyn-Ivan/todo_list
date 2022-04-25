@@ -639,7 +639,7 @@ class MainApp(App):
             # 'lists_font_size': '15dp',
             'app_version': '0.0.20',
             'app_title': 'TODOit',
-            'db_path': "..//TODO.db",
+            'db_path': "..\\TODO.db",
         },)
 
     @staticmethod

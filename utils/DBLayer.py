@@ -116,7 +116,7 @@ def run_migrations():
 
 
 # Lists CRUD
-def create_list(list_name: str, order_id: int) -> tuple[bool, Error or None]:
+def create_list(list_name: str, order_id: int):
     sqlite_connection = sqlite3.connect(db_path)
     cursor = sqlite_connection.cursor()
     try:

@@ -56,8 +56,8 @@ class TextInputWithEntriesDropDown(TextInput):
             else:
                 self.suggestion_text = ' '  # setting suggestion_text to '' screws everything
             self.dropdown = DropDown()
-            for each_suggestion in self.suggestions:
-                button = Button(text=str(each_suggestion[0]),
+            for suggestion in self.suggestions:
+                button = Button(text=suggestion[0],
                                 size_hint_y=None,
                                 height="60dp",
                                 on_release=self.do_choose,
@@ -67,7 +67,6 @@ class TextInputWithEntriesDropDown(TextInput):
 
     def do_choose(self, btn_obj):
         self.text = ''
-        # TODO replace with instance method
         screen_manager = main.MainApp.get_running_app().root
         entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
         entries_screen_instance.create_entry(btn_obj.text)
@@ -129,8 +128,8 @@ class TextInputWithSourcesDropDown(TextInput):
                 self.suggestion_text = ' '  # setting suggestion_text to '' screws everything
 
             self.dropdown = DropDown()
-            for each_suggestion in self.suggestions:
-                button = Button(text=str(each_suggestion[0]),
+            for suggestion in self.suggestions:
+                button = Button(text=suggestion[0],
                                 size_hint_y=None,
                                 height="60dp",
                                 on_release=self.do_choose,

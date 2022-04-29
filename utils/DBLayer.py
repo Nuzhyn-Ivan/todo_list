@@ -1,31 +1,43 @@
 import os.path
 import sqlite3
-from sqlite3 import Error
-from typing import Union, Tuple
 
 import utils.ConfigParser as config
 
-db_path = config.get_option_value('db_path')
-
+database_path = config.get_option_value('db_path')
 migrations_list = {
     1: '''ALTER TABLE `Entries` ADD COLUMN note TEXT;''',
 }
 
 
-# TODO add errors handling with open error popup in app
-def create_db():
-    if not os.path.exists(db_path):
-        recreate_database()
+def is_database_exist() -> bool:
+    if os.path.exists(database_path):
+        return True
+    else:
+        return False
+
+
+def drop_database():
+    """
+    Drop database
+    """
+    if os.path.exists(database_path):
+        os.remove(database_path)
+
+
+def actualize_database():
+    """
+    Run database migrations if db state not actual. Create db if not exist.
+    """
+    if is_database_exist():
+        run_migrations()
+    else:
+        create_database()
 
 
 # TODO add feature to backup db and load from backup
 # TODO default lists and entries - make it lang related
-def recreate_database():
-    sqlite_connection = sqlite3.connect(db_path)
-    sqlite_drop_lists = "DROP TABLE IF EXISTS Lists"
-    sqlite_drop_entries = "DROP TABLE IF EXISTS Entries"
-    sqlite_drop_entries_source = "DROP TABLE IF EXISTS EntriesSource"
-    sqlite_drop_entries_history = "DROP TABLE IF EXISTS EntriesHistory"
+def create_database():
+    sqlite_connection = sqlite3.connect(database_path)
 
     sqlite_create_lists = '''
     CREATE TABLE Lists (
@@ -76,34 +88,38 @@ def recreate_database():
     INSERT INTO 'Entries' ('list_id', 'name', 'frequency') VALUES (1, 'first', 1 ), (1, 'first2', 1 ), (1, 'first3', 1 ), (1, 'first4', 1 );
     '''
 
-    cursor = sqlite_connection.cursor()
-    # Drop tables
-    cursor.execute(sqlite_drop_lists)
-    cursor.execute(sqlite_drop_entries)
-    cursor.execute(sqlite_drop_entries_history)
-    cursor.execute(sqlite_drop_entries_source)
+    try:
+        cursor = sqlite_connection.cursor()
 
-    # Create tables
-    cursor.execute(sqlite_create_lists)
-    cursor.execute(sqlite_create_entries)
-    cursor.execute(sqlite_create_entry_name_index)
-    cursor.execute(sqlite_create_entries_history)
-    cursor.execute(sqlite_create_entries_source)
+        # Create tables
+        cursor.execute(sqlite_create_lists)
+        cursor.execute(sqlite_create_entries)
+        cursor.execute(sqlite_create_entry_name_index)
+        cursor.execute(sqlite_create_entries_history)
+        cursor.execute(sqlite_create_entries_source)
 
-    # Insert default values
-    cursor.execute(sqlite_insert_default_lists)
-    cursor.execute(sqlite_insert_default_entries)
+        # Insert default values
+        cursor.execute(sqlite_insert_default_lists)
+        cursor.execute(sqlite_insert_default_entries)
 
-    cursor.close()
-    sqlite_connection.commit()
-    sqlite_connection.close()
+        cursor.close()
+        sqlite_connection.commit()
+
+    except sqlite3.Error as er:
+        # todo add error handling - open error popup
+        pass
+
+    finally:
+        sqlite_connection.close()
 
 
 def run_migrations():
+    # todo add docstring
+    # todo add try except
     current_db_version = int(config.get_option_value('db_version'))
     available_db_version = int(config.get_option_value('available_db_version'))
     if available_db_version > current_db_version:  # need to run migrations
-        sqlite_connection = sqlite3.connect(db_path)
+        sqlite_connection = sqlite3.connect(database_path)
         for key, value in migrations_list.items():
             if key > current_db_version:
                 cursor = sqlite_connection.cursor()
@@ -112,12 +128,14 @@ def run_migrations():
                 current_db_version = key
         sqlite_connection.commit()
         sqlite_connection.close()
-        config.set_option_value('db_version', current_db_version)
+        config.set_option_value('db_version', str(current_db_version))
 
 
 # Lists CRUD
 def create_list(list_name: str, order_id: int):
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     try:
         query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, ? )"
@@ -132,7 +150,9 @@ def create_list(list_name: str, order_id: int):
 
 
 def read_lists() -> list:
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT * FROM `Lists` ORDER BY order_id """
     cursor.execute(query)
@@ -143,7 +163,9 @@ def read_lists() -> list:
 
 
 def read_last_list() -> list:
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = '''SELECT id, name FROM `Lists` ORDER BY id DESC LIMIT 1;'''
     cursor.execute(query)
@@ -154,7 +176,9 @@ def read_last_list() -> list:
 
 
 def get_list_name(list_id: int) -> str:
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT name FROM `Lists` where id = ? """
     cursor.execute(query, (list_id,))
@@ -165,7 +189,9 @@ def get_list_name(list_id: int) -> str:
 
 
 def get_list_id(list_name: str) -> int:
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT id FROM `Lists` where name = ? """
     cursor.execute(query, (list_name,))
@@ -177,7 +203,9 @@ def get_list_id(list_name: str) -> int:
 
 
 def rename_list(list_name: str, new_list_name: str):
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """UPDATE `Lists` SET name = ? WHERE name = ?"""
     cursor.execute(query, (new_list_name, list_name))
@@ -187,23 +215,26 @@ def rename_list(list_name: str, new_list_name: str):
 
 
 def delete_list_by_id(list_id: int):
+    # todo add docstring
     delete_entries(list_id)
-    sqlite_connection = sqlite3.connect(db_path)
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     try:
         query = """DELETE FROM `Lists` WHERE id = ? """
         cursor.execute(query, (list_id,))
+        cursor.close()
+        sqlite_connection.commit()
     except sqlite3.Error as e:
         return False
     finally:
-        cursor.close()
-        sqlite_connection.commit()
         sqlite_connection.close()
 
 
 # Entries CRUD
 def get_entry_name(entry_id: int or str) -> str:
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT name FROM `Entries` where id = ? """
     cursor.execute(query, (entry_id,))
@@ -214,18 +245,23 @@ def get_entry_name(entry_id: int or str) -> str:
 
 
 def get_entry_note(entry_id: int or str) -> str:
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT note FROM `Entries` where id = ? """
     cursor.execute(query, (entry_id,))
     records = cursor.fetchall()
     cursor.close()
     sqlite_connection.close()
+    # todo remove if from return
     return '' if (records[0][0] is None) else records[0][0]
 
 
 def is_entry_exists(entry_name: str) -> bool:
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT * FROM `Entries` WHERE name = ?"""
     cursor.execute(query, (entry_name,))
@@ -239,7 +275,9 @@ def is_entry_exists(entry_name: str) -> bool:
 
 
 def create_entry(list_id: int, entry_name: str):
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     if is_entry_exists(entry_name):
         query = """UPDATE `Entries` SET list_id = ?, is_completed = 0, frequency =  frequency + 1  WHERE name = ?"""
@@ -253,7 +291,9 @@ def create_entry(list_id: int, entry_name: str):
 
 
 def read_entries(list_id: int) -> list:
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 0"""
     cursor.execute(query, (list_id,))
@@ -264,7 +304,9 @@ def read_entries(list_id: int) -> list:
 
 
 def read_entries_history(list_id: int) -> list:
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 1"""
     cursor.execute(query, (list_id,))
@@ -275,8 +317,10 @@ def read_entries_history(list_id: int) -> list:
 
 
 def read_entries_by_name_part(list_id: int, name_part: str) -> list:
+    # todo add docstring
+    # todo add try except
     count = int(config.get_option_value('max_suggestions_count'))
-    sqlite_connection = sqlite3.connect(db_path)
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = '''SELECT name FROM `Entries` WHERE list_id = ? and name like ? and is_completed = 1 ORDER BY frequency DESC LIMIT ?;'''
     cursor.execute(query, (list_id, name_part + '%', count))
@@ -287,7 +331,9 @@ def read_entries_by_name_part(list_id: int, name_part: str) -> list:
 
 
 def read_last_entry(list_id: int) -> list:
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = '''SELECT id, name FROM `Entries` WHERE list_id = ? ORDER BY id DESC LIMIT 1;'''
     cursor.execute(query, (list_id,))
@@ -298,7 +344,9 @@ def read_last_entry(list_id: int) -> list:
 
 
 def read_all_entries() -> list:
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT * FROM `Entries` """
     cursor.execute(query, )
@@ -309,7 +357,9 @@ def read_all_entries() -> list:
 
 
 def read_entries_count(list_id: int or str) -> int:
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT COUNT(*) FROM `Entries` WHERE list_id = ?  and is_completed = 0"""
     cursor.execute(query, (list_id,))
@@ -320,7 +370,7 @@ def read_entries_count(list_id: int or str) -> int:
 
 
 # def rename_entry(entry_name, new_entry_name):
-#     sqlite_connection = sqlite3.connect(db_path)
+#     sqlite_connection = sqlite3.connect(database_path)
 #     cursor = sqlite_connection.cursor()
 #     query = """UPDATE `Entries` SET name = ? WHERE name = ?"""
 #     cursor.execute(query, (new_entry_name, entry_name))
@@ -330,7 +380,9 @@ def read_entries_count(list_id: int or str) -> int:
 
 
 def complete_entry(entry_id: int or str):
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """UPDATE `Entries` SET is_completed = 1 WHERE id = ?"""
     cursor.execute(query, (entry_id,))
@@ -340,7 +392,9 @@ def complete_entry(entry_id: int or str):
 
 
 def set_entry_note(entry_id: int or str, note_text: str):
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """UPDATE `Entries` SET note = ? WHERE id = ?"""
     cursor.execute(query, (note_text, entry_id,))
@@ -350,7 +404,9 @@ def set_entry_note(entry_id: int or str, note_text: str):
 
 
 def delete_entry(entry_id: int or str):
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """DELETE FROM `Entries` WHERE id = ? """
     cursor.execute(query, (entry_id,))
@@ -360,7 +416,9 @@ def delete_entry(entry_id: int or str):
 
 
 def delete_entries(list_id: int or str):
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """DELETE FROM `Entries` WHERE list_id = ? """
     cursor.execute(query, (list_id,))
@@ -374,7 +432,9 @@ def delete_entries(list_id: int or str):
 # TODO update documentation, refactor DBLayer
 
 def create_source(source_name):
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     if not is_source_exist(source_name):
         query = """INSERT INTO 'EntriesSource' ( 'name') VALUES (?);"""
@@ -385,8 +445,10 @@ def create_source(source_name):
 
 
 def read_sources_by_name_part(list_id: int, name_part: str) -> list:
+    # todo add docstring
+    # todo add try except
     count = int(config.get_option_value('max_suggestions_count'))
-    sqlite_connection = sqlite3.connect(db_path)
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = '''SELECT EntriesSource.name FROM `EntriesHistory` INNER JOIN 'EntriesSource' on EntriesHistory.source_id = EntriesSource.id INNER JOIN  'Entries' on Entries.id = EntriesHistory.entry_id WHERE Entries.list_id = ? and EntriesSource.name like ? ORDER BY quantity DESC LIMIT ?;'''
     cursor.execute(query, (list_id, name_part + '%', count))
@@ -397,7 +459,9 @@ def read_sources_by_name_part(list_id: int, name_part: str) -> list:
 
 
 def is_source_exist(source_name):
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT id FROM `EntriesSource` WHERE name = ?;"""
     cursor.execute(query, (source_name,))
@@ -411,7 +475,9 @@ def is_source_exist(source_name):
 
 
 def get_source_id(source_name):
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = '''SELECT id FROM `EntriesSource` WHERE name like ?;'''
     cursor.execute(query, (source_name + '%',))
@@ -429,13 +495,15 @@ def get_source_id(source_name):
 # CRUD EntriesHistory
 
 def create_entries_history(source_id, entry_id, price, quantity):
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     if is_entry_history_exists(source_id, entry_id, price):
         query = """UPDATE `EntriesHistory` SET quantity = quantity + ?, special_price = 0, WHERE entry_id = ? and source_id = ? and price = ? """
         cursor.execute(query, (quantity, entry_id, source_id, price))
     else:
-        query = """INSERT INTO 'EntriesHistory' ( 'entry_id', 'source_id', 'price', 'quantity', 'special_price') VALUES (?, ?, ?, ?, 0)"""
+        query = """INSERT INTO 'EntriesHistory' ('entry_id', 'source_id', 'price', 'quantity', 'special_price') VALUES (?, ?, ?, ?, 0)"""
         cursor.execute(query, (entry_id, source_id, price, quantity, ))
     cursor.close()
     sqlite_connection.commit()
@@ -443,7 +511,9 @@ def create_entries_history(source_id, entry_id, price, quantity):
 
 
 def is_entry_history_exists(source_id, entry_id, price):
-    sqlite_connection = sqlite3.connect(db_path)
+    # todo add docstring
+    # todo add try except
+    sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT * FROM `EntriesHistory` WHERE source_id = ? and entry_id = ? and price = ?;"""
     cursor.execute(query, (source_id, entry_id, price,))

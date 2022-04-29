@@ -356,7 +356,7 @@ def read_all_entries() -> list:
     return records
 
 
-def read_entries_count(list_id: int or str) -> int:
+def read_entries_count(list_id: int) -> int:
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
@@ -379,7 +379,7 @@ def read_entries_count(list_id: int or str) -> int:
 #     sqlite_connection.close()
 
 
-def complete_entry(entry_id: int or str):
+def complete_entry(entry_id: int):
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
@@ -391,7 +391,7 @@ def complete_entry(entry_id: int or str):
     sqlite_connection.close()
 
 
-def set_entry_note(entry_id: int or str, note_text: str):
+def set_entry_note(entry_id: int, note_text: str):
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
@@ -403,7 +403,7 @@ def set_entry_note(entry_id: int or str, note_text: str):
     sqlite_connection.close()
 
 
-def delete_entry(entry_id: int or str):
+def delete_entry(entry_id: int):
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
@@ -415,7 +415,7 @@ def delete_entry(entry_id: int or str):
     sqlite_connection.close()
 
 
-def delete_entries(list_id: int or str):
+def delete_entries(list_id: int):
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
@@ -431,7 +431,7 @@ def delete_entries(list_id: int or str):
 
 # TODO update documentation, refactor DBLayer
 
-def create_source(source_name):
+def create_source(source_name: str):
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
@@ -458,7 +458,7 @@ def read_sources_by_name_part(list_id: int, name_part: str) -> list:
     return records
 
 
-def is_source_exist(source_name):
+def is_source_exist(source_name: str):
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
@@ -494,7 +494,7 @@ def get_source_id(source_name):
 
 # CRUD EntriesHistory
 
-def create_entries_history(source_id, entry_id, price, quantity):
+def create_entries_history(source_id: int, entry_id: int, price: float, quantity: int):
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
@@ -510,6 +510,7 @@ def create_entries_history(source_id, entry_id, price, quantity):
     sqlite_connection.close()
 
 
+# todo add annotation
 def is_entry_history_exists(source_id, entry_id, price):
     # todo add docstring
     # todo add try except

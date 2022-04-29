@@ -159,9 +159,9 @@ class ListsScreen(Screen):
         for list in lists:
             # todo add keyword arguments
             self.add_list(
-                list[0],  # list id
-                list[1],  # list name
-                0,  # index
+                list_id=list[0],
+                list_name=list[1],
+                index=0,
             )
 
     def open_list(self, btn_obj):
@@ -205,9 +205,9 @@ class ListsScreen(Screen):
                 last_list = db.read_last_list()[0]
                 # todo add keyword arguments
                 self.add_list(
-                    last_list[0],  # list id
-                    last_list[1],  # list name
-                    0,  # index
+                    list_id=last_list[0],
+                    list_name=last_list[1],
+                    index=0,
                 )
             elif error.args[0]:  # TODO - handle all errors
                 MainApp.open_error_popup(error.args[0])
@@ -255,7 +255,7 @@ class EntriesScreen(Screen):
         self.current_list_id = None
         self.current_list_name = None
 
-    def add_entry(self, entry_id: int or str, entry_name: str, index=0):
+    def add_entry(self, entry_id: str, entry_name: str, index=0):
         """
         Method to add entry to EntriesScreen and database
         :param entry_id: ID of entry
@@ -580,9 +580,9 @@ class HistoryScreen(Screen):
         #     )
         for entry in self.entries_list:
             self.add_entry(
-                entry[0],  # entry_id
-                entry[2],  # entry_name
-                0,         # index
+                entry_id=entry[0],
+                entry_name=entry[2],
+                index=0,
             )
 
     def tag_entry_to_delete(self, btn_obj):
@@ -616,10 +616,11 @@ class HistoryScreen(Screen):
         # Disable 'revoke' button if no entries left to revoke
         if len(self.entries_list_to_delete) == 0:
             self.ids.revoke_btn_id.disabled = True
-        self.add_entry(last_entry[0],  # entry_id
-                       last_entry[1],  # entry_name
-                       0,              # index
-                       )
+        self.add_entry(
+            entry_id=last_entry[0],
+            entry_name=last_entry[1],
+            index=0,
+        )
 
 
 class MainApp(App):

@@ -1,7 +1,7 @@
 <EntryInfoScreen>:
     name: root.manager.entry_notes_screen
     on_pre_enter:
-        root.refresh_entry_notes_screen()
+        root.init_entry_info_screen()
     # Root
     BoxLayout:
         orientation: 'vertical'
@@ -13,7 +13,6 @@
             bar_width: config.get_option_value('scrollview_size')
             TextInput:
                 id: note_id
-                text: root.note_text
                 size_hint_y: None
                 height: max(self.minimum_height, entries_sw_id.height)
                 halign: "center"

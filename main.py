@@ -400,8 +400,8 @@ class EntriesScreen(Screen):
 class EntryInfoScreen(Screen):
     def __init__(self, **kwargs):
         super(EntryInfoScreen, self).__init__(**kwargs)
-        self.note_text = ''
-        self.entry_id = ''
+        self.note_text = str
+        self.entry_id = int
 
     def save_note(self):
         """
@@ -422,7 +422,7 @@ class EntryInfoScreen(Screen):
         self.manager.change_screen(self.manager.entries_screen, "left")
         self.ids.note_id.text = ''
 
-    def init_entry_notes_screen(self):
+    def init_entry_info_screen(self):
         """
         Method to initiate EntryNotesScreen
         :param:
@@ -612,7 +612,7 @@ class HistoryScreen(Screen):
         :param:
         :return:
         """
-        last_entry = self.entries_list_to_delete.pop(-1)  # get the last
+        last_entry = self.entries_list_to_delete.pop(-1)
         # Disable 'revoke' button if no entries left to revoke
         if len(self.entries_list_to_delete) == 0:
             self.ids.revoke_btn_id.disabled = True
@@ -661,7 +661,7 @@ class MainApp(App):
             # 'lists_font_size': '15dp',
             'app_version': '0.0.20',
             'app_title': 'TODOit',
-            'db_path': "..\\TODO.db",
+            'db_path': r"..\TODO.db",
         },)
 
     @staticmethod

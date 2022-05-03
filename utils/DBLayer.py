@@ -132,34 +132,37 @@ def run_migrations():
 
 
 # Lists CRUD
-def create_list(list_name: str, order_id: int):
+def create_list(list_name: str, order_id: int) -> bool and sqlite3.Error:
     # todo add docstring
-    # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
+    query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, ? )"
     try:
-        query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, ? )"
         cursor.execute(query, (list_name, order_id))
+        cursor.close()
+        sqlite_connection.commit()
         return True, None
     except sqlite3.Error as error:
         return False, error
     finally:
-        cursor.close()
-        sqlite_connection.commit()
         sqlite_connection.close()
 
 
 def read_lists() -> list:
     # todo add docstring
-    # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT * FROM `Lists` ORDER BY order_id """
-    cursor.execute(query)
-    records = cursor.fetchall()
-    cursor.close()
-    sqlite_connection.close()
-    return records
+    try:
+        cursor.execute(query)
+        records = cursor.fetchall()
+        cursor.close()
+        return records
+    except sqlite3.Error as error:
+        pass
+        # todo add error handling
+    finally:
+        sqlite_connection.close()
 
 
 def read_last_list() -> list:

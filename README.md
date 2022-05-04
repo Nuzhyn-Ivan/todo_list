@@ -1,5 +1,5 @@
-# <h1>todo_list
-Software that can help with:
+# <h1>ToDo List
+Multi-platform software that can help with:
  1. Regular food purchaising planing
  2. Any other purchaising
  3. Tasks planing

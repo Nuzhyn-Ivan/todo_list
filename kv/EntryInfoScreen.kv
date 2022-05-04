@@ -1,7 +1,7 @@
 <EntryInfoScreen>:
-    name: root.manager.entry_notes_screen
-    on_pre_enter:
-        root.init_entry_info_screen()
+    name: root.manager.entry_info_screen
+#    on_pre_enter:
+
     # Root
     BoxLayout:
         orientation: 'vertical'
@@ -28,7 +28,7 @@
                 height: "70dp"
                 size_hint:(1, None)
                 on_release:
-                    root.back()
+                    root.manager.change_screen(root.manager.entries_screen, "left")
 
             Button:
                 text: lang.get('save_btn')

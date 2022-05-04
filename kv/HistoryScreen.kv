@@ -35,7 +35,7 @@
                 values: lang.get('az_sorting'), lang.get('za_sorting'), lang.get('min_max_usage_sorting'), lang.get('max_min_usage_sorting')
                 on_text:
                     root.sorting_type = lang.get_key_by_value(self.text)
-                    root.refresh_history()
+                    root.refresh_history_screen()
             Button:
                 id: revoke_btn_id
                 text: lang.get('revoke_btn')

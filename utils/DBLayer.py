@@ -359,13 +359,13 @@ def read_all_entries() -> list:
     return records
 
 
-def read_entries_count(list_id: int) -> int:
+def read_entries_count(list_id: int or str) -> int:
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT COUNT(*) FROM `Entries` WHERE list_id = ?  and is_completed = 0"""
-    cursor.execute(query, (list_id,))
+    cursor.execute(query, (int(list_id),))
     records = cursor.fetchall()
     cursor.close()
     sqlite_connection.close()

@@ -22,7 +22,7 @@ class ScreenManagement(ScreenManager):
     lists_screen = 'lists_screen'
     entries_screen = 'entries_screen'
     entry_details_screen = 'entry_details_screen'
-    entry_notes_screen = 'entry_notes_screen'
+    entry_info_screen = 'entry_info_screen'
     settings_screen = 'settings_screen'
     history_screen = 'history_screen'
     tags_screen = 'tags_screen'
@@ -139,7 +139,7 @@ class ListsScreen(Screen):
         list_btn.name = list_name
         list_btn.entries_count = db.read_entries_count(list_id)
 
-        # todo move to change_edit_mode. One responsibility for one object
+        # todo move out is_edit_mode . One responsibility for one object
         if self.is_edit_mode:
             list_btn.bind(on_release=self.open_edit_popup)
             list_btn.text = F"{list_btn.name}{lang.get('tap_to_edit')}"
@@ -157,7 +157,6 @@ class ListsScreen(Screen):
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
         for list in lists:
-            # todo add keyword arguments
             self.add_list(
                 list_id=list[0],
                 list_name=list[1],
@@ -170,19 +169,11 @@ class ListsScreen(Screen):
         :param btn_obj: Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
         :return:
         """
-        # Add list info to Entries screen
-        # todo pas list info as a param for refresh_entry_screen def.
-        #  All entry screen data should be changed by entries screen functions
-        entries_screen_instance = self.manager.get_screen(self.manager.entries_screen)
-        list_id = btn_obj.id
-        list_name = db.get_list_name(btn_obj.id)
-        entries_screen_instance.current_list_id = list_id
-        entries_screen_instance.current_list_name = list_name
 
-        # TODO move to entry_details_screen
-        # Clear source field on entry_details_screen
-        entry_details_screen_instance = self.manager.get_screen(self.manager.entry_details_screen)
-        entry_details_screen_instance.clear_source()
+        # Init entries_screen
+        list_id = btn_obj.id
+        entries_screen_instance = self.manager.get_screen(self.manager.entries_screen)
+        entries_screen_instance.init_entries_screen(list_id)
 
         # Open entries_screen
         self.manager.change_screen(self.manager.entries_screen, 'left')
@@ -223,15 +214,14 @@ class ListsScreen(Screen):
 
     def change_edit_mode(self):
         self.is_edit_mode = not self.is_edit_mode
-        # TODO replace with 'refresh_list' using Lists instance
-        refresh_lists_timer = Clock.schedule_interval(self.refresh_lists, 0.5)
-        if not self.is_edit_mode:
-            self.ids.lists_edit_btn.text = lang.get('edit_btn')
-            refresh_lists_timer.cancel()
-        else:
-            # TODO - text  out of button
+        # refresh_lists_timer = Clock.schedule_interval(self.refresh_lists, 0.5)
+        if self.is_edit_mode:
             self.ids.lists_edit_btn.text = lang.get('apply_edit_btn')
-        refresh_lists_timer()
+        else:
+            self.ids.lists_edit_btn.text = lang.get('edit_btn')
+            # refresh_lists_timer.cancel()
+        self.refresh_lists()
+        # refresh_lists_timer()
 
     @staticmethod
     def open_edit_popup(btn_obj):
@@ -255,6 +245,11 @@ class EntriesScreen(Screen):
         self.current_list_id = None
         self.current_list_name = None
 
+    def init_entries_screen(self, list_id: str):
+        self.current_list_id = list_id
+        self.current_list_name = db.get_list_name(int(self.current_list_id))
+        self.refresh_entries_screen()
+
     def add_entry(self, entry_id: str, entry_name: str, index=0):
         """
         Method to add entry to EntriesScreen and database
@@ -268,7 +263,7 @@ class EntriesScreen(Screen):
             size_hint=(0.2, None),
             height=config.get_option_value('entries_height'),
             font_size=config.get_option_value('entries_font_size'),
-            on_release=self.open_notes_screen,
+            on_release=self.open_entry_info_screen,
         )
         entry_note.id = entry_id
 
@@ -292,22 +287,14 @@ class EntriesScreen(Screen):
         :return:
         """
         # TODO remove and refactor label sizing
-        entries_list = db.read_entries(int(self.current_list_id))
-        # entries_list_height = self.get_parent_window().height - self.ids.entries_upper_panel_id.height - self.ids.input_id.height
-        # entry_height = int(config.get('entries_height')[:-2]) + int(config.get('padding'))
 
+        # Remove all entries
         for widget in self.ids.entries_panel_id.children:
             widget.clear_widgets()  # remove all child's from Layout
         self.ids.entries_panel_id.clear_widgets()  # remove all layouts from entries_panel
-        # if len(entries_list) > 0 and range(len(entries_list) < 9):
-        #
-        #     label = Label(
-        #         id='entries_label_id',
-        #         size=(1,   (entries_list_height - (len(entries_list) * entry_height))),
-        #         size_hint=(None, None),
-        #     )
-        #     self.ids.entries_panel_id.add_widget(label, 0)
-        # TODO replace range(len()) with enumerate(), compare memory
+
+        # Add actual entries
+        entries_list = db.read_entries(int(self.current_list_id))
         for entry in entries_list:
             self.add_entry(
                 entry_id=entry[0],
@@ -316,6 +303,7 @@ class EntriesScreen(Screen):
             )
 
         # Add actual list name to 'Back' button
+
         self.ids.current_list_btn.text = F"<--   {self.current_list_name}"
         self.ids.tools_btn_id.text = lang.get('tools_btn')
 
@@ -385,23 +373,26 @@ class EntriesScreen(Screen):
             # TODO: add exception handling
             pass
 
-    def open_notes_screen(self, btn_obj: Button):
+    def open_entry_info_screen(self, btn_obj: Button):
         """
-        Method to open EntryNotes screen
+        Method to open EntryInfo screen
         :param btn_obj: Object of pressed button.
         :return:
         """
-        entry_notes_screen_instance = self.manager.get_screen(self.manager.entry_notes_screen)
-        entry_id = btn_obj.id
-        entry_notes_screen_instance.entry_id = entry_id
-        self.manager.change_screen(self.manager.entry_notes_screen, "right")
+        # Init entry_info_screen
+        entry_info_screen_instance = self.manager.get_screen(self.manager.entry_info_screen)
+        current_entry_id = btn_obj.id
+        entry_info_screen_instance.init_entry_info_screen(current_entry_id)
+
+        # Change screen to entry_info_screen
+        self.manager.change_screen(self.manager.entry_info_screen, "right")
 
 
 class EntryInfoScreen(Screen):
     def __init__(self, **kwargs):
         super(EntryInfoScreen, self).__init__(**kwargs)
         self.note_text = str
-        self.entry_id = int
+        self.current_entry_id = None
 
     def save_note(self):
         """
@@ -420,15 +411,15 @@ class EntryInfoScreen(Screen):
         :return:
         """
         self.manager.change_screen(self.manager.entries_screen, "left")
-        self.ids.note_id.text = ''
 
-    def init_entry_info_screen(self):
+    def init_entry_info_screen(self, current_entry_id):
         """
         Method to initiate EntryNotesScreen
         :param:
         :return:
         """
-        self.note_text = db.get_entry_note(self.entry_id)
+        self.current_entry_id = current_entry_id
+        self.note_text = db.get_entry_note(current_entry_id)
         self.ids.note_id.text = self.note_text
 
 
@@ -439,6 +430,7 @@ class EntryDetailsScreen(Screen):
         self.entry_id = ''
         self.last_source = ''
 
+        # TODO clear source_id.text if another list opened
     def clear_source(self):
         self.ids.source_id.text = ""
 

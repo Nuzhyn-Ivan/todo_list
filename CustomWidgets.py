@@ -31,10 +31,12 @@ class TextInputWithEntriesDropDown(TextInput):
         super(TextInputWithEntriesDropDown, self).on_touch_down(touch)
 
     def load_choices(self, entry_name_part, chooser):
+        self.suggestions.clear()
+
         screen_manager = main.MainApp.get_running_app().root
         entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
-        self.suggestions.clear()
         suggestions_list = db.read_entries_by_name_part(int(entries_screen_instance.current_list_id), entry_name_part)
+
         # TODO list comprehensions?
         for suggestion in suggestions_list:
             self.suggestions.append(suggestion)
@@ -188,6 +190,12 @@ class ListEditPopup(Popup):
         list_id = db.get_list_id(list_name)
         db.delete_list_by_id(list_id)
         self.dismiss()
+
+    @staticmethod
+    def refresh_lists():
+        screen_manager = main.MainApp.get_running_app().root
+        lists_screen_instance = screen_manager.get_screen(screen_manager.lists_screen)
+        lists_screen_instance.refresh_lists()
 
 
 class EntriesNotesPopup(Popup):

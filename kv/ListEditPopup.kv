@@ -17,6 +17,7 @@
             multiline: False
             on_text_validate:
                 root.rename_list(self.text)
+                root.refresh_lists()
                 root.dismiss()
         Button:
             text: lang.get('delete_list')
@@ -25,6 +26,7 @@
             size_hint:(1, None)
             on_release:
                 root.delete_list()
+                root.refresh_lists()
         Button:
             text: lang.get('cancel_btn')
             font_size: config.get_option_value('font_size')

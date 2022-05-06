@@ -431,6 +431,7 @@ class EntryDetailsScreen(Screen):
         self.last_source = ''
 
         # TODO clear source_id.text if another list opened
+
     def clear_source(self):
         self.ids.source_id.text = ""
 
@@ -513,21 +514,6 @@ class HistoryScreen(Screen):
         self.entries_list_to_delete = []
         self.sorting_type = config.get_option_value('history_sorting')
 
-    def apply_entries_sorting(self, sorting_type: str):
-        """
-        Method to apply chosen sort type
-        :param:
-        :return:
-        """
-        if sorting_type == 'az_sorting':
-            self.entries_list.sort(key=lambda x: x[2])
-        elif sorting_type == 'za_sorting':
-            self.entries_list.sort(key=lambda x: x[2], reverse=True)
-        elif sorting_type == 'min_max_usage_sorting':
-            self.entries_list.sort(key=lambda x: x[7])
-        elif sorting_type == 'max_min_usage_sorting':
-            self.entries_list.sort(key=lambda x: x[7], reverse=True)
-
     def add_entry(self, entry_id: str, entry_name: str, index=0):
         """
         Method to add entry to HistoryScreen and database
@@ -577,6 +563,21 @@ class HistoryScreen(Screen):
                 index=0,
             )
 
+    def apply_entries_sorting(self, sorting_type: str):
+        """
+        Method to apply chosen sort type
+        :param:
+        :return:
+        """
+        if sorting_type == 'az_sorting':
+            self.entries_list.sort(key=lambda x: x[2])
+        elif sorting_type == 'za_sorting':
+            self.entries_list.sort(key=lambda x: x[2], reverse=True)
+        elif sorting_type == 'min_max_usage_sorting':
+            self.entries_list.sort(key=lambda x: x[7])
+        elif sorting_type == 'max_min_usage_sorting':
+            self.entries_list.sort(key=lambda x: x[7], reverse=True)
+
     def tag_entry_to_delete(self, btn_obj):
         """
         Method to
@@ -605,9 +606,12 @@ class HistoryScreen(Screen):
         :return:
         """
         last_entry = self.entries_list_to_delete.pop(-1)
+
         # Disable 'revoke' button if no entries left to revoke
         if len(self.entries_list_to_delete) == 0:
             self.ids.revoke_btn_id.disabled = True
+
+        # Add entry
         self.add_entry(
             entry_id=last_entry[0],
             entry_name=last_entry[1],

@@ -3,12 +3,14 @@ import sqlite3
 
 import utils.ConfigParser as config
 
+
 database_path = config.get_option_value('db_path')
 migrations_list = {
     1: '''ALTER TABLE `Entries` ADD COLUMN note TEXT;''',
 }
 
 
+# TODO update documentation, refactor DBLayer
 def is_database_exist() -> bool:
     if os.path.exists(database_path):
         return True
@@ -217,7 +219,7 @@ def rename_list(list_name: str, new_list_name: str):
     sqlite_connection.close()
 
 
-def delete_list_by_id(list_id: int):
+def delete_list_by_id(list_id: str):
     # todo add docstring
     delete_entries(list_id)
     sqlite_connection = sqlite3.connect(database_path)
@@ -234,7 +236,7 @@ def delete_list_by_id(list_id: int):
 
 
 # Entries CRUD
-def get_entry_name(entry_id: int or str) -> str:
+def get_entry_name(entry_id: str) -> str:
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
@@ -247,7 +249,7 @@ def get_entry_name(entry_id: int or str) -> str:
     return records[0][0]
 
 
-def get_entry_note(entry_id: int or str) -> str:
+def get_entry_note(entry_id: str) -> str:
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
@@ -359,7 +361,7 @@ def read_all_entries() -> list:
     return records
 
 
-def read_entries_count(list_id: int or str) -> int:
+def read_entries_count(list_id: str) -> int:
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
@@ -418,7 +420,7 @@ def delete_entry(entry_id: int):
     sqlite_connection.close()
 
 
-def delete_entries(list_id: int):
+def delete_entries(list_id: str):
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)
@@ -431,9 +433,6 @@ def delete_entries(list_id: int):
 
 
 # Sources CRUD
-
-# TODO update documentation, refactor DBLayer
-
 def create_source(source_name: str):
     # todo add docstring
     # todo add try except
@@ -490,13 +489,7 @@ def get_source_id(source_name):
     return records[0][0]
 
 
-# update
-
-# delete
-
-
-# CRUD EntriesHistory
-
+# EntriesHistory CRUD
 def create_entries_history(source_id: int, entry_id: int, price: float, quantity: int):
     # todo add docstring
     # todo add try except

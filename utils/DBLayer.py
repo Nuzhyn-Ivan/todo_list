@@ -9,8 +9,9 @@ migrations_list = {
 }
 
 
-# TODO update documentation, refactor DBLayer
+# TODO update documentation, refactor DBLayer(try to extract sqlite part from def)
 def is_database_exist() -> bool:
+    # todo replace with ternary
     if os.path.exists(database_path):
         return True
     else:
@@ -180,7 +181,7 @@ def read_last_list() -> list:
         cursor.execute(query)
         records = cursor.fetchall()
         cursor.close()
-        return records
+        return records[0]
     except sqlite3.Error as error:
         pass
         # todo add error handling - open error popup
@@ -237,7 +238,7 @@ def rename_list(list_name: str, new_list_name: str):
         sqlite_connection.close()
 
 
-def delete_list_by_id(list_id: str):
+def delete_list_by_id(list_id: int):
     delete_entries(list_id)
     sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
@@ -254,7 +255,7 @@ def delete_list_by_id(list_id: str):
 
 
 # Entries CRUD
-def get_entry_name(entry_id: str) -> str:
+def get_entry_name(entry_id: int) -> str:
     sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT name FROM `Entries` where id = ? """
@@ -270,7 +271,7 @@ def get_entry_name(entry_id: str) -> str:
         sqlite_connection.close()
 
 
-def get_entry_note(entry_id: str) -> str:
+def get_entry_note(entry_id: int) -> str:
     sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     query = """SELECT note FROM `Entries` where id = ? """

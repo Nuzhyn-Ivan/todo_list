@@ -12,9 +12,8 @@ import lang.Localization as lang
 import utils.ConfigParser as config
 import utils.DBLayer as db
 
+
 # TODO add type of param and return for all methods
-
-
 class ScreenManagement(ScreenManager):
     """
     Class to handle all screens in app
@@ -156,10 +155,10 @@ class ListsScreen(Screen):
         """
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
-        for list in lists:
+        for list_id, list_name, _, _ in lists:
             self.add_list(
-                list_id=list[0],
-                list_name=list[1],
+                list_id=list_id,
+                list_name=list_name,
                 index=0,
             )
 
@@ -187,17 +186,17 @@ class ListsScreen(Screen):
         # TODO - implement lists order display
         order_id_of_list = 1
         list_name = list_name.strip()
-        if len(list_name) == 0:
+        if not list_name:
             # TODO - move to lang
             MainApp.open_error_popup('List name cant be empty')
         else:
             result, error = db.create_list(list_name, order_id_of_list)
             if result:
-                last_list = db.read_last_list()[0]
+                list_id, list_name, _, _ = db.read_last_list()
                 # todo add keyword arguments
                 self.add_list(
-                    list_id=last_list[0],
-                    list_name=last_list[1],
+                    list_id=list_id,
+                    list_name=list_name,
                     index=0,
                 )
             elif error.args[0]:  # TODO - handle all errors
@@ -569,6 +568,7 @@ class HistoryScreen(Screen):
         :param:
         :return:
         """
+        # todo change to match after update python to 3.10
         if sorting_type == 'az_sorting':
             self.entries_list.sort(key=lambda x: x[2])
         elif sorting_type == 'za_sorting':

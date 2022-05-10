@@ -477,7 +477,7 @@ def is_source_exist(source_name: str):
         return False
 
 
-def get_source_id(source_name):
+def get_source_id(source_name: str) -> str:
     # todo add docstring
     # todo add try except
     sqlite_connection = sqlite3.connect(database_path)

@@ -9,6 +9,29 @@ migrations_list = {
 }
 
 
+def execute_query(query, *args):
+    """
+    Execute given query with given params
+    :param query: SQL query
+    :param args: params for a query
+    :type args: tuple
+    :return: result of query execution
+    """
+    sqlite_connection = sqlite3.connect(database_path)
+    cursor = sqlite_connection.cursor()
+    try:
+        cursor.execute(query, *args)
+        records = cursor.fetchall()
+        sqlite_connection.commit()
+        return records
+    except sqlite3.Error as error:
+        pass
+        # todo add error handling - open error popup
+    finally:
+        cursor.close()
+        sqlite_connection.close()
+
+
 # TODO update documentation, refactor DBLayer(try to extract sqlite part from def)
 def is_database_exist() -> bool:
     # todo replace with ternary
@@ -39,8 +62,6 @@ def actualize_database():
 # TODO add feature to backup db and load from backup
 # TODO default lists and entries - make it lang related
 def create_database():
-    sqlite_connection = sqlite3.connect(database_path)
-
     sqlite_create_lists = '''
     CREATE TABLE Lists (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,13 +82,11 @@ def create_database():
     note TEXT,
     FOREIGN KEY(list_id) REFERENCES Lists(id));
     '''
-
     sqlite_create_entries_source = '''
     CREATE TABLE EntriesSource (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL);
     '''
-
     sqlite_create_entries_history = '''
     CREATE TABLE EntriesHistory (
     entry_id INTEGER,
@@ -80,9 +99,7 @@ def create_database():
     FOREIGN KEY(entry_id) REFERENCES Entries(id),
     FOREIGN KEY(source_id) REFERENCES EntriesSource(id));
     '''
-
-    sqlite_create_entry_name_index = 'CREATE UNIQUE INDEX entry_name ON Entries(name);'
-
+    sqlite_create_entry_name_index = '''CREATE UNIQUE INDEX entry_name ON Entries(name);'''
     sqlite_insert_default_lists = '''
     INSERT INTO 'Lists' ('name', 'order_id') VALUES ("Supermarket", 1 ), ("To Do", 2 ), ("Drug Store", 3 ), ("Movies to watch", 4 );
     '''
@@ -90,28 +107,16 @@ def create_database():
     INSERT INTO 'Entries' ('list_id', 'name', 'frequency') VALUES (1, 'first', 1 ), (1, 'first2', 1 ), (1, 'first3', 1 ), (1, 'first4', 1 );
     '''
 
-    cursor = sqlite_connection.cursor()
-    try:
+    # Create tables
+    execute_query(sqlite_create_lists)
+    execute_query(sqlite_create_entries)
+    execute_query(sqlite_create_entry_name_index)
+    execute_query(sqlite_create_entries_history)
+    execute_query(sqlite_create_entries_source)
 
-        # Create tables
-        cursor.execute(sqlite_create_lists)
-        cursor.execute(sqlite_create_entries)
-        cursor.execute(sqlite_create_entry_name_index)
-        cursor.execute(sqlite_create_entries_history)
-        cursor.execute(sqlite_create_entries_source)
-
-        # Insert default values
-        cursor.execute(sqlite_insert_default_lists)
-        cursor.execute(sqlite_insert_default_entries)
-
-        cursor.close()
-        sqlite_connection.commit()
-
-    except sqlite3.Error as error:
-        # todo add error handling - open error popup
-        pass
-    finally:
-        sqlite_connection.close()
+    # Insert default values
+    execute_query(sqlite_insert_default_lists)
+    execute_query(sqlite_insert_default_entries)
 
 
 def run_migrations():
@@ -121,489 +126,218 @@ def run_migrations():
     if current_db_version == available_db_version:
         return
     else:
-        sqlite_connection = sqlite3.connect(database_path)
-        try:
-            # Run all needed migrations
-            for key, value in migrations_list.items():
-                if key > current_db_version:
-                    cursor = sqlite_connection.cursor()
-                    cursor.execute(value)
-                    cursor.close()
-                    current_db_version = key
-
-            sqlite_connection.commit()
-            config.set_option_value('db_version', str(current_db_version))
-        except sqlite3.Error as error:
-            # todo add error handling - open error popup
-            pass
-        finally:
-            sqlite_connection.close()
+        for key, query in migrations_list.items():
+            if key > current_db_version:
+                execute_query(query)
+                current_db_version = key
+        config.set_option_value('db_version', str(current_db_version))
 
 
 # Lists CRUD
-def create_list(list_name: str, order_id: int) -> bool and sqlite3.Error:
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
+def create_list(list_name: str, order_id: int):
     query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, ? )"
-    try:
-        cursor.execute(query, (list_name, order_id))
-        cursor.close()
-        sqlite_connection.commit()
-        return True, None
-    except sqlite3.Error as error:
-        # todo add error handling - open error popup
-        return False, error
-    finally:
-        sqlite_connection.close()
+    execute_query(query, (list_name, order_id))
 
 
 def read_lists() -> list:
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT * FROM `Lists` ORDER BY order_id """
-    try:
-        cursor.execute(query)
-        records = cursor.fetchall()
-        cursor.close()
-        return records
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''SELECT * FROM `Lists` ORDER BY order_id '''
+    records = execute_query(query)
+    return records
 
 
 def read_last_list() -> list:
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
     query = '''SELECT id, name FROM `Lists` ORDER BY id DESC LIMIT 1;'''
-    try:
-        cursor.execute(query)
-        records = cursor.fetchall()
-        cursor.close()
-        return records[0]
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    records = execute_query(query)
+    return records[0]
 
 
 def get_list_name(list_id: int) -> str:
-    # todo add try except
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT name FROM `Lists` where id = ? """
-    try:
-        cursor.execute(query, (list_id,))
-        records = cursor.fetchall()
-        cursor.close()
-        return records[0][0]
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''SELECT name FROM `Lists` where id = ? '''
+    records = execute_query(query, (list_id,))
+    list_name = records[0][0]
+    return list_name
 
 
 def get_list_id(list_name: str) -> int:
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT id FROM `Lists` where name = ? """
-    try:
-        cursor.execute(query, (list_name,))
-        records = cursor.fetchall()
-        cursor.close()
-        list_id = records[0][0]
-        return list_id
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''SELECT id FROM `Lists` where name = ? '''
+    records = execute_query(query, (list_name,))
+    list_id = records[0][0]
+    return list_id
 
 
 def rename_list(list_name: str, new_list_name: str):
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """UPDATE `Lists` SET name = ? WHERE name = ?"""
-    try:
-        cursor.execute(query, (new_list_name, list_name))
-        cursor.close()
-        sqlite_connection.commit()
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''UPDATE `Lists` SET name = ? WHERE name = ?'''
+    execute_query(query, (new_list_name, list_name,))
 
 
-def delete_list_by_id(list_id: int):
+def delete_list_by_id(list_id: str):
     delete_entries(list_id)
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """DELETE FROM `Lists` WHERE id = ? """
-    try:
-        cursor.execute(query, (list_id,))
-        cursor.close()
-        sqlite_connection.commit()
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''DELETE FROM `Lists` WHERE id = ? '''
+    execute_query(query, (list_id,))
 
 
 # Entries CRUD
 def get_entry_name(entry_id: int) -> str:
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT name FROM `Entries` where id = ? """
-    try:
-        cursor.execute(query, (entry_id,))
-        records = cursor.fetchall()
-        cursor.close()
-        return records[0][0]
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''SELECT name FROM `Entries` where id = ? '''
+    records = execute_query(query, (entry_id,))
+    return records[0][0]
 
 
 def get_entry_note(entry_id: int) -> str:
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT note FROM `Entries` where id = ? """
-    try:
-        cursor.execute(query, (entry_id,))
-        records = cursor.fetchall()
-        cursor.close()
-        return '' if (records[0][0] is None) else records[0][0]
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''SELECT note FROM `Entries` where id = ? '''
+    records = execute_query(query, (entry_id,))
+    return '' if (records[0][0] is None) else records[0][0]
 
 
 def is_entry_exists(entry_name: str) -> bool:
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT * FROM `Entries` WHERE name = ?"""
-    try:
-        cursor.execute(query, (entry_name,))
-        records = cursor.fetchall()
-        cursor.close()
-        return True if records else False
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''SELECT * FROM `Entries` WHERE name = ?'''
+    records = execute_query(query, (entry_name,))
+    return True if records else False
 
 
 def create_entry(list_id: int, entry_name: str):
     """
     Create entry OR set 'is_completed=1' if exist
     """
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    try:
-        if is_entry_exists(entry_name):
-            query = """UPDATE `Entries` SET list_id = ?, is_completed = 0, frequency =  frequency + 1  WHERE name = ?"""
-            cursor.execute(query, (list_id, entry_name,))
-        else:
-            query = """INSERT INTO 'Entries' ( 'list_id', 'name', 'is_completed', 'created_date', 'frequency') VALUES (?, ?, 0, date(), 1)"""
-            cursor.execute(query, (list_id, entry_name,))
-        cursor.close()
-        sqlite_connection.commit()
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    if is_entry_exists(entry_name):
+        query = '''
+        UPDATE `Entries` 
+        SET list_id = ?, is_completed = 0, frequency =  frequency + 1  
+        WHERE name = ?'''
+        execute_query(query, (list_id, entry_name,))
+
+    else:
+        query = '''
+        INSERT INTO 'Entries' ( 'list_id', 'name', 'is_completed', 'created_date', 'frequency') 
+        VALUES (?, ?, 0, date(), 1)
+        '''
+        execute_query(query, (list_id, entry_name,))
 
 
 def read_entries(list_id: int) -> list:
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 0"""
-    try:
-        cursor.execute(query, (list_id,))
-        records = cursor.fetchall()
-        cursor.close()
-        return records
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 0'''
+    records = execute_query(query, (list_id,))
+    return records
 
 
 def read_entries_history(list_id: int) -> list:
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 1"""
-    try:
-        cursor.execute(query, (list_id,))
-        records = cursor.fetchall()
-        cursor.close()
-        return records
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 1'''
+    records = execute_query(query, (list_id,))
+    return records
 
 
 def read_entries_by_name_part(list_id: int, name_part: str) -> list:
     max_suggestions_count = int(config.get_option_value('max_suggestions_count'))
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = '''SELECT name FROM `Entries` WHERE list_id = ? and name like ? and is_completed = 1 ORDER BY frequency DESC LIMIT ?;'''
-    try:
-        cursor.execute(query, (list_id, name_part + '%', max_suggestions_count))
-        records = cursor.fetchall()
-        cursor.close()
-        return records
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''
+    SELECT name 
+    FROM `Entries` 
+    WHERE list_id = ? and name like ? and is_completed = 1 
+    ORDER BY frequency DESC LIMIT ?;
+    '''
+    records = execute_query(query, (list_id, name_part + '%', max_suggestions_count))
+    return records
 
 
 def read_last_entry(list_id: int) -> list:
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
     query = '''SELECT id, name FROM `Entries` WHERE list_id = ? ORDER BY id DESC LIMIT 1;'''
-    try:
-        cursor.execute(query, (list_id,))
-        records = cursor.fetchall()
-        cursor.close()
-        return records
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    records = execute_query(query, (list_id,))
+    return records
 
 
 def read_all_entries() -> list:
-    # todo add docstring
-    # todo add try except
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT * FROM `Entries` """
-    try:
-        cursor.execute(query, )
-        records = cursor.fetchall()
-        cursor.close()
-        return records
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''SELECT * FROM `Entries` '''
+    records = execute_query(query, )
+    return records
 
 
 def read_entries_count(list_id: str) -> int:
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT COUNT(*) FROM `Entries` WHERE list_id = ?  and is_completed = 0"""
-    try:
-        cursor.execute(query, (int(list_id),))
-        records = cursor.fetchall()
-        cursor.close()
-        return records[0][0]
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''SELECT COUNT(*) FROM `Entries` WHERE list_id = ?  and is_completed = 0'''
+    records = execute_query(query, (list_id,))
+    return records[0][0]
 
-
-# def rename_entry(entry_name, new_entry_name):
-#     sqlite_connection = sqlite3.connect(database_path)
-#     cursor = sqlite_connection.cursor()
-#     query = """UPDATE `Entries` SET name = ? WHERE name = ?"""
-#     try:
-#         cursor.execute(query, (new_entry_name, entry_name))
-#         cursor.close()
-#         sqlite_connection.commit()
-#     except sqlite3.Error as error:
-#         pass
-#         # todo add error handling - open error popup
-#     finally:
-#         sqlite_connection.close()
 
 def complete_entry(entry_id: int):
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """UPDATE `Entries` SET is_completed = 1 WHERE id = ?"""
-    try:
-        cursor.execute(query, (entry_id,))
-        cursor.close()
-        sqlite_connection.commit()
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''UPDATE `Entries` SET is_completed = 1 WHERE id = ?'''
+    execute_query(query, (entry_id,))
 
 
 def set_entry_note(entry_id: int, note_text: str):
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """UPDATE `Entries` SET note = ? WHERE id = ?"""
-    try:
-        cursor.execute(query, (note_text, entry_id,))
-        cursor.close()
-        sqlite_connection.commit()
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''UPDATE `Entries` SET note = ? WHERE id = ?'''
+    execute_query(query, (note_text, entry_id,))
 
 
 def delete_entry(entry_id: int):
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """DELETE FROM `Entries` WHERE id = ? """
-    try:
-        cursor.execute(query, (entry_id,))
-        cursor.close()
-        sqlite_connection.commit()
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''DELETE FROM `Entries` WHERE id = ? '''
+    execute_query(query, (entry_id,))
 
 
 def delete_entries(list_id: str):
-    # todo add docstring
-    # todo add try except
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """DELETE FROM `Entries` WHERE list_id = ? """
-    try:
-        cursor.execute(query, (list_id,))
-        cursor.close()
-        sqlite_connection.commit()
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''DELETE FROM `Entries` WHERE list_id = ?'''
+    execute_query(query, (list_id,))
 
 
 # Sources CRUD
 def create_source(source_name: str):
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    try:
-        if not is_source_exist(source_name):
-            query = """INSERT INTO 'EntriesSource' ( 'name') VALUES (?);"""
-            cursor.execute(query, (source_name,))
-        cursor.close()
-        sqlite_connection.commit()
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    # todo - fix, it doesnt work
+    if not is_source_exist(source_name):
+        query = '''INSERT INTO 'EntriesSource' ( 'name') VALUES (?)'''
+        execute_query(query, (source_name,))
 
 
 def read_sources_by_name_part(list_id: int, name_part: str) -> list:
     max_suggestions_count = int(config.get_option_value('max_suggestions_count'))
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = '''SELECT EntriesSource.name FROM `EntriesHistory` INNER JOIN 'EntriesSource' on EntriesHistory.source_id = EntriesSource.id INNER JOIN  'Entries' on Entries.id = EntriesHistory.entry_id WHERE Entries.list_id = ? and EntriesSource.name like ? ORDER BY quantity DESC LIMIT ?;'''
-    try:
-        cursor.execute(query, (list_id, name_part + '%', max_suggestions_count))
-        records = cursor.fetchall()
-        cursor.close()
-        return records
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''
+    SELECT EntriesSource.name 
+    FROM `EntriesHistory` 
+    INNER JOIN 'EntriesSource' on EntriesHistory.source_id = EntriesSource.id 
+    INNER JOIN  'Entries' on Entries.id = EntriesHistory.entry_id 
+    WHERE Entries.list_id = ? and EntriesSource.name like ? 
+    ORDER BY quantity DESC LIMIT ?
+    '''
+    records = execute_query(query, (list_id, name_part + '%', max_suggestions_count))
+    return records
 
 
 def is_source_exist(source_name: str):
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT id FROM `EntriesSource` WHERE name = ?;"""
-    try:
-        cursor.execute(query, (source_name,))
-        source = cursor.fetchall()
-        cursor.close()
-        sqlite_connection.close()
-        # todo replace with ternary
-        if len(source) > 0:
-            return True
-        else:
-            return False
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''SELECT id FROM `EntriesSource` WHERE name = ?'''
+    records = execute_query(query, (source_name,))
+    # todo replace with ternary
+    if len(records) > 0:
+        return True
+    else:
+        return False
+
 
 def get_source_id(source_name):
-    # todo add docstring
-    # todo add try except
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = '''SELECT id FROM `EntriesSource` WHERE name like ?;'''
-    cursor.execute(query, (source_name + '%',))
-    records = cursor.fetchall()
-    cursor.close()
-    sqlite_connection.close()
+    query = '''SELECT id FROM `EntriesSource` WHERE name like ?'''
+    records = execute_query(query, (source_name + '%',))
     return records[0][0]
 
 
 # EntriesHistory CRUD
 def create_entries_history(source_id: int, entry_id: int, price: float, quantity: int):
     """Create entry in EntriesHistory or update if exist"""
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    try:
-        if is_entry_history_exists(source_id, entry_id, price):
-            query = """UPDATE `EntriesHistory` SET quantity = quantity + ?, special_price = 0, WHERE entry_id = ? and source_id = ? and price = ? """
-            cursor.execute(query, (quantity, entry_id, source_id, price))
-        else:
-            query = """INSERT INTO 'EntriesHistory' ('entry_id', 'source_id', 'price', 'quantity', 'special_price') VALUES (?, ?, ?, ?, 0)"""
-            cursor.execute(query, (entry_id, source_id, price, quantity,))
-        cursor.close()
-        sqlite_connection.commit()
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    if is_entry_history_exists(source_id, entry_id, price):
+        query = '''
+        UPDATE `EntriesHistory` 
+        SET quantity = quantity + ?, special_price = 0, 
+        WHERE entry_id = ? and source_id = ? and price = ? 
+        '''
+        execute_query(query, (quantity, entry_id, source_id, price))
+    else:
+        query = '''
+        INSERT INTO 'EntriesHistory' ('entry_id', 'source_id', 'price', 'quantity', 'special_price') 
+        VALUES (?, ?, ?, ?, 0)
+        '''
+        execute_query(query, (entry_id, source_id, price, quantity,))
 
 
 # todo add annotation
 def is_entry_history_exists(source_id, entry_id, price):
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    query = """SELECT * FROM `EntriesHistory` WHERE source_id = ? and entry_id = ? and price = ?;"""
-    try:
-        cursor.execute(query, (source_id, entry_id, price,))
-        source = cursor.fetchall()
-        cursor.close()
-        # todo replace with ternary
-        if len(source) > 0:
-            return True
-        else:
-            return False
-    except sqlite3.Error as error:
-        pass
-        # todo add error handling - open error popup
-    finally:
-        sqlite_connection.close()
+    query = '''SELECT * FROM `EntriesHistory` WHERE source_id = ? and entry_id = ? and price = ?'''
+    records = execute_query(query, (source_id, entry_id, price,))
+    # todo replace with ternary
+    if len(records) > 0:
+        return True
+    else:
+        return False

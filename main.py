@@ -183,24 +183,25 @@ class ListsScreen(Screen):
         :param list_name: Name of list to create
         :return:
         """
-        # TODO - implement lists order display
+        # todo - implement lists order display
+        # todo - handle duplicates
         order_id_of_list = 1
         list_name = list_name.strip()
-        if not list_name:
+        if list_name:
+            db.create_list(list_name, order_id_of_list)
+            list_id, list_name = db.read_last_list()
+            # todo add keyword arguments
+            self.add_list(
+                list_id=list_id,
+                list_name=list_name,
+                index=0,
+            )
+        else:
             # TODO - move to lang
             MainApp.open_error_popup('List name cant be empty')
-        else:
-            result, error = db.create_list(list_name, order_id_of_list)
-            if result:
-                list_id, list_name, _, _ = db.read_last_list()
-                # todo add keyword arguments
-                self.add_list(
-                    list_id=list_id,
-                    list_name=list_name,
-                    index=0,
-                )
-            elif error.args[0]:  # TODO - handle all errors
-                MainApp.open_error_popup(error.args[0])
+
+        # TODO - handle all errors
+        #     MainApp.open_error_popup(error.args[0])
 
     def delete_list(self, btn_obj):
         """
@@ -213,14 +214,11 @@ class ListsScreen(Screen):
 
     def change_edit_mode(self):
         self.is_edit_mode = not self.is_edit_mode
-        # refresh_lists_timer = Clock.schedule_interval(self.refresh_lists, 0.5)
         if self.is_edit_mode:
             self.ids.lists_edit_btn.text = lang.get('apply_edit_btn')
         else:
             self.ids.lists_edit_btn.text = lang.get('edit_btn')
-            # refresh_lists_timer.cancel()
         self.refresh_lists()
-        # refresh_lists_timer()
 
     @staticmethod
     def open_edit_popup(btn_obj):
@@ -302,7 +300,6 @@ class EntriesScreen(Screen):
             )
 
         # Add actual list name to 'Back' button
-
         self.ids.current_list_btn.text = F"<--   {self.current_list_name}"
         self.ids.tools_btn_id.text = lang.get('tools_btn')
 
@@ -324,9 +321,10 @@ class EntriesScreen(Screen):
         :param btn_obj: Object of pressed entry button from Entries screen. Contain 'id' and 'name' of the entry
         :return:
         """
-        self.complete_entry(btn_obj)
         # TODO complete_entry have to be in EntryDetailsScreen.save
         #  Now entry completed even if close app on entry_details_screen without save
+        self.complete_entry(btn_obj)
+
         entry_details_screen_instance = self.manager.get_screen(self.manager.entry_details_screen)
         entry_details_screen_instance.entry_id = btn_obj.id
         self.manager.change_screen(self.manager.entry_details_screen, "up")
@@ -353,7 +351,9 @@ class EntriesScreen(Screen):
         """
         entry_text = self.ready_to_revoke_entries.pop()
         self.create_entry(entry_text)
-        if len(self.ready_to_revoke_entries) == 0:
+
+        # Disable revoke btn if no entries to revoke
+        if not self.ready_to_revoke_entries:
             self.ids.revoke_btn_id.disabled = True
 
     # todo add annotation for all btn_obj
@@ -429,8 +429,7 @@ class EntryDetailsScreen(Screen):
         self.entry_id = ''
         self.last_source = ''
 
-        # TODO clear source_id.text if another list opened
-
+    # TODO clear source_id.text if another list opened
     def clear_source(self):
         self.ids.source_id.text = ""
 
@@ -439,13 +438,11 @@ class EntryDetailsScreen(Screen):
         source_name = self.ids.source_id.text
         price = self.ids.price_id.text
         quantity = self.ids.qty_id.text
-        source_id = None
 
         if not db.is_source_exist(source_name):
             db.create_source(source_name)
         source_id = db.get_source_id(source_name)
-
-        db.create_entries_history(source_id, self.entry_id, price, quantity)
+        db.create_entries_history(source_id, int(self.entry_id), float(price), int(quantity))
 
         self.ids.qty_id.text = ""
         self.ids.price_id.text = ""
@@ -503,6 +500,7 @@ class SettingsScreen(Screen):
 
 
 class TagsScreen(Screen):
+    # todo implement
     pass
 
 
@@ -548,7 +546,6 @@ class HistoryScreen(Screen):
         # Add properly sorted entries
         self.entries_list = db.read_entries_history(int(entries_screen_instance.current_list_id))
         self.apply_entries_sorting(self.sorting_type)
-        # TODO replace range(len()) with enumerate(), compare memory
         # for entry_num in range(len(self.entries_list)):
         #     self.add_entry(
         #         self.entries_list[entry_num][0],  # entry_id

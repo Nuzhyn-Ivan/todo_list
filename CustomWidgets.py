@@ -35,11 +35,9 @@ class TextInputWithEntriesDropDown(TextInput):
 
         screen_manager = main.MainApp.get_running_app().root
         entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
-        suggestions_list = db.read_entries_by_name_part(int(entries_screen_instance.current_list_id), entry_name_part)
-
-        # TODO list comprehensions?
-        for suggestion in suggestions_list:
-            self.suggestions.append(suggestion)
+        available_suggestions = db.read_entries_by_name_part(int(entries_screen_instance.current_list_id),
+                                                             entry_name_part)
+        self.suggestions.extend(available_suggestions)
 
         # The first entry has to be under TextInput - this is the last position in suggestions
         self.suggestions.reverse()
@@ -52,7 +50,7 @@ class TextInputWithEntriesDropDown(TextInput):
             return
         self.load_choices(text, chooser)
 
-        if len(self.suggestions) > 0:
+        if self.suggestions:
             if len(self.text) < len(self.suggestions[0]):
                 self.suggestion_text = self.suggestions[0][len(self.text):]
             else:
@@ -105,12 +103,8 @@ class TextInputWithSourcesDropDown(TextInput):
         screen_manager = main.MainApp.get_running_app().root
         entry_details_screen_instance = screen_manager.get_screen(screen_manager.entry_details_screen)
         self.suggestions.clear()
-        suggestions_list = db.read_sources_by_name_part(int(entry_details_screen_instance.entry_id),
-                                                        entry_name_part,
-                                                        )
-        # TODO try list comprehensions here
-        for suggestion in suggestions_list:
-            self.suggestions.append(suggestion)
+        available_suggestions = db.read_sources_by_name_part(entry_details_screen_instance.entry_id, entry_name_part,)
+        self.suggestions.extend(available_suggestions)
 
         # The first entry has to be next to TextInput - this is the last position in suggestions
         self.suggestions.reverse()
@@ -123,7 +117,7 @@ class TextInputWithSourcesDropDown(TextInput):
             return
         self.load_choices(text, chooser)
 
-        if len(self.suggestions) > 0:
+        if self.suggestions:
             if len(self.text) < len(self.suggestions[0]):
                 self.suggestion_text = self.suggestions[0][len(self.text):]
             else:
@@ -182,7 +176,7 @@ class ListEditPopup(Popup):
     list_name = StringProperty()
 
     def rename_list(self, text):
-        if text != self.list_name:
+        if text != self.list_name:  # todo check why this if here - remove or add docstring
             db.rename_list(self.list_name, text)
 
     def delete_list(self):

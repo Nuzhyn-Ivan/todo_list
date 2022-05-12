@@ -12,9 +12,8 @@ import lang.Localization as lang
 import utils.ConfigParser as config
 import utils.DBLayer as db
 
+
 # TODO add type of param and return for all methods
-
-
 class ScreenManagement(ScreenManager):
     """
     Class to handle all screens in app
@@ -156,10 +155,10 @@ class ListsScreen(Screen):
         """
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
-        for list in lists:
+        for list_id, list_name, _, _ in lists:
             self.add_list(
-                list_id=list[0],
-                list_name=list[1],
+                list_id=list_id,
+                list_name=list_name,
                 index=0,
             )
 
@@ -184,24 +183,25 @@ class ListsScreen(Screen):
         :param list_name: Name of list to create
         :return:
         """
-        # TODO - implement lists order display
+        # todo - implement lists order display
+        # todo - handle duplicates
         order_id_of_list = 1
         list_name = list_name.strip()
-        if len(list_name) == 0:
+        if list_name:
+            db.create_list(list_name, order_id_of_list)
+            list_id, list_name = db.read_last_list()
+            # todo add keyword arguments
+            self.add_list(
+                list_id=list_id,
+                list_name=list_name,
+                index=0,
+            )
+        else:
             # TODO - move to lang
             MainApp.open_error_popup('List name cant be empty')
-        else:
-            result, error = db.create_list(list_name, order_id_of_list)
-            if result:
-                last_list = db.read_last_list()[0]
-                # todo add keyword arguments
-                self.add_list(
-                    list_id=last_list[0],
-                    list_name=last_list[1],
-                    index=0,
-                )
-            elif error.args[0]:  # TODO - handle all errors
-                MainApp.open_error_popup(error.args[0])
+
+        # TODO - handle all errors
+        #     MainApp.open_error_popup(error.args[0])
 
     def delete_list(self, btn_obj):
         """
@@ -214,14 +214,11 @@ class ListsScreen(Screen):
 
     def change_edit_mode(self):
         self.is_edit_mode = not self.is_edit_mode
-        # refresh_lists_timer = Clock.schedule_interval(self.refresh_lists, 0.5)
         if self.is_edit_mode:
             self.ids.lists_edit_btn.text = lang.get('apply_edit_btn')
         else:
             self.ids.lists_edit_btn.text = lang.get('edit_btn')
-            # refresh_lists_timer.cancel()
         self.refresh_lists()
-        # refresh_lists_timer()
 
     @staticmethod
     def open_edit_popup(btn_obj):
@@ -303,7 +300,6 @@ class EntriesScreen(Screen):
             )
 
         # Add actual list name to 'Back' button
-
         self.ids.current_list_btn.text = F"<--   {self.current_list_name}"
         self.ids.tools_btn_id.text = lang.get('tools_btn')
 
@@ -325,9 +321,10 @@ class EntriesScreen(Screen):
         :param btn_obj: Object of pressed entry button from Entries screen. Contain 'id' and 'name' of the entry
         :return:
         """
-        self.complete_entry(btn_obj)
         # TODO complete_entry have to be in EntryDetailsScreen.save
         #  Now entry completed even if close app on entry_details_screen without save
+        self.complete_entry(btn_obj)
+
         entry_details_screen_instance = self.manager.get_screen(self.manager.entry_details_screen)
         entry_details_screen_instance.entry_id = btn_obj.id
         self.manager.change_screen(self.manager.entry_details_screen, "up")
@@ -354,7 +351,9 @@ class EntriesScreen(Screen):
         """
         entry_text = self.ready_to_revoke_entries.pop()
         self.create_entry(entry_text)
-        if len(self.ready_to_revoke_entries) == 0:
+
+        # Disable revoke btn if no entries to revoke
+        if not self.ready_to_revoke_entries:
             self.ids.revoke_btn_id.disabled = True
 
     # todo add annotation for all btn_obj
@@ -430,7 +429,7 @@ class EntryDetailsScreen(Screen):
         self.entry_id = ''
         self.last_source = ''
 
-        # TODO clear source_id.text if another list opened
+    # TODO clear source_id.text if another list opened
     def clear_source(self):
         self.ids.source_id.text = ""
 
@@ -439,13 +438,11 @@ class EntryDetailsScreen(Screen):
         source_name = self.ids.source_id.text
         price = self.ids.price_id.text
         quantity = self.ids.qty_id.text
-        source_id = None
 
         if not db.is_source_exist(source_name):
             db.create_source(source_name)
         source_id = db.get_source_id(source_name)
-
-        db.create_entries_history(source_id, self.entry_id, price, quantity)
+        db.create_entries_history(source_id, int(self.entry_id), float(price), int(quantity))
 
         self.ids.qty_id.text = ""
         self.ids.price_id.text = ""
@@ -503,6 +500,7 @@ class SettingsScreen(Screen):
 
 
 class TagsScreen(Screen):
+    # todo implement
     pass
 
 
@@ -512,21 +510,6 @@ class HistoryScreen(Screen):
         self.entries_list = []
         self.entries_list_to_delete = []
         self.sorting_type = config.get_option_value('history_sorting')
-
-    def apply_entries_sorting(self, sorting_type: str):
-        """
-        Method to apply chosen sort type
-        :param:
-        :return:
-        """
-        if sorting_type == 'az_sorting':
-            self.entries_list.sort(key=lambda x: x[2])
-        elif sorting_type == 'za_sorting':
-            self.entries_list.sort(key=lambda x: x[2], reverse=True)
-        elif sorting_type == 'min_max_usage_sorting':
-            self.entries_list.sort(key=lambda x: x[7])
-        elif sorting_type == 'max_min_usage_sorting':
-            self.entries_list.sort(key=lambda x: x[7], reverse=True)
 
     def add_entry(self, entry_id: str, entry_name: str, index=0):
         """
@@ -563,7 +546,6 @@ class HistoryScreen(Screen):
         # Add properly sorted entries
         self.entries_list = db.read_entries_history(int(entries_screen_instance.current_list_id))
         self.apply_entries_sorting(self.sorting_type)
-        # TODO replace range(len()) with enumerate(), compare memory
         # for entry_num in range(len(self.entries_list)):
         #     self.add_entry(
         #         self.entries_list[entry_num][0],  # entry_id
@@ -576,6 +558,22 @@ class HistoryScreen(Screen):
                 entry_name=entry[2],
                 index=0,
             )
+
+    def apply_entries_sorting(self, sorting_type: str):
+        """
+        Method to apply chosen sort type
+        :param:
+        :return:
+        """
+        # todo change to match after update python to 3.10
+        if sorting_type == 'az_sorting':
+            self.entries_list.sort(key=lambda x: x[2])
+        elif sorting_type == 'za_sorting':
+            self.entries_list.sort(key=lambda x: x[2], reverse=True)
+        elif sorting_type == 'min_max_usage_sorting':
+            self.entries_list.sort(key=lambda x: x[7])
+        elif sorting_type == 'max_min_usage_sorting':
+            self.entries_list.sort(key=lambda x: x[7], reverse=True)
 
     def tag_entry_to_delete(self, btn_obj):
         """
@@ -605,9 +603,12 @@ class HistoryScreen(Screen):
         :return:
         """
         last_entry = self.entries_list_to_delete.pop(-1)
+
         # Disable 'revoke' button if no entries left to revoke
         if len(self.entries_list_to_delete) == 0:
             self.ids.revoke_btn_id.disabled = True
+
+        # Add entry
         self.add_entry(
             entry_id=last_entry[0],
             entry_name=last_entry[1],

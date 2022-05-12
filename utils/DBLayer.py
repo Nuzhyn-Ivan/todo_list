@@ -308,7 +308,7 @@ def is_source_exist(source_name: str):
         return False
 
 
-def get_source_id(source_name):
+def get_source_id(source_name: str) -> str:
     query = '''SELECT id FROM `EntriesSource` WHERE name like ?'''
     records = execute_query(query, (source_name + '%',))
     return records[0][0]

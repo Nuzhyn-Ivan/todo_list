@@ -18,7 +18,10 @@ class ListsScreen(Screen):
     def __init__(self, **kwargs):
         super(ListsScreen, self).__init__(**kwargs)
         self.is_edit_mode = False
-        Clock.schedule_once(self.refresh_lists, 0.5)  # Add lists to Lists screen on app start
+        Clock.schedule_once(self.init_screen, 0.5)  # Add lists to Lists screen on app start
+
+    def init_screen(self, *delta_time: float):
+        self.refresh_lists()
 
     def add_list(self, list_id: str, list_name: str, index: int):
         """
@@ -46,7 +49,7 @@ class ListsScreen(Screen):
             list_btn.text = F"{ list_btn.name} ({list_btn.entries_count})"
         self.ids.lists_panel_id.add_widget(list_btn, index)
 
-    def refresh_lists(self, *delta_time: float):
+    def refresh_lists(self):
         """
         Method to remove all lists from Lists screen and add them again from database.
         :param delta_time: Time in sec for Clock.schedule_once(). See ListsScreen __init__
@@ -68,10 +71,10 @@ class ListsScreen(Screen):
         :return:
         """
 
-        # Init entries_screen
+        # Set pressed list_id  to entries_screen
         list_id = btn_obj.id
         entries_screen_instance = self.manager.get_screen(self.manager.entries_screen)
-        entries_screen_instance.init_entries_screen(list_id)
+        entries_screen_instance.set_current_list(list_id)
 
         # Open entries_screen
         self.manager.change_screen(self.manager.entries_screen, 'left')
@@ -138,17 +141,16 @@ class EntriesScreen(Screen):
     def __init__(self, **kwargs):
         super(EntriesScreen, self).__init__(**kwargs)
         self.ready_to_revoke_entries = []
-        self.current_list_id = None
-        self.current_list_name = None
+        self.current_list_id = ''
+        self.current_list_name = ''
 
-    def init_entries_screen(self, list_id: str):
+    def set_current_list(self, list_id: str):
         self.current_list_id = list_id
-        self.current_list_name = db.get_list_name(int(self.current_list_id))
-        self.refresh_entries_screen()
+        self.current_list_name = db.get_list_name(self.current_list_id)
 
     def add_entry(self, entry_id: str, entry_name: str, index=0):
         """
-        Method to add entry to EntriesScreen and database
+        Method to add entry to EntriesScreen
         :param entry_id: ID of entry
         :param entry_name: name of entry
         :param index: index of entry to display on entries screen. Not implemented
@@ -190,7 +192,7 @@ class EntriesScreen(Screen):
         self.ids.entries_panel_id.clear_widgets()  # remove all layouts from entries_panel
 
         # Add actual entries
-        entries_list = db.read_entries(int(self.current_list_id))
+        entries_list = db.read_entries(self.current_list_id)
         for entry in entries_list:
             self.add_entry(
                 entry_id=entry[0],
@@ -280,7 +282,7 @@ class EntriesScreen(Screen):
         # Init entry_info_screen
         entry_info_screen_instance = self.manager.get_screen(self.manager.entry_info_screen)
         current_entry_id = btn_obj.id
-        entry_info_screen_instance.init_entry_info_screen(current_entry_id)
+        entry_info_screen_instance.init_screen(current_entry_id)
 
         # Change screen to entry_info_screen
         self.manager.change_screen(self.manager.entry_info_screen, "right")
@@ -291,6 +293,16 @@ class EntryInfoScreen(Screen):
         super(EntryInfoScreen, self).__init__(**kwargs)
         self.note_text = str
         self.current_entry_id = None
+
+    def init_screen(self, current_entry_id):
+        """
+        Method to initiate EntryNotesScreen
+        :param:
+        :return:
+        """
+        self.current_entry_id = current_entry_id
+        self.note_text = db.get_entry_note(current_entry_id)
+        self.ids.note_id.text = self.note_text
 
     def save_note(self):
         """
@@ -309,16 +321,6 @@ class EntryInfoScreen(Screen):
         :return:
         """
         self.manager.change_screen(self.manager.entries_screen, "left")
-
-    def init_entry_info_screen(self, current_entry_id):
-        """
-        Method to initiate EntryNotesScreen
-        :param:
-        :return:
-        """
-        self.current_entry_id = current_entry_id
-        self.note_text = db.get_entry_note(current_entry_id)
-        self.ids.note_id.text = self.note_text
 
 
 class CompleteEntryScreen(Screen):
@@ -366,6 +368,9 @@ class SettingsScreen(Screen):
         'scrollview_size': config.get_option_value('scrollview_size'),
     })
 
+    def init_screen(self):
+        self.get_current_settings()
+
     def get_current_settings(self):
         """
         Method to actualize self.current_settings from app config
@@ -409,6 +414,9 @@ class HistoryScreen(Screen):
         self.entries_list = []
         self.entries_list_to_delete = []
         self.sorting_type = config.get_option_value('history_sorting')
+
+    def init_screen(self):
+        self.refresh_history_screen()
 
     def add_entry(self, entry_id: str, entry_name: str, index=0):
         """

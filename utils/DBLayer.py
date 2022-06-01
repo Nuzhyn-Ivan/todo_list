@@ -151,7 +151,7 @@ def read_last_list() -> list:
     return records[0]
 
 
-def get_list_name(list_id: int) -> str:
+def get_list_name(list_id: str) -> str:
     query = '''SELECT name FROM `Lists` where id = ? '''
     records = execute_query(query, (list_id,))
     list_name = records[0][0]
@@ -177,13 +177,13 @@ def delete_list_by_id(list_id: str):
 
 
 # Entries CRUD
-def get_entry_name(entry_id: int) -> str:
+def get_entry_name(entry_id: str) -> str:
     query = '''SELECT name FROM `Entries` where id = ? '''
     records = execute_query(query, (entry_id,))
     return records[0][0]
 
 
-def get_entry_note(entry_id: int) -> str:
+def get_entry_note(entry_id: str) -> str:
     query = '''SELECT note FROM `Entries` where id = ? '''
     records = execute_query(query, (entry_id,))
     return '' if (records[0][0] is None) else records[0][0]
@@ -214,19 +214,19 @@ def create_entry(list_id: int, entry_name: str):
         execute_query(query, (list_id, entry_name,))
 
 
-def read_entries(list_id: int) -> list:
+def read_entries(list_id: str) -> list:
     query = '''SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 0'''
     records = execute_query(query, (list_id,))
     return records
 
 
-def read_entries_history(list_id: int) -> list:
+def read_entries_history(list_id: str) -> list:
     query = '''SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 1'''
     records = execute_query(query, (list_id,))
     return records
 
 
-def read_entries_by_name_part(list_id: int, name_part: str) -> list:
+def read_entries_by_name_part(list_id: str, name_part: str) -> list:
     max_suggestions_count = int(config.get_option_value('max_suggestions_count'))
     query = '''
     SELECT name 
@@ -238,7 +238,7 @@ def read_entries_by_name_part(list_id: int, name_part: str) -> list:
     return records
 
 
-def read_last_entry(list_id: int) -> list:
+def read_last_entry(list_id: str) -> list:
     query = '''SELECT id, name FROM `Entries` WHERE list_id = ? ORDER BY id DESC LIMIT 1;'''
     records = execute_query(query, (list_id,))
     return records
@@ -256,17 +256,17 @@ def read_entries_count(list_id: str) -> int:
     return records[0][0]
 
 
-def complete_entry(entry_id: int):
+def complete_entry(entry_id: str):
     query = '''UPDATE `Entries` SET is_completed = 1 WHERE id = ?'''
     execute_query(query, (entry_id,))
 
 
-def set_entry_note(entry_id: int, note_text: str):
+def set_entry_note(entry_id: str, note_text: str):
     query = '''UPDATE `Entries` SET note = ? WHERE id = ?'''
     execute_query(query, (note_text, entry_id,))
 
 
-def delete_entry(entry_id: int):
+def delete_entry(entry_id: str):
     query = '''DELETE FROM `Entries` WHERE id = ? '''
     execute_query(query, (entry_id,))
 
@@ -284,7 +284,7 @@ def create_source(source_name: str):
         execute_query(query, (source_name,))
 
 
-def read_sources_by_name_part(list_id: int, name_part: str) -> list:
+def read_sources_by_name_part(list_id: str, name_part: str) -> list:
     max_suggestions_count = int(config.get_option_value('max_suggestions_count'))
     query = '''
     SELECT EntriesSource.name 
@@ -315,7 +315,7 @@ def get_source_id(source_name: str) -> str:
 
 
 # EntriesHistory CRUD
-def create_entries_history(source_id: int, entry_id: int, price: float, quantity: int):
+def create_entries_history(source_id: int, entry_id: str, price: float, quantity: int):
     """Create entry in EntriesHistory or update if exist"""
     if is_entry_history_exists(source_id, entry_id, price):
         query = '''

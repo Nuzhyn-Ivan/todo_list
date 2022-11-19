@@ -35,8 +35,8 @@ class TextInputWithEntriesDropDown(TextInput):
 
         screen_manager = main.MainApp.get_running_app().root
         entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
-        available_suggestions = db.read_entries_by_name_part(int(entries_screen_instance.current_list_id),
-                                                             entry_name_part)
+        available_suggestions = db.read_entries_by_name_part(list_id=entries_screen_instance.current_list_id,
+                                                             name_part=entry_name_part)
         self.suggestions.extend(available_suggestions)
 
         # The first entry has to be under TextInput - this is the last position in suggestions
@@ -65,7 +65,7 @@ class TextInputWithEntriesDropDown(TextInput):
                 self.dropdown.add_widget(button)
             self.dropdown.open(self)
 
-    def do_choose(self, btn_obj):
+    def do_choose(self, btn_obj: Button):
         self.text = ''
         screen_manager = main.MainApp.get_running_app().root
         entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
@@ -133,7 +133,7 @@ class TextInputWithSourcesDropDown(TextInput):
                 self.dropdown.add_widget(button)
             self.dropdown.open(self)
 
-    def do_choose(self, btn_obj):
+    def do_choose(self, btn_obj: Button):
         """
         Set text of chosen suggestion as a source InputLine text
         """
@@ -176,12 +176,12 @@ class ListEditPopup(Popup):
     list_name = StringProperty()
 
     def rename_list(self, text):
-        if text != self.list_name:  # todo check why this if here - remove or add docstring
-            db.rename_list(self.list_name, text)
+        if text != self.list_name:
+            db.rename_list(list_name=self.list_name, new_list_name=text)
 
     def delete_list(self):
         list_name = self.ids.list_name_id.text
-        list_id = db.get_list_id(list_name)
+        list_id = db.get_list_id(list_name=list_name)
         db.delete_list_by_id(list_id)
         self.dismiss()
 

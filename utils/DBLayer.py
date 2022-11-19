@@ -140,6 +140,10 @@ def create_list(list_name: str, order_id: int):
 
 
 def read_lists() -> list:
+    """
+    Select all entries from Lists table
+    :return: [id, name, order_id, created_date]
+    """
     query = '''SELECT * FROM `Lists` ORDER BY order_id '''
     records = execute_query(query)
     return records
@@ -170,7 +174,7 @@ def rename_list(list_name: str, new_list_name: str):
     execute_query(query, (new_list_name, list_name,))
 
 
-def delete_list_by_id(list_id: str):
+def delete_list_by_id(list_id: str or int):
     delete_entries(list_id)
     query = '''DELETE FROM `Lists` WHERE id = ? '''
     execute_query(query, (list_id,))
@@ -315,7 +319,11 @@ def get_source_id(source_name: str) -> str:
 
 
 # EntriesHistory CRUD
-def create_entries_history(source_id: int, entry_id: str, price: float, quantity: int):
+def create_entries_history(
+        source_id: int or str,
+        entry_id: int or str,
+        price: float,
+        quantity: int or str):
     """Create entry in EntriesHistory or update if exist"""
     if is_entry_history_exists(source_id, entry_id, price):
         query = '''

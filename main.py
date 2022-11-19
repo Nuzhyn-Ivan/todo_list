@@ -11,7 +11,7 @@ import CustomWidgets
 import lang.Localization as lang
 import utils.ConfigParser as config
 import utils.DBLayer as db
-from ScreenManagement import ScreenManagement
+from utils.ScreenManagement import ScreenManagement
 
 
 class ListsScreen(Screen):
@@ -25,7 +25,7 @@ class ListsScreen(Screen):
 
     def add_list(self, list_id: str, list_name: str, index: int):
         """
-        Method to add List on Lists screen.
+        Add List on Lists screen.
         :param list_id: List ID
         :param list_name: List name
         :param index: Index of exact list on Lists screen.
@@ -51,9 +51,7 @@ class ListsScreen(Screen):
 
     def refresh_lists(self):
         """
-        Method to remove all lists from Lists screen and add them again from database.
-        :param delta_time: Time in sec for Clock.schedule_once(). See ListsScreen __init__
-        :return:
+        Remove all lists from Lists screen and add them again from database.
         """
         lists = db.read_lists()
         self.ids.lists_panel_id.clear_widgets()
@@ -64,9 +62,9 @@ class ListsScreen(Screen):
                 index=0,
             )
 
-    def open_list(self, btn_obj):
+    def open_list(self, btn_obj: Button):
         """
-        Method to change screen to 'Entries', and add entries of exact list
+        Change screen to 'Entries', add entries of exact list
         :param btn_obj: Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
         :return:
         """
@@ -81,7 +79,7 @@ class ListsScreen(Screen):
 
     def create_list(self, list_name: str):
         """
-        Method to add list to database and Lists screen
+        Add list_name to database and Lists screen
         :param list_name: Name of list to create
         :return:
         """
@@ -99,15 +97,14 @@ class ListsScreen(Screen):
                 index=0,
             )
         else:
-            # TODO - move to lang
-            MainApp.open_error_popup('List name cant be empty')
+            MainApp.open_error_popup(lang.get('list_name_empty'))
 
         # TODO - handle all errors
         #     MainApp.open_error_popup(error.args[0])
 
-    def delete_list(self, btn_obj):
+    def delete_list(self, btn_obj: Button):
         """
-        Method to delete list from database and Lists screen
+        Delete list from database and Lists screen
         :param btn_obj: Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
         :return:
         """
@@ -123,9 +120,9 @@ class ListsScreen(Screen):
         self.refresh_lists()
 
     @staticmethod
-    def open_edit_popup(btn_obj):
+    def open_edit_popup(btn_obj: Button):
         """
-        Method to open ListEditPopup
+        Open ListEditPopup
         :param btn_obj: Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
         :return:
         """
@@ -150,11 +147,10 @@ class EntriesScreen(Screen):
 
     def add_entry(self, entry_id: str, entry_name: str, index=0):
         """
-        Method to add entry to EntriesScreen
+        Add entry to EntriesScreen
         :param entry_id: ID of entry
         :param entry_name: name of entry
         :param index: index of entry to display on entries screen. Not implemented
-        :return:
         """
         entry_note = Button(
             text=lang.get('open_entry_info'),
@@ -164,6 +160,7 @@ class EntriesScreen(Screen):
             on_release=self.open_entry_info_screen,
         )
         entry_note.id = entry_id
+        self.ids.entries_panel_id.add_widget(entry_note, index)
 
         entry = CustomWidgets.Button(
             text=entry_name,
@@ -174,13 +171,11 @@ class EntriesScreen(Screen):
             duration_long_touch=0.4,
         )
         entry.id = entry_id
-
-        self.ids.entries_panel_id.add_widget(entry_note, index)
         self.ids.entries_panel_id.add_widget(entry, index)
 
     def refresh_entries_screen(self):
         """
-        Method to refresh EntriesScreen
+        Refresh EntriesScreen
         :param:
         :return:
         """
@@ -197,18 +192,17 @@ class EntriesScreen(Screen):
             self.add_entry(
                 entry_id=entry[0],
                 entry_name=entry[2],
-                index=0,
+                index=0
             )
 
         # Add actual list name to 'Back' button
         self.ids.current_list_btn.text = F"<--   {self.current_list_name}"
         self.ids.tools_btn_id.text = lang.get('tools_btn')
 
-    def complete_entry(self, btn_obj):
+    def complete_entry(self, btn_obj: Button):
         """
-        Method to remove entry from entries screen and mark as completed in db
+        Remove entry from entries screen and mark as completed in db
         :param btn_obj: Object of pressed entry button from Entries screen. Contain 'id' and 'name' of the entry
-        :return:
         """
         db.complete_entry(btn_obj.id)
         self.ready_to_revoke_entries.append(btn_obj.text)
@@ -216,11 +210,10 @@ class EntriesScreen(Screen):
         self.ids.revoke_btn_id.disabled = False
         self.refresh_entries_screen()
 
-    def complete_entry_with_details(self, btn_obj):
+    def complete_entry_with_details(self, btn_obj: Button):
         """
-        Method to remove entry from entries screen and mark as completed in db with adding details
+        Remove entry from entries screen and mark as completed in db with adding details
         :param btn_obj: Object of pressed entry button from Entries screen. Contain 'id' and 'name' of the entry
-        :return:
         """
         # TODO complete_entry have to be in EntryDetailsScreen.save
         #  Now entry completed even if close app on entry_details_screen without save
@@ -232,21 +225,22 @@ class EntriesScreen(Screen):
 
     def create_entry(self, text: str):
         """
-        Method to add entry to database and refresh EntriesScreen
+        Add entry to database and refresh EntriesScreen
         :param text: Entry name
         :return:
         """
         text = text.strip()
         # TODO add error handling same with add_list
         if text:
-            db.create_entry(list_id=int(self.current_list_id),
-                            entry_name=text,
-                            )
+            db.create_entry(
+                list_id=int(self.current_list_id),
+                entry_name=text,
+                )
             self.refresh_entries_screen()
 
     def revoke_entry(self):
         """
-        Method to recover last completed entry and add it back to EntriesScreen
+        Recover last completed entry and add it back to EntriesScreen
         :param:
         :return:
         """
@@ -258,9 +252,9 @@ class EntriesScreen(Screen):
             self.ids.revoke_btn_id.disabled = True
 
     # todo add annotation for all btn_obj
-    def open_tools_screen(self, btn_obj):
+    def open_tools_screen(self, btn_obj: Button):
         """
-        Method to open one of the Tools screen - TagsScreen, HistoryScreen
+        Open one of the Tools screen - TagsScreen, HistoryScreen
         :param btn_obj: Object of pressed button.
         :return:
         """
@@ -275,7 +269,7 @@ class EntriesScreen(Screen):
 
     def open_entry_info_screen(self, btn_obj: Button):
         """
-        Method to open EntryInfo screen
+        Open EntryInfo screen
         :param btn_obj: Object of pressed button.
         :return:
         """
@@ -296,7 +290,7 @@ class EntryInfoScreen(Screen):
 
     def init_screen(self, current_entry_id):
         """
-        Method to initiate EntryNotesScreen
+        Initiate EntryNotesScreen
         :param:
         :return:
         """
@@ -306,7 +300,7 @@ class EntryInfoScreen(Screen):
 
     def save_note(self):
         """
-        Method to save note to database
+        Save note to database
         :param:
         :return:
         """
@@ -316,7 +310,7 @@ class EntryInfoScreen(Screen):
 
     def back(self):
         """
-        Method to change screen to EntriesScreen
+        Change screen to EntriesScreen
         :param:
         :return:
         """
@@ -343,7 +337,9 @@ class CompleteEntryScreen(Screen):
         if not db.is_source_exist(source_name):
             db.create_source(source_name)
         source_id = db.get_source_id(source_name)
-        db.create_entries_history(source_id, int(self.entry_id), float(price), int(quantity))
+        db.create_entries_history(
+            source_id=source_id, entry_id=int(self.entry_id), price=float(price), quantity=int(quantity)
+        )
 
         self.ids.qty_id.text = ""
         self.ids.price_id.text = ""
@@ -373,7 +369,7 @@ class SettingsScreen(Screen):
 
     def get_current_settings(self):
         """
-        Method to actualize self.current_settings from app config
+        Actualize self.current_settings from app config
         :param:
         :return:
         """
@@ -383,7 +379,7 @@ class SettingsScreen(Screen):
     @staticmethod
     def reset_db():
         """
-        Method to drop current database and recreate it
+        Drop current database and recreate it
         :param:
         :return:
         """
@@ -393,12 +389,12 @@ class SettingsScreen(Screen):
 
     def apply_settings(self):
         """
-        Method to apply settings from self.current_settings to app config
+        Apply settings from self.current_settings to app config
         :param:
         :return:
         """
         for key in self.current_settings:
-            config.set_option_value(key, self.current_settings[key])
+            config.set_option_value(option=key, value=self.current_settings[key])
         # TODO lang reload doesnt work
         self.manager.refresh_screens()
 
@@ -420,7 +416,7 @@ class HistoryScreen(Screen):
 
     def add_entry(self, entry_id: str, entry_name: str, index=0):
         """
-        Method to add entry to HistoryScreen and database
+        Add entry to HistoryScreen and database
         :param entry_id: ID of entry
         :param entry_name: name of entry
         :param index: index of entry to display on entries screen. Not implemented
@@ -438,7 +434,7 @@ class HistoryScreen(Screen):
 
     def refresh_history_screen(self):
         """
-        Method to refresh History Screen
+        Refresh History Screen
         :param:
         :return:
         """
@@ -451,7 +447,7 @@ class HistoryScreen(Screen):
         self.ids.back_btn.text = F"<--   {entries_screen_instance.current_list_name}"
 
         # Add properly sorted entries
-        self.entries_list = db.read_entries_history(int(entries_screen_instance.current_list_id))
+        self.entries_list = db.read_entries_history(entries_screen_instance.current_list_id)
         self.apply_entries_sorting(self.sorting_type)
         # for entry_num in range(len(self.entries_list)):
         #     self.add_entry(
@@ -468,24 +464,26 @@ class HistoryScreen(Screen):
 
     def apply_entries_sorting(self, sorting_type: str):
         """
-        Method to apply chosen sort type
+        Apply chosen sort type
         :param:
         :return:
         """
-        # todo change to match after update python to 3.10
-        if sorting_type == 'az_sorting':
-            self.entries_list.sort(key=lambda x: x[2])
-        elif sorting_type == 'za_sorting':
-            self.entries_list.sort(key=lambda x: x[2], reverse=True)
-        elif sorting_type == 'min_max_usage_sorting':
-            self.entries_list.sort(key=lambda x: x[7])
-        elif sorting_type == 'max_min_usage_sorting':
-            self.entries_list.sort(key=lambda x: x[7], reverse=True)
+        match sorting_type:
+            case 'az_sorting':
+                self.entries_list.sort(key=lambda x: x[2])
+            case 'za_sorting':
+                self.entries_list.sort(key=lambda x: x[2], reverse=True)
+            case 'min_max_usage_sorting':
+                self.entries_list.sort(key=lambda x: x[7])
+            case 'max_min_usage_sorting':
+                self.entries_list.sort(key=lambda x: x[7], reverse=True)
 
-    def tag_entry_to_delete(self, btn_obj):
+    def tag_entry_to_delete(self, btn_obj: Button):
         """
-        Method to
-        :param:
+        Delete entry from UI
+        Put to self.entries_list_to_delete
+        Enable Revoke btn
+        :param: btn_obj
         :return:
         """
         self.ids.history_panel_id.remove_widget(btn_obj)
@@ -494,7 +492,7 @@ class HistoryScreen(Screen):
 
     def apply_delete_entry(self):
         """
-        Method to delete entry from HistoryScreen
+        Delete entry from HistoryScreen
         :param:
         :return:
         """
@@ -505,7 +503,7 @@ class HistoryScreen(Screen):
 
     def revoke_entry(self):
         """
-        Method to recover last completed entry and add it back to HistoryScreen
+        Recover last completed entry and add it back to HistoryScreen
         :param:
         :return:
         """
@@ -529,7 +527,7 @@ class MainApp(App):
 
     def build(self):
         """
-        Method to build app
+        Build app
         :param:
         :return:
         """
@@ -551,7 +549,7 @@ class MainApp(App):
 
     def build_config(self, app_config: kivy.config.ConfigParser):
         """
-        Method to build app config
+        Build app config
         :param app_config:
         :return:
         """
@@ -567,7 +565,7 @@ class MainApp(App):
     @staticmethod
     def open_error_popup(text):
         """
-        Method to open ErrorPopup
+        Open ErrorPopup
         :param:
         :return:
         """

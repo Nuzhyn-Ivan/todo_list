@@ -2,7 +2,7 @@ from kivy.core.window import Window
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.screenmanager import ScreenManager, CardTransition
 
-import ConfigParser as config
+import utils.ConfigParser as config
 
 
 # TODO add type of param and return for all methods
@@ -24,26 +24,27 @@ class ScreenManagement(ScreenManager):
 
     def on_key(self, window, key, *args):
         """
-        Method to handle 'key pressed' events
+        Handle 'key pressed' events
         Full list of key codes:
         https://gist.github.com/Enteleform/a2e4daf9c302518bf31fcc2b35da4661
         """
         back_key = 27  # the 'ESC' key on win or 'Back' key on phone
 
         if key == back_key:
-            if self.current_screen.name == self.lists_screen:
-                return False  # exit the app from this page
-            elif self.current_screen.name == self.settings_screen:
-                self.change_screen(self.lists_screen, 'right')
-                return True  # do not exit the app
-            elif self.current_screen.name == self.entries_screen:
-                self.change_screen(self.lists_screen, 'right')
-                return True  # do not exit the app
+            match self.current_screen.name:
+                case self.lists_screen:
+                    return False  # exit the app from this page
+                case self.settings_screen:
+                    self.change_screen(self.lists_screen, 'right')
+                    return True  # do not exit the app
+                case self.entries_screen:
+                    self.change_screen(self.lists_screen, 'right')
+                    return True  # do not exit the app
 
     # todo add keyword arguments for all usages
     def change_screen(self, screen_name: str, transition_direction: str):
         """
-        Method to change app screen.
+        Change app screen.
         Screen title its 'name' param from kv screen file. Screens list can be found in self.screen_title.
 
         :param screen_name: title of screen to open.

@@ -22,8 +22,8 @@ def reload_lang():
     finally:
         system_language = config.get_option_value('lang')
 
-    with codecs.open("lang/{}.ini".format(system_language), encoding='utf-8') as myfile:
-        for line in myfile:
+    with codecs.open("lang/{}.ini".format(system_language), encoding='utf-8') as file:
+        for line in file:
             name, var = line.partition("=")[::2]
             lang_dict[name.strip()] = str(var).rstrip('\n')
 

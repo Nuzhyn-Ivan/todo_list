@@ -6,7 +6,7 @@ from kivy.uix.textinput import TextInput
 from kivymd.uix.behaviors import TouchBehavior
 
 import main
-import utils.DBLayer as db
+from Models.utils import DBLayer as db
 
 
 class TextInputWithEntriesDropDown(TextInput):

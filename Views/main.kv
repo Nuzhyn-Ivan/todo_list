@@ -1,0 +1,33 @@
+#: import hex kivy.utils.get_color_from_hex
+#: import CardTransition kivy.uix.screenmanager.CardTransition
+#: import CustomWidgets ViewModels.CustomWidgets
+#: import Clipboard kivy.core.clipboard.Clipboard
+#: import  config Models.utils.ConfigParser
+#: import  lang Models.lang.Localization
+
+#  Screens
+#:include force Views//kv//ListsScreen.kv
+#:include force Views//kv//SettingsScreen.kv
+#:include force Views//kv//EntriesScreen.kv
+#:include force Views//kv//TagsScreen.kv
+#:include force Views//kv//HistoryScreen.kv
+#:include force Views//kv//EntryInfoScreen.kv
+#:include force Views//kv//CompleteEntryScreen.kv
+
+#  Popups
+#:include force Views//kv//ErrorPopup.kv
+#:include force Views//kv//ListEditPopup.kv
+
+
+<ScreenManagement>:
+    id: manager
+    ListsScreen:
+    EntriesScreen:
+    SettingsScreen:
+    TagsScreen:
+    HistoryScreen:
+    EntryInfoScreen:
+    CompleteEntryScreen:
+
+
+

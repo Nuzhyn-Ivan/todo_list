@@ -1,7 +1,7 @@
 import os.path
 import sqlite3
 
-import utils.ConfigParser as config
+from Models.utils import ConfigParser as config
 
 database_path = config.get_option_value('db_path')
 migrations_list = {

@@ -1,17 +1,16 @@
-import kivy.config
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
+from kivy.lang import Builder
 from kivy.properties import DictProperty
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 
-
-import CustomWidgets
-import lang.Localization as lang
-import utils.ConfigParser as config
-import utils.DBLayer as db
-from utils.ScreenManagement import ScreenManagement
+from ViewModels import CustomWidgets
+import Models.lang.Localization as lang
+from Models.utils import ConfigParser as config
+from Models.utils import DBLayer as db
+from Models.utils.ScreenManagement import ScreenManagement
 
 
 class ListsScreen(Screen):
@@ -547,21 +546,6 @@ class MainApp(App):
 
         return ScreenManagement()
 
-    def build_config(self, app_config: kivy.config.ConfigParser):
-        """
-        Build app config
-        :param app_config:
-        :return:
-        """
-        app_config.setdefaults('', {
-            # 'font_size': '15dp',
-            # 'entries_font_size': 42,
-            # 'lists_font_size': '15dp',
-            'app_version': '0.0.20',
-            'app_title': 'TODOit',
-            'db_path': r"..\TODO.db",
-        }, )
-
     @staticmethod
     def open_error_popup(text):
         """
@@ -575,4 +559,5 @@ class MainApp(App):
 
 if __name__ == '__main__':
     db.actualize_database()
+    Builder.load_file('Views/main.kv')
     MainApp().run()

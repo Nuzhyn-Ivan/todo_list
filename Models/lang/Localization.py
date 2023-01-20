@@ -1,7 +1,7 @@
 import codecs
 import locale
 
-import utils.ConfigParser as config
+from Models.utils import ConfigParser as config
 
 lang_dict = {}
 
@@ -22,7 +22,7 @@ def reload_lang():
     finally:
         system_language = config.get_option_value('lang')
 
-    with codecs.open("lang/{}.ini".format(system_language), encoding='utf-8') as file:
+    with codecs.open("Models/lang/{}.ini".format(system_language), encoding='utf-8') as file:
         for line in file:
             name, var = line.partition("=")[::2]
             lang_dict[name.strip()] = str(var).rstrip('\n')

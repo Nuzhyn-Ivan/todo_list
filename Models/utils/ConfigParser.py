@@ -4,7 +4,7 @@ import shutil
 from kivy.config import ConfigParser
 
 __configfile = ConfigParser(interpolation=None)
-__configfile.read('main.ini')
+__configfile.read('Models/main.ini')
 
 
 def get_option_value(option: str) -> str:
@@ -30,13 +30,13 @@ def set_option_value(option: str, value: str):
     """
     __configfile.set('DEFAULT', option, value)
     __configfile.write()
-    shutil.copyfile('main.ini', '../TODO_config.ini')
+    shutil.copyfile('Models/main.ini', '../TODO_config.ini')
 
 
 def load_config():
     # TODO: move out str to var, like '../TODO_config.ini'
     if os.path.exists('../TODO_config.ini'):
-        shutil.copyfile('../TODO_config.ini', 'main.ini')  # load saved config
-        __configfile.read('main.ini')  # refresh Kivy config
+        shutil.copyfile('../TODO_config.ini', 'Models/main.ini')  # load saved config
+        __configfile.read('Models/main.ini')  # refresh Kivy config
         __configfile.write()  # save config to main.ini file # todo - is this step needed?
-        shutil.copyfile('main.ini', '../TODO_config.ini')
+        shutil.copyfile('Models/main.ini', '../TODO_config.ini')

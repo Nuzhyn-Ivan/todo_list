@@ -2,7 +2,7 @@ from kivy.core.window import Window
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.screenmanager import ScreenManager, CardTransition
 
-import utils.ConfigParser as config
+from Models.utils import ConfigParser as config
 
 
 # TODO add type of param and return for all methods

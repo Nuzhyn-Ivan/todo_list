@@ -1,5 +1,9 @@
-Kivy==1.11.1
+Kivy>=1.11.1
 # https://kivy.org/doc/stable/installation/installation-windows.html
-KivyMD==0.104.2
+# python -m pip install "kivy[base] @ https://github.com/kivy/kivy/archive/master.zip"
+
+KivyMD>=0.104.2
 # https://kivymd.readthedocs.io/en/latest/getting-started/
-python>3.10
+# pip install https://github.com/kivymd/KivyMD/archive/master.zip
+
+python==3.11

@@ -46,7 +46,7 @@ class ListsScreen(Screen):
             list_btn.text = F"{list_btn.name}{lang.get('tap_to_edit')}"
         else:
             list_btn.bind(on_release=self.open_list)
-            list_btn.text = F"{ list_btn.name} ({list_btn.entries_count})"
+            list_btn.text = F"{list_btn.name} ({list_btn.entries_count})"
         self.ids.lists_panel_id.add_widget(list_btn, index)
 
     def refresh_lists(self):
@@ -235,7 +235,7 @@ class EntriesScreen(Screen):
             db.create_entry(
                 list_id=int(self.current_list_id),
                 entry_name=text,
-                )
+            )
             self.refresh_entries_screen()
 
     def revoke_entry(self):
@@ -560,7 +560,7 @@ class MainApp(App):
             'app_version': '0.0.20',
             'app_title': 'TODOit',
             'db_path': r"..\TODO.db",
-        },)
+        }, )
 
     @staticmethod
     def open_error_popup(text):

@@ -35,10 +35,7 @@ def execute_query(query, *args):
 # TODO update documentation, refactor DBLayer(try to extract sqlite part from def)
 def is_database_exist() -> bool:
     # todo replace with ternary
-    if os.path.exists(database_path):
-        return True
-    else:
-        return False
+    return True if os.path.exists(database_path) else False
 
 
 def drop_database():

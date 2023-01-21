@@ -5,7 +5,16 @@
 #: import  config Models.utils.ConfigParser
 #: import  lang Models.lang.Localization
 
-#  Screens
+#  Screens py
+#: import ListsScreen ViewModels.screens.ListsScreen
+#: import SettingsScreen ViewModels.screens.SettingsScreen
+#: import EntriesScreen ViewModels.screens.EntriesScreen
+#: import TagsScreen ViewModels.screens.TagsScreen
+#: import HistoryScreen ViewModels.screens.HistoryScreen
+#: import EntryInfoScreen ViewModels.screens.EntryInfoScreen
+#: import CompleteEntryScreen ViewModels.screens.CompleteEntryScreen
+
+#  Screens kv
 #:include force Views//kv//ListsScreen.kv
 #:include force Views//kv//SettingsScreen.kv
 #:include force Views//kv//EntriesScreen.kv
@@ -14,10 +23,9 @@
 #:include force Views//kv//EntryInfoScreen.kv
 #:include force Views//kv//CompleteEntryScreen.kv
 
-#  Popups
+#  Popups kv
 #:include force Views//kv//ErrorPopup.kv
 #:include force Views//kv//ListEditPopup.kv
-
 
 <ScreenManagement>:
     id: manager

@@ -1,0 +1,128 @@
+from kivy.clock import Clock
+from kivy.uix.button import Button
+from kivy.uix.screenmanager import Screen
+
+from Models.lang import Localization as lang
+from Models.utils import ConfigParser as config, DBLayer as db
+from ViewModels import CustomWidgets
+from main import MainApp
+
+
+class ListsScreen(Screen):
+    def __init__(self, **kwargs):
+        super(ListsScreen, self).__init__(**kwargs)
+        self.is_edit_mode = False
+        Clock.schedule_once(self.init_screen, 0.5)  # Add lists to Lists screen on app start
+
+    def init_screen(self, *delta_time: float):
+        self.refresh_lists()
+
+    def add_list(self, list_id: str, list_name: str, index: int):
+        """
+        Add List on Lists screen.
+        :param list_id: List ID
+        :param list_name: List name
+        :param index: Index of exact list on Lists screen.
+        :return:
+        """
+        list_btn = Button(
+            font_size=config.get_option_value('lists_font_size'),
+            size_hint=(1, None),
+            height="70dp",
+        )
+        list_btn.id = list_id
+        list_btn.name = list_name
+        list_btn.entries_count = db.read_entries_count(list_id)
+
+        # todo move out is_edit_mode . One responsibility for one object
+        if self.is_edit_mode:
+            list_btn.bind(on_release=self.open_edit_popup)
+            list_btn.text = F"{list_btn.name}{lang.get('tap_to_edit')}"
+        else:
+            list_btn.bind(on_release=self.open_list)
+            list_btn.text = F"{list_btn.name} ({list_btn.entries_count})"
+        self.ids.lists_panel_id.add_widget(list_btn, index)
+
+    def refresh_lists(self):
+        """
+        Remove all lists from Lists screen and add them again from database.
+        """
+        lists = db.read_lists()
+        self.ids.lists_panel_id.clear_widgets()
+        for list_id, list_name, _, _ in lists:
+            self.add_list(
+                list_id=list_id,
+                list_name=list_name,
+                index=0,
+            )
+
+    def open_list(self, btn_obj: Button):
+        """
+        Change screen to 'Entries', add entries of exact list
+        :param btn_obj: Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
+        :return:
+        """
+
+        # Set pressed list_id  to entries_screen
+        list_id = btn_obj.id
+        entries_screen_instance = self.manager.get_screen(self.manager.entries_screen)
+        entries_screen_instance.set_current_list(list_id)
+
+        # Open entries_screen
+        self.manager.change_screen(self.manager.entries_screen, 'left')
+
+    def create_list(self, list_name: str):
+        """
+        Add list_name to database and Lists screen
+        :param list_name: Name of list to create
+        :return:
+        """
+        # todo - implement lists order display
+        # todo - handle duplicates
+        order_id_of_list = 1
+        list_name = list_name.strip()
+        if list_name:
+            db.create_list(list_name, order_id_of_list)
+            list_id, list_name = db.read_last_list()
+            # todo add keyword arguments
+            self.add_list(
+                list_id=list_id,
+                list_name=list_name,
+                index=0,
+            )
+        else:
+            MainApp.open_error_popup(lang.get('list_name_empty'))
+
+        # TODO - handle all errors
+        #     MainApp.open_error_popup(error.args[0])
+
+    def delete_list(self, btn_obj: Button):
+        """
+        Delete list from database and Lists screen
+        :param btn_obj: Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
+        :return:
+        """
+        db.delete_list_by_id(btn_obj.id)
+        self.ids.lists_panel_id.remove_widget(btn_obj)
+
+    def change_edit_mode(self):
+        self.is_edit_mode = not self.is_edit_mode
+        if self.is_edit_mode:
+            self.ids.lists_edit_btn.text = lang.get('apply_edit_btn')
+        else:
+            self.ids.lists_edit_btn.text = lang.get('edit_btn')
+        self.refresh_lists()
+
+    @staticmethod
+    def open_edit_popup(btn_obj: Button):
+        """
+        Open ListEditPopup
+        :param btn_obj: Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
+        :return:
+        """
+        list_edit_popup = CustomWidgets.ListEditPopup(
+            title=btn_obj.text.replace(lang.get('tap_to_edit'), ''),
+            title_align='center',
+        )
+        list_edit_popup.list_name = btn_obj.text.replace(lang.get('tap_to_edit'), '')
+        list_edit_popup.open()

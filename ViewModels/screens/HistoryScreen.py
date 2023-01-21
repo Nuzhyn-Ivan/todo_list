@@ -1,0 +1,121 @@
+from kivy.uix.button import Button
+from kivy.uix.screenmanager import Screen
+
+from Models.utils import ConfigParser as config, DBLayer as db
+
+
+class HistoryScreen(Screen):
+    def __init__(self, **kwargs):
+        super(HistoryScreen, self).__init__(**kwargs)
+        self.entries_list = []
+        self.entries_list_to_delete = []
+        self.sorting_type = config.get_option_value('history_sorting')
+
+    def init_screen(self):
+        self.refresh_history_screen()
+
+    def add_entry(self, entry_id: str, entry_name: str, index=0):
+        """
+        Add entry to HistoryScreen and database
+        :param entry_id: ID of entry
+        :param entry_name: name of entry
+        :param index: index of entry to display on entries screen. Not implemented
+        :return:
+        """
+        entry = Button(
+            text=entry_name,
+            size_hint=(1, None),
+            height="70dp",
+            font_size=config.get_option_value('entries_font_size'),
+            on_release=self.tag_entry_to_delete,
+        )
+        entry.id = entry_id
+        self.ids.history_panel_id.add_widget(entry, index)
+
+    def refresh_history_screen(self):
+        """
+        Refresh History Screen
+        :param:
+        :return:
+        """
+        entries_screen_instance = self.manager.get_screen(self.manager.entries_screen)
+
+        # Remove all
+        self.ids.history_panel_id.clear_widgets()
+
+        # Add actual list name to 'Back' button
+        self.ids.back_btn.text = F"<--   {entries_screen_instance.current_list_name}"
+
+        # Add properly sorted entries
+        self.entries_list = db.read_entries_history(entries_screen_instance.current_list_id)
+        self.apply_entries_sorting(self.sorting_type)
+        # for entry_num in range(len(self.entries_list)):
+        #     self.add_entry(
+        #         self.entries_list[entry_num][0],  # entry_id
+        #         self.entries_list[entry_num][2],  # entry_name
+        #         0,  # index
+        #     )
+        for entry in self.entries_list:
+            self.add_entry(
+                entry_id=entry[0],
+                entry_name=entry[2],
+                index=0,
+            )
+
+    def apply_entries_sorting(self, sorting_type: str):
+        """
+        Apply chosen sort type
+        :param:
+        :return:
+        """
+        match sorting_type:
+            case 'az_sorting':
+                self.entries_list.sort(key=lambda x: x[2])
+            case 'za_sorting':
+                self.entries_list.sort(key=lambda x: x[2], reverse=True)
+            case 'min_max_usage_sorting':
+                self.entries_list.sort(key=lambda x: x[7])
+            case 'max_min_usage_sorting':
+                self.entries_list.sort(key=lambda x: x[7], reverse=True)
+
+    def tag_entry_to_delete(self, btn_obj: Button):
+        """
+        Delete entry from UI
+        Put to self.entries_list_to_delete
+        Enable Revoke btn
+        :param: btn_obj
+        :return:
+        """
+        self.ids.history_panel_id.remove_widget(btn_obj)
+        self.entries_list_to_delete.append(btn_obj.id)
+        self.ids.revoke_btn_id.disabled = False
+
+    def apply_delete_entry(self):
+        """
+        Delete entry from HistoryScreen
+        :param:
+        :return:
+        """
+        for entry in self.entries_list_to_delete:
+            db.delete_entry(entry)
+        self.entries_list_to_delete.clear()
+        self.ids.revoke_btn_id.disabled = True
+
+    def revoke_entry(self):
+        """
+        Recover last completed entry and add it back to HistoryScreen
+        :param:
+        :return:
+        """
+        last_entry = self.entries_list_to_delete.pop(-1)
+
+        # Disable 'revoke' button if no entries left to revoke
+        if len(self.entries_list_to_delete) == 0:
+            self.ids.revoke_btn_id.disabled = True
+
+        # Add entry
+        self.add_entry(
+            entry_id=last_entry[0],
+            entry_name=last_entry[1],
+            index=0,
+        )

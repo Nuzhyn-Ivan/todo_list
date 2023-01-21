@@ -2,9 +2,9 @@ from kivy.clock import Clock
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 
+import ViewModels.popups.ListEditPopup
 from Models.lang import Localization as lang
 from Models.utils import ConfigParser as config, DBLayer as db
-from ViewModels import CustomWidgets
 from main import MainApp
 
 
@@ -120,7 +120,7 @@ class ListsScreen(Screen):
         :param btn_obj: Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
         :return:
         """
-        list_edit_popup = CustomWidgets.ListEditPopup(
+        list_edit_popup = ViewModels.popups.ListEditPopup.ListEditPopup(
             title=btn_obj.text.replace(lang.get('tap_to_edit'), ''),
             title_align='center',
         )

@@ -1,9 +1,9 @@
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 
+import ViewModels.widgets.Button
 from Models.lang import Localization as lang
 from Models.utils import DBLayer as db, ConfigParser as config
-from ViewModels import CustomWidgets
 
 
 class EntriesScreen(Screen):
@@ -34,7 +34,7 @@ class EntriesScreen(Screen):
         entry_note.id = entry_id
         self.ids.entries_panel_id.add_widget(entry_note, index)
 
-        entry = CustomWidgets.Button(
+        entry = ViewModels.widgets.Button.Button(
             text=entry_name,
             size_hint=(0.6, None),
             height=config.get_option_value('entries_height'),

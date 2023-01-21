@@ -1,9 +1,12 @@
+# This file contain ScreenManagement namespace definitions and all needed imports
+# All content used in kv - should be imported here
+
+# Various imports. Yes, its NOT a comments but worked imports. Welcome to kivy
 #: import hex kivy.utils.get_color_from_hex
 #: import CardTransition kivy.uix.screenmanager.CardTransition
-#: import CustomWidgets ViewModels.CustomWidgets
 #: import Clipboard kivy.core.clipboard.Clipboard
-#: import  config Models.utils.ConfigParser
-#: import  lang Models.lang.Localization
+#: import config Models.utils.ConfigParser
+#: import lang Models.lang.Localization
 
 #  Screens py
 #: import ListsScreen ViewModels.screens.ListsScreen
@@ -23,9 +26,21 @@
 #:include force Views//kv//EntryInfoScreen.kv
 #:include force Views//kv//CompleteEntryScreen.kv
 
+#  Popups py
+#: import EntriesNotesPopup ViewModels.popups.EntriesNotesPopup
+#: import ErrorPopup ViewModels.popups.ErrorPopup
+#: import ListEditPopup ViewModels.popups.ListEditPopup
+
 #  Popups kv
 #:include force Views//kv//ErrorPopup.kv
 #:include force Views//kv//ListEditPopup.kv
+
+#  Widgets py
+#: import Button ViewModels.widgets.Button
+#: import TextInputWithEntriesDropDown ViewModels.widgets.TextInputWithEntriesDropDown
+#: import TextInputWithSourcesDropDown ViewModels.widgets.TextInputWithSourcesDropDown
+
+#  Widgets kv
 
 <ScreenManagement>:
     id: manager
@@ -36,6 +51,3 @@
     HistoryScreen:
     EntryInfoScreen:
     CompleteEntryScreen:
-
-
-

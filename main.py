@@ -2,7 +2,7 @@ from kivy.app import App
 from kivy.core.window import Window
 from kivy.lang import Builder
 
-from ViewModels import CustomWidgets
+import ViewModels.popups.ErrorPopup
 import Models.lang.Localization as lang
 from Models.utils import ConfigParser as config
 from Models.utils import DBLayer as db
@@ -42,8 +42,8 @@ class MainApp(App):
         :param:
         :return:
         """
-        CustomWidgets.ErrorPopup.error_text = text
-        CustomWidgets.ErrorPopup().open()
+        ViewModels.popups.ErrorPopup.ErrorPopup.error_text = text
+        ViewModels.popups.ErrorPopup.ErrorPopup().open()
 
 
 if __name__ == '__main__':

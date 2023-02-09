@@ -7,15 +7,20 @@ __configfile = ConfigParser(interpolation=None)
 __configfile.read('Models/main.ini')
 
 
-def get_option_value(option: str) -> str:
+def get_option_value(option: str, default: str = None) -> str:
     """ Get option value from configfile
     :param option: title of option
     :type option: str
+    :param default value to return if option not presented
+    :type default: str
     :return: option value
     :rtype: str
     :raises:
     """
-    return __configfile.get('DEFAULT', option)
+    try:
+        return __configfile.get('DEFAULT', option)
+    except:
+        return default
 
 
 def set_option_value(option: str, value: str):

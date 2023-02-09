@@ -3,9 +3,11 @@
     orientation: 'vertical'
     on_pre_enter:
         root.refresh_entries_screen()
+
     # Root
     BoxLayout:
         orientation: 'vertical'
+
         # Upper panel
         BoxLayout:
             id: entries_upper_panel_id
@@ -35,6 +37,7 @@
                 values: 'Tags', 'History'
                 on_text:
                     root.open_tools_screen(self)
+
         # Entries Panel
         ScrollView:
             id: entries_sw_id
@@ -49,6 +52,7 @@
                 spacing: int(config.get_option_value('spacing'))
                 padding: int(config.get_option_value('padding'))
                 #height: self.minimum_height
+
         # Bottom Panel
         BoxLayout:
             orientation: 'vertical'

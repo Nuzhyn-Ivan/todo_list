@@ -1,9 +1,11 @@
 <CompleteEntryScreen>:
     name: root.manager.complete_entry_screen
     orientation: 'vertical'
+
     # Root
     BoxLayout:
         orientation: 'vertical'
+
         # Entry details panel
         ScrollView:
             bar_width: config.get_option_value('scrollview_size')
@@ -14,10 +16,12 @@
                 cols: 3
                 spacing: int(config.get_option_value('spacing'))
                 padding: int(config.get_option_value('padding'))
+
         # Separator
         BoxLayout:
             size_hint_y: None
             size_hint: 1, 0.01
+
         # Input details Panel
         BoxLayout:
             orientation: 'vertical'
@@ -55,6 +59,7 @@
                     size_hint: 0.3, 1
                     text:lang.get('save_btn')
                     on_release: root.save()
+
         # Separator
         BoxLayout:
             size_hint_y: None

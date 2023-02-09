@@ -1,11 +1,14 @@
 <SettingsScreen>:
     name: root.manager.settings_screen
     on_pre_enter: root.init_screen()
+
     # Root
     BoxLayout:
         orientation: 'vertical'
+
         ScrollView:
             bar_width: config.get_option_value('scrollview_size')
+
             BoxLayout:
                 id: settings_panel_id
                 size_hint: 1, None
@@ -19,14 +22,13 @@
                     height: "70dp"
                     size_hint: (1, None)
                     font_size: config.get_option_value('font_size')
-                    on_release:
-                        root.reset_db()
+                    on_release: root.reset_db()
 
                 # Text size for Entries on Entries Screen
                 Label:
                     size_hint: (1, None)
-                    font_size: str(entries_font_size_slider_id.value) + 'dp'
-                    text: lang.get('text_size_for_entries') + ' ' + str(int(entries_font_size_slider_id.value))
+                    font_size: "{}dp".format(entries_font_size_slider_id.value)
+                    text: "{} {}".format(lang.get('text_size_for_entries'), entries_font_size_slider_id.value)
                     height: "35dp"
                     color: 0, 0, 0, 1
                 Slider:
@@ -36,13 +38,13 @@
                     value: int(root.current_settings['entries_font_size'][:-2] )
                     range: (10,40)
                     step: 1
-                    on_value: root.current_settings['entries_font_size'] =  str(self.value) + 'dp'
+                    on_value: root.current_settings['entries_font_size'] =  "{}dp".format(self.value)
 
                 # Text size for lists on Lists Screen
                 Label:
                     size_hint: (1, None)
-                    font_size: str(lists_font_size_slider_id.value) + 'dp'
-                    text: lang.get('text_size_for_lists') + ' ' + str(int(lists_font_size_slider_id.value))
+                    font_size: "{}dp".format(lists_font_size_slider_id.value)
+                    text: "{} {}".format(lang.get('text_size_for_lists'), lists_font_size_slider_id.value)
                     height: "35dp"
                     color: 0, 0, 0, 1
                 Slider:
@@ -52,13 +54,13 @@
                     value: int(root.current_settings['lists_font_size'][:-2] )
                     range: (10,40)
                     step: 1
-                    on_value: root.current_settings['lists_font_size'] =  str(self.value) + 'dp'
+                    on_value: root.current_settings['lists_font_size'] =  "{}dp".format(self.value)
 
                 # General font size
                 Label:
                     size_hint: (1, None)
-                    font_size: str(general_font_size_slider_id.value) + 'dp'
-                    text: lang.get('general_text_size') + ' ' + str(int(general_font_size_slider_id.value))
+                    font_size: "{}dp".format(general_font_size_slider_id.value)
+                    text: "{} {}".format(lang.get('general_text_size'), general_font_size_slider_id.value)
                     height: "35dp"
                     color: 0, 0, 0, 1
                 Slider:
@@ -68,12 +70,13 @@
                     value: int(root.current_settings['font_size'][:-2] )
                     range: (10,40)
                     step: 1
-                    on_value: root.current_settings['font_size'] =  str(self.value) + 'dp'
+                    on_value: root.current_settings['font_size'] =  "{}dp".format(self.value)
 
                 # Suggestions count for entries
                 Label:
                     size_hint: (1, None)
-                    text: lang.get('suggestions_count_for_entries') + ' '  + str(int(max_suggestions_count_slider_id.value))
+                    text: "{} {}".format(lang.get('suggestions_count_for_entries'), max_suggestions_count_slider_id.value)
+
                     font_size: config.get_option_value('font_size')
                     height: "35dp"
                     color: 0, 0, 0, 1
@@ -89,7 +92,7 @@
                 # Padding
                 Label:
                     size_hint: (1, None)
-                    text: lang.get('padding')  + str(int(padding_slider_id.value))
+                    text: "{} {}".format(lang.get('padding'), int(padding_slider_id.value))
                     font_size: config.get_option_value('font_size')
                     height: "35dp"
                     color: 0, 0, 0, 1
@@ -105,7 +108,7 @@
                 # Spacing
                 Label:
                     size_hint: (1, None)
-                    text: lang.get('spacing') + ' '  + str(int(spacing_slider_id.value))
+                    text: "{} {}".format(lang.get('spacing'), int(spacing_slider_id.value))
                     font_size: config.get_option_value('font_size')
                     height: "35dp"
                     color: 0, 0, 0, 1
@@ -121,32 +124,35 @@
                 # ScrollView width
                 Label:
                     size_hint: (1, None)
-                    text: lang.get('scrollview_size') + ': '  + str(int(spacing_slider_id.value))
+                    text: "{}: {}".format(lang.get('scrollview_size'), int(scrollwiew_slider_id.value))
                     font_size: config.get_option_value('font_size')
                     height: "35dp"
                     color: 0, 0, 0, 1
                 Slider:
                     size_hint: (1, None)
                     height: "30dp"
-                    id: spacing_slider_id
+                    id: scrollwiew_slider_id
                     value: int(root.current_settings['scrollview_size'])
                     range: (0,15)
                     step: 1
                     on_value: root.current_settings['scrollview_size'] =  str(int(self.value))
+
                 # Background colour
                 Spinner:
                     height: "70dp"
                     size_hint: (1, None)
                     font_size: config.get_option_value('font_size')
-                    text: lang.get('theme') + ' ' + root.current_settings['background_colour']
-                    values: lang.get('theme') + ' ' + 'Orange', lang.get('theme') + ' ' + 'White', lang.get('theme') + ' ' + 'Black'
+                    text: "{} {}".format(lang.get('theme'), root.current_settings['background_colour'])
+                    values:
+                        "{} Orange".format(lang.get('theme')), "{} White".format(lang.get('theme')), "{} Black".format(lang.get('theme'))
+
                     on_text:  root.current_settings['background_colour'] = (self.text).rsplit(' ', 1)[1]
                 Spinner:
                     height: "70dp"
                     size_hint: (1, None)
                     font_size: config.get_option_value('font_size')
-                    text: lang.get('language:') + ' ' + root.current_settings['lang']
-                    values: lang.get('language:') + ' ' +  'en', lang.get('language:') + ' ' +  'ua',
+                    text: "{} {}".format(lang.get('language:'), root.current_settings['lang'])
+                    values: "{} en".format(lang.get('language:')), "{} ua".format(lang.get('language:'))
                     on_text:  root.current_settings['lang']  =  (self.text).rsplit(' ', 1)[1]
         # Bottom panel
         BoxLayout:

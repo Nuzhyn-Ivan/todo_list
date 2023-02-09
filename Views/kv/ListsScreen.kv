@@ -1,10 +1,12 @@
 <ListsScreen>:
     name: root.manager.lists_screen
     on_pre_enter: root.init_screen()
+
     # Root
     BoxLayout:
         orientation: 'vertical'
         # Upper Panel
+
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
@@ -31,6 +33,7 @@
                 disabled: True
         ScrollView:
             bar_width: config.get_option_value('scrollview_size')
+
             # Lists panel
             GridLayout:
                 id: lists_panel_id
@@ -39,6 +42,7 @@
                 padding: int(config.get_option_value('padding'))
                 size_hint_y: None
                 height: self.minimum_height
+
         # Bottom panel
         BoxLayout:
             orientation: 'horizontal'

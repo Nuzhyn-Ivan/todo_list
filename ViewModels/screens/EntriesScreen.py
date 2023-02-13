@@ -59,7 +59,7 @@ class EntriesScreen(Screen):
         self.ids.entries_panel_id.clear_widgets()  # remove all layouts from entries_panel
 
         # Add actual entries
-        entries_list = db.read_entries(self.current_list_id)
+        entries_list = db.read_entries(list_id=self.current_list_id)
         for entry in entries_list:
             self.add_entry(
                 entry_id=entry[0],

@@ -3,8 +3,13 @@ import shutil
 
 from kivy.config import ConfigParser
 
+
+DEFAULT_SECTION = 'DEFAULT'
+MAIN_CONFIG_PATH = 'Models/main.ini'
+BACKUP_CONFIG_PATH = '../TODO_config.ini'
+
 __configfile = ConfigParser(interpolation=None)
-__configfile.read('Models/main.ini')
+__configfile.read(MAIN_CONFIG_PATH)
 
 
 def get_option_value(option: str, default: str = None) -> str:
@@ -18,7 +23,7 @@ def get_option_value(option: str, default: str = None) -> str:
     :raises:
     """
     try:
-        return __configfile.get('DEFAULT', option)
+        return __configfile.get(DEFAULT_SECTION, option)
     except:
         return default
 
@@ -33,15 +38,15 @@ def set_option_value(option: str, value: str):
     :rtype:
     :raises:
     """
-    __configfile.set('DEFAULT', option, value)
+    __configfile.set(DEFAULT_SECTION, option, value)
     __configfile.write()
-    shutil.copyfile('Models/main.ini', '../TODO_config.ini')
+    shutil.copyfile(MAIN_CONFIG_PATH, BACKUP_CONFIG_PATH)
 
 
 def load_config():
     # TODO: move out str to var, like '../TODO_config.ini'
-    if os.path.exists('../TODO_config.ini'):
-        shutil.copyfile('../TODO_config.ini', 'Models/main.ini')  # load saved config
-        __configfile.read('Models/main.ini')  # refresh Kivy config
+    if os.path.exists(BACKUP_CONFIG_PATH):
+        shutil.copyfile(BACKUP_CONFIG_PATH, MAIN_CONFIG_PATH)  # load saved config
+        __configfile.read(MAIN_CONFIG_PATH)  # refresh Kivy config
         __configfile.write()  # save config to main.ini file # todo - is this step needed?
-        shutil.copyfile('Models/main.ini', '../TODO_config.ini')
+        shutil.copyfile(MAIN_CONFIG_PATH, BACKUP_CONFIG_PATH)

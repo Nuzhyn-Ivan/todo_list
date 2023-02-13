@@ -1,5 +1,6 @@
 import os.path
 import sqlite3
+from typing import Tuple, List, Union
 
 from Models.utils import ConfigParser as config
 
@@ -25,7 +26,7 @@ def execute_query(query, *args):
         sqlite_connection.commit()
         return records
     except sqlite3.Error as error:
-        pass
+        print(f"Error executing query: {error}")
         # todo add error handling - open error popup
     finally:
         cursor.close()
@@ -33,16 +34,15 @@ def execute_query(query, *args):
 
 
 # TODO update documentation, refactor DBLayer(try to extract sqlite part from def)
-def is_database_exist() -> bool:
-    # todo replace with ternary
-    return True if os.path.exists(database_path) else False
+def database_exist() -> bool:
+    return os.path.exists(database_path)
 
 
 def drop_database():
     """
     Drop database
     """
-    if os.path.exists(database_path):
+    if database_exist():
         os.remove(database_path)
 
 
@@ -50,7 +50,7 @@ def actualize_database():
     """
     Run database migrations if db state not actual. Create db if not exist.
     """
-    if is_database_exist():
+    if database_exist():
         run_migrations()
     else:
         create_database()
@@ -59,6 +59,9 @@ def actualize_database():
 # TODO add feature to backup db and load from backup
 # TODO default lists and entries - make it lang related
 def create_database():
+    """
+    Create the database tables and insert default values.
+    """
     sqlite_create_lists = '''
     CREATE TABLE Lists (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -132,35 +135,35 @@ def run_migrations():
 
 # Lists CRUD
 def create_list(list_name: str, order_id: int):
-    query = "INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, ? )"
+    query = '''INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, ? )'''
     execute_query(query, (list_name, order_id))
 
 
-def read_lists() -> list:
+def read_lists() -> list[tuple]:
     """
     Select all entries from Lists table
     :return: [id, name, order_id, created_date]
     """
-    query = '''SELECT * FROM `Lists` ORDER BY order_id '''
+    query = '''SELECT * FROM `Lists` ORDER BY order_id'''
     records = execute_query(query)
     return records
 
 
-def read_last_list() -> list:
-    query = '''SELECT id, name FROM `Lists` ORDER BY id DESC LIMIT 1;'''
+def read_last_list() -> list[tuple]:
+    query = '''SELECT id, name FROM `Lists` ORDER BY id DESC LIMIT 1'''
     records = execute_query(query)
     return records[0]
 
 
 def get_list_name(list_id: str) -> str:
-    query = '''SELECT name FROM `Lists` where id = ? '''
+    query = '''SELECT name FROM `Lists` WHERE id = ?'''
     records = execute_query(query, (list_id,))
     list_name = records[0][0]
     return list_name
 
 
 def get_list_id(list_name: str) -> int:
-    query = '''SELECT id FROM `Lists` where name = ? '''
+    query = '''SELECT id FROM `Lists` WHERE name = ?'''
     records = execute_query(query, (list_name,))
     list_id = records[0][0]
     return list_id
@@ -179,28 +182,28 @@ def delete_list_by_id(list_id: str or int):
 
 # Entries CRUD
 def get_entry_name(entry_id: str) -> str:
-    query = '''SELECT name FROM `Entries` where id = ? '''
+    query = '''SELECT name FROM `Entries` WHERE id = ? '''
     records = execute_query(query, (entry_id,))
     return records[0][0]
 
 
 def get_entry_note(entry_id: str) -> str:
-    query = '''SELECT note FROM `Entries` where id = ? '''
+    query = '''SELECT note FROM `Entries` WHERE id = ? '''
     records = execute_query(query, (entry_id,))
     return '' if (records[0][0] is None) else records[0][0]
 
 
-def is_entry_exists(entry_name: str) -> bool:
+def entry_exists(entry_name: str) -> bool:
     query = '''SELECT * FROM `Entries` WHERE name = ?'''
     records = execute_query(query, (entry_name,))
-    return True if records else False
+    return bool(records)
 
 
 def create_entry(list_id: int, entry_name: str):
     """
     Create entry OR set 'is_completed=1' if exist
     """
-    if is_entry_exists(entry_name):
+    if entry_exists(entry_name):
         query = '''
         UPDATE `Entries` 
         SET list_id = ?, is_completed = 0, frequency =  frequency + 1  
@@ -215,44 +218,37 @@ def create_entry(list_id: int, entry_name: str):
         execute_query(query, (list_id, entry_name,))
 
 
-def read_entries(list_id: str) -> list:
-    query = '''SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 0'''
-    records = execute_query(query, (list_id,))
+def read_entries(list_id: str, completed: bool = False) -> list[tuple]:
+    query = '''SELECT * FROM `Entries` WHERE list_id = ? and is_completed = ?'''
+    records = execute_query(query, (list_id, completed))
     return records
 
 
-def read_entries_history(list_id: str) -> list:
-    query = '''SELECT * FROM `Entries` WHERE list_id = ? and is_completed = 1'''
-    records = execute_query(query, (list_id,))
-    return records
-
-
-def read_entries_by_name_part(list_id: str, name_part: str) -> list:
-    max_suggestions_count = int(config.get_option_value('max_suggestions_count'))
+def read_entries_by_name_part(list_id: str, name_part: str, limit: int) -> list[tuple]:
     query = '''
     SELECT name 
     FROM `Entries` 
     WHERE list_id = ? and name like ? and is_completed = 1 
     ORDER BY frequency DESC LIMIT ?;
     '''
-    records = execute_query(query, (list_id, name_part + '%', max_suggestions_count))
+    records = execute_query(query, (list_id, f'{name_part}%', limit))
     return records
 
 
-def read_last_entry(list_id: str) -> list:
+def read_last_entry(list_id: str) -> list[tuple]:
     query = '''SELECT id, name FROM `Entries` WHERE list_id = ? ORDER BY id DESC LIMIT 1;'''
     records = execute_query(query, (list_id,))
     return records
 
 
-def read_all_entries() -> list:
+def read_all_entries() -> list[tuple]:
     query = '''SELECT * FROM `Entries` '''
     records = execute_query(query, )
     return records
 
 
 def read_entries_count(list_id: str) -> int:
-    query = '''SELECT COUNT(*) FROM `Entries` WHERE list_id = ?  and is_completed = 0'''
+    query = '''SELECT COUNT(*) FROM `Entries` WHERE list_id = ? and is_completed = 0'''
     records = execute_query(query, (list_id,))
     return records[0][0]
 
@@ -280,49 +276,44 @@ def delete_entries(list_id: str):
 # Sources CRUD
 def create_source(source_name: str):
     # todo - fix, it doesnt work
-    if not is_source_exist(source_name):
-        query = '''INSERT INTO 'EntriesSource' ( 'name') VALUES (?)'''
+    if not source_exist(source_name):
+        query = '''INSERT INTO 'EntriesSource' ('name') VALUES (?)'''
         execute_query(query, (source_name,))
 
 
-def read_sources_by_name_part(list_id: str, name_part: str) -> list:
-    max_suggestions_count = int(config.get_option_value('max_suggestions_count'))
+def read_sources_by_name_part(list_id: str, name_part: str, limit: int) -> list[tuple]:
     query = '''
     SELECT EntriesSource.name 
     FROM `EntriesHistory` 
     INNER JOIN 'EntriesSource' on EntriesHistory.source_id = EntriesSource.id 
     INNER JOIN  'Entries' on Entries.id = EntriesHistory.entry_id 
-    WHERE Entries.list_id = ? and EntriesSource.name like ? 
+    WHERE Entries.list_id = ? and EntriesSource.name LIKE ? 
     ORDER BY quantity DESC LIMIT ?
     '''
-    records = execute_query(query, (list_id, name_part + '%', max_suggestions_count))
+    records = execute_query(query, (list_id, f'{name_part}%', limit))
     return records
 
 
-def is_source_exist(source_name: str):
+def source_exist(source_name: str) -> bool:
     query = '''SELECT id FROM `EntriesSource` WHERE name = ?'''
     records = execute_query(query, (source_name,))
-    # todo replace with ternary
-    if len(records) > 0:
-        return True
-    else:
-        return False
+    return bool(records)
 
 
 def get_source_id(source_name: str) -> str:
     query = '''SELECT id FROM `EntriesSource` WHERE name like ?'''
-    records = execute_query(query, (source_name + '%',))
+    records = execute_query(query, (f'{source_name}%',))
     return records[0][0]
 
 
 # EntriesHistory CRUD
 def create_entries_history(
-        source_id: int or str,
-        entry_id: int or str,
+        source_id: Union[int, str],
+        entry_id: Union[int, str],
         price: float,
-        quantity: int or str):
+        quantity: Union[int, str]):
     """Create entry in EntriesHistory or update if exist"""
-    if is_entry_history_exists(source_id, entry_id, price):
+    if entry_history_exists(source_id, entry_id, price):
         query = '''
         UPDATE `EntriesHistory` 
         SET quantity = quantity + ?, special_price = 0, 
@@ -338,11 +329,8 @@ def create_entries_history(
 
 
 # todo add annotation
-def is_entry_history_exists(source_id, entry_id, price):
+def entry_history_exists(source_id, entry_id, price):
     query = '''SELECT * FROM `EntriesHistory` WHERE source_id = ? and entry_id = ? and price = ?'''
     records = execute_query(query, (source_id, entry_id, price,))
-    # todo replace with ternary
-    if len(records) > 0:
-        return True
-    else:
-        return False
+    return bool(records)
+

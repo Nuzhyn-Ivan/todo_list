@@ -1,3 +1,4 @@
+from enum import Enum
 from kivy.core.window import Window
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.screenmanager import ScreenManager, CardTransition
@@ -74,9 +75,8 @@ class ScreenManagement(ScreenManager):
 
         # clear all the dashboard screens from the outer container
         for screen in loaded_screens.values():
-            parent = screen.parent
-            if parent is not None:
-                parent.remove_widget(screen)
+            if screen.parent:
+                screen.parent.remove_widget(screen)
 
         # add more carousel panes as needed
         while True:
@@ -92,7 +92,7 @@ class ScreenManagement(ScreenManager):
         # Now re-add the screens for the new screen keys
         for (screen_key, container) in zip(new_screens, carousel.slides):
             screen = loaded_screens.get(screen_key)
-            if screen is not None:
+            if screen:
                 container.add_widget(screen)
 
         self._screens = new_screens

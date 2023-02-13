@@ -3,6 +3,7 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.textinput import TextInput
 
 import main
+from Models.utils.ConfigParser import ConfigParser as config
 from Models.utils import DBLayer as db
 from ViewModels.widgets.Button import Button
 
@@ -33,7 +34,10 @@ class TextInputWithSourcesDropDown(TextInput):
         screen_manager = main.MainApp.get_running_app().root
         entry_details_screen_instance = screen_manager.get_screen(screen_manager.entry_details_screen)
         self.suggestions.clear()
-        available_suggestions = db.read_sources_by_name_part(entry_details_screen_instance.entry_id, entry_name_part,)
+        max_suggestions_count = int(config.get_option_value('max_suggestions_count'))
+        available_suggestions = db.read_sources_by_name_part(list_id=entry_details_screen_instance.entry_id,
+                                                             name_part=entry_name_part,
+                                                             limit=max_suggestions_count)
         self.suggestions.extend(available_suggestions)
 
         # The first entry has to be next to TextInput - this is the last position in suggestions

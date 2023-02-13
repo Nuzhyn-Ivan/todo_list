@@ -47,7 +47,7 @@ class HistoryScreen(Screen):
         self.ids.back_btn.text = F"<--   {entries_screen_instance.current_list_name}"
 
         # Add properly sorted entries
-        self.entries_list = db.read_entries_history(entries_screen_instance.current_list_id)
+        self.entries_list = db.read_entries(list_id=entries_screen_instance.current_list_id, completed=True)
         self.apply_entries_sorting(self.sorting_type)
         # for entry_num in range(len(self.entries_list)):
         #     self.add_entry(

@@ -27,7 +27,7 @@ class EntryInfoScreen(Screen):
         """
         self.manager.change_screen(self.manager.entries_screen, "left")
         db.set_entry_note(self.entry_id, self.ids.note_id.text)
-        self.ids.note_id.text = ''
+        self.ids.note_id.text = ""
 
     def back(self):
         """

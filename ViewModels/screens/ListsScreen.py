@@ -12,7 +12,9 @@ class ListsScreen(Screen):
     def __init__(self, **kwargs):
         super(ListsScreen, self).__init__(**kwargs)
         self.is_edit_mode = False
-        Clock.schedule_once(self.init_screen, 0.5)  # Add lists to Lists screen on app start
+        Clock.schedule_once(
+            self.init_screen, 0.5
+        )  # Add lists to Lists screen on app start
 
     def init_screen(self, *delta_time: float):
         self.refresh_lists()
@@ -26,7 +28,7 @@ class ListsScreen(Screen):
         :return:
         """
         list_btn = Button(
-            font_size=config.get_option_value('lists_font_size'),
+            font_size=config.get_option_value("lists_font_size"),
             size_hint=(1, None),
             height="70dp",
         )
@@ -37,10 +39,10 @@ class ListsScreen(Screen):
         # todo move out is_edit_mode . One responsibility for one object
         if self.is_edit_mode:
             list_btn.bind(on_release=self.open_edit_popup)
-            list_btn.text = F"{list_btn.name}{lang.get('tap_to_edit')}"
+            list_btn.text = f"{list_btn.name}{lang.get('tap_to_edit')}"
         else:
             list_btn.bind(on_release=self.open_list)
-            list_btn.text = F"{list_btn.name} ({list_btn.entries_count})"
+            list_btn.text = f"{list_btn.name} ({list_btn.entries_count})"
         self.ids.lists_panel_id.add_widget(list_btn, index)
 
     def refresh_lists(self):
@@ -69,7 +71,7 @@ class ListsScreen(Screen):
         entries_screen_instance.set_current_list(list_id)
 
         # Open entries_screen
-        self.manager.change_screen(self.manager.entries_screen, 'left')
+        self.manager.change_screen(self.manager.entries_screen, "left")
 
     def create_list(self, list_name: str):
         """
@@ -91,7 +93,7 @@ class ListsScreen(Screen):
                 index=0,
             )
         else:
-            MainApp.open_error_popup(lang.get('list_name_empty'))
+            MainApp.open_error_popup(lang.get("list_name_empty"))
 
         # TODO - handle all errors
         #     MainApp.open_error_popup(error.args[0])
@@ -108,9 +110,9 @@ class ListsScreen(Screen):
     def change_edit_mode(self):
         self.is_edit_mode = not self.is_edit_mode
         if self.is_edit_mode:
-            self.ids.lists_edit_btn.text = lang.get('apply_edit_btn')
+            self.ids.lists_edit_btn.text = lang.get("apply_edit_btn")
         else:
-            self.ids.lists_edit_btn.text = lang.get('edit_btn')
+            self.ids.lists_edit_btn.text = lang.get("edit_btn")
         self.refresh_lists()
 
     @staticmethod
@@ -121,8 +123,8 @@ class ListsScreen(Screen):
         :return:
         """
         list_edit_popup = ViewModels.popups.ListEditPopup.ListEditPopup(
-            title=btn_obj.text.replace(lang.get('tap_to_edit'), ''),
-            title_align='center',
+            title=btn_obj.text.replace(lang.get("tap_to_edit"), ""),
+            title_align="center",
         )
-        list_edit_popup.list_name = btn_obj.text.replace(lang.get('tap_to_edit'), '')
+        list_edit_popup.list_name = btn_obj.text.replace(lang.get("tap_to_edit"), "")
         list_edit_popup.open()

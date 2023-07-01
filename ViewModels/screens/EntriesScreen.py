@@ -10,8 +10,8 @@ class EntriesScreen(Screen):
     def __init__(self, **kwargs):
         super(EntriesScreen, self).__init__(**kwargs)
         self.ready_to_revoke_entries = []
-        self.current_list_id = ''
-        self.current_list_name = ''
+        self.current_list_id = ""
+        self.current_list_name = ""
 
     def set_current_list(self, list_id: str):
         self.current_list_id = list_id
@@ -25,10 +25,10 @@ class EntriesScreen(Screen):
         :param index: index of entry to display on entries screen. Not implemented
         """
         entry_note = Button(
-            text=lang.get('open_entry_info'),
+            text=lang.get("open_entry_info"),
             size_hint=(0.2, None),
-            height=config.get_option_value('entries_height'),
-            font_size=config.get_option_value('entries_font_size'),
+            height=config.get_option_value("entries_height"),
+            font_size=config.get_option_value("entries_font_size"),
             on_release=self.open_entry_info_screen,
         )
         entry_note.id = entry_id
@@ -37,8 +37,8 @@ class EntriesScreen(Screen):
         entry = ViewModels.widgets.Button.Button(
             text=entry_name,
             size_hint=(0.6, None),
-            height=config.get_option_value('entries_height'),
-            font_size=config.get_option_value('entries_font_size'),
+            height=config.get_option_value("entries_height"),
+            font_size=config.get_option_value("entries_font_size"),
             on_release=self.complete_entry,
             duration_long_touch=0.4,
         )
@@ -61,15 +61,11 @@ class EntriesScreen(Screen):
         # Add actual entries
         entries_list = db.read_entries(list_id=self.current_list_id)
         for entry in entries_list:
-            self.add_entry(
-                entry_id=entry[0],
-                entry_name=entry[2],
-                index=0
-            )
+            self.add_entry(entry_id=entry[0], entry_name=entry[2], index=0)
 
         # Add actual list name to 'Back' button
-        self.ids.current_list_btn.text = F"<--   {self.current_list_name}"
-        self.ids.tools_btn_id.text = lang.get('tools_btn')
+        self.ids.current_list_btn.text = f"<--   {self.current_list_name}"
+        self.ids.tools_btn_id.text = lang.get("tools_btn")
 
     def complete_entry(self, btn_obj: Button):
         """
@@ -91,7 +87,9 @@ class EntriesScreen(Screen):
         #  Now entry completed even if close app on entry_details_screen without save
         self.complete_entry(btn_obj)
 
-        complete_entry_screen_instance = self.manager.get_screen(self.manager.complete_entry_screen)
+        complete_entry_screen_instance = self.manager.get_screen(
+            self.manager.complete_entry_screen
+        )
         complete_entry_screen_instance.entry_id = btn_obj.id
         self.manager.change_screen(self.manager.complete_entry_screen, "up")
 
@@ -131,9 +129,9 @@ class EntriesScreen(Screen):
         :return:
         """
         pressed_button = lang.get_key_by_value(btn_obj.text)
-        if pressed_button == 'tags_btn':
+        if pressed_button == "tags_btn":
             self.manager.change_screen(self.manager.tags_screen, "right")
-        elif pressed_button == 'history_btn':
+        elif pressed_button == "history_btn":
             self.manager.change_screen(self.manager.history_screen, "right")
         else:
             # TODO: add exception handling
@@ -146,7 +144,9 @@ class EntriesScreen(Screen):
         :return:
         """
         # Init entry_info_screen
-        entry_info_screen_instance = self.manager.get_screen(self.manager.entry_info_screen)
+        entry_info_screen_instance = self.manager.get_screen(
+            self.manager.entry_info_screen
+        )
         current_entry_id = btn_obj.id
         entry_info_screen_instance.init_screen(current_entry_id)
 

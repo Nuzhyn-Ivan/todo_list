@@ -4,16 +4,16 @@ import shutil
 from kivy.config import ConfigParser
 
 
-DEFAULT_SECTION = 'DEFAULT'
-MAIN_CONFIG_PATH = 'Models/main.ini'
-BACKUP_CONFIG_PATH = '../TODO_config.ini'
+DEFAULT_SECTION = "DEFAULT"
+MAIN_CONFIG_PATH = "Models/main.ini"
+BACKUP_CONFIG_PATH = "../TODO_config.ini"
 
 __configfile = ConfigParser(interpolation=None)
 __configfile.read(MAIN_CONFIG_PATH)
 
 
 def get_option_value(option: str, default: str = None) -> str:
-    """ Get option value from configfile
+    """Get option value from configfile
     :param option: title of option
     :type option: str
     :param default value to return if option not presented
@@ -29,7 +29,7 @@ def get_option_value(option: str, default: str = None) -> str:
 
 
 def set_option_value(option: str, value: str):
-    """ Set option value to configfile
+    """Set option value to configfile
     :param option: title of option
     :type option: str
     :param value: new value for option

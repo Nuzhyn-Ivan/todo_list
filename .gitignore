@@ -106,3 +106,4 @@ venv.bak/
 /prev_details.txt
 /idea - Copy/
 /.idea/
+.vscode/settings.json

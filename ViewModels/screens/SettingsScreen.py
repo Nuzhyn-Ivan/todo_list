@@ -11,17 +11,19 @@ class SettingsScreen(Screen):
     def __init__(self, **kwargs):
         super(SettingsScreen, self).__init__(**kwargs)
 
-    current_settings = DictProperty({
-        'background_colour': config.get_option_value('background_colour'),
-        'lang': config.get_option_value('lang'),
-        'entries_font_size': config.get_option_value('entries_font_size'),
-        'lists_font_size': config.get_option_value('lists_font_size'),
-        'max_suggestions_count': config.get_option_value('max_suggestions_count'),
-        'font_size': config.get_option_value('font_size'),
-        'padding': config.get_option_value('padding'),
-        'spacing': config.get_option_value('spacing'),
-        'scrollview_size': config.get_option_value('scrollview_size'),
-    })
+    current_settings = DictProperty(
+        {
+            "background_colour": config.get_option_value("background_colour"),
+            "lang": config.get_option_value("lang"),
+            "entries_font_size": config.get_option_value("entries_font_size"),
+            "lists_font_size": config.get_option_value("lists_font_size"),
+            "max_suggestions_count": config.get_option_value("max_suggestions_count"),
+            "font_size": config.get_option_value("font_size"),
+            "padding": config.get_option_value("padding"),
+            "spacing": config.get_option_value("spacing"),
+            "scrollview_size": config.get_option_value("scrollview_size"),
+        }
+    )
 
     def init_screen(self):
         self.get_current_settings()

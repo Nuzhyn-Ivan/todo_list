@@ -6,9 +6,9 @@ from Models.utils import DBLayer as db
 class CompleteEntryScreen(Screen):
     def __init__(self, **kwargs):
         super(CompleteEntryScreen, self).__init__(**kwargs)
-        self.note_text = ''
-        self.entry_id = ''
-        self.last_source = ''
+        self.note_text = ""
+        self.entry_id = ""
+        self.last_source = ""
 
     # TODO clear source_id.text if another list opened
     def clear_source(self):
@@ -24,7 +24,10 @@ class CompleteEntryScreen(Screen):
             db.create_source(source_name)
         source_id = db.get_source_id(source_name)
         db.create_entries_history(
-            source_id=source_id, entry_id=int(self.entry_id), price=float(price), quantity=int(quantity)
+            source_id=source_id,
+            entry_id=int(self.entry_id),
+            price=float(price),
+            quantity=int(quantity),
         )
 
         self.ids.qty_id.text = ""

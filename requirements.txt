@@ -5,5 +5,3 @@ Kivy>=1.11.1
 KivyMD>=0.104.2
 # https://kivymd.readthedocs.io/en/latest/getting-started/
 # pip install https://github.com/kivymd/KivyMD/archive/master.zip
-
-python==3.11

@@ -141,7 +141,7 @@ def create_list(list_name: str, order_id: int):
     execute_query(query, (list_name, order_id))
 
 
-def read_lists() -> list[tuple]:
+def read_lists() -> List[Tuple]:
     """
     Select all entries from Lists table
     :return: [id, name, order_id, created_date]
@@ -151,7 +151,7 @@ def read_lists() -> list[tuple]:
     return records
 
 
-def read_last_list() -> list[tuple]:
+def read_last_list() -> List[Tuple]:
     query = """SELECT id, name FROM `Lists` ORDER BY id DESC LIMIT 1"""
     records = execute_query(query)
     return records[0]
@@ -182,7 +182,7 @@ def rename_list(list_name: str, new_list_name: str):
     )
 
 
-def delete_list_by_id(list_id: str or int):
+def delete_list_by_id(list_id: Union[str, int]):
     delete_entries(list_id)
     query = """DELETE FROM `Lists` WHERE id = ? """
     execute_query(query, (list_id,))
@@ -238,13 +238,13 @@ def create_entry(list_id: int, entry_name: str):
         )
 
 
-def read_entries(list_id: str, completed: bool = False) -> list[tuple]:
+def read_entries(list_id: str, completed: bool = False) -> List[Tuple]:
     query = """SELECT * FROM `Entries` WHERE list_id = ? and is_completed = ?"""
     records = execute_query(query, (list_id, completed))
     return records
 
 
-def read_entries_by_name_part(list_id: str, name_part: str, limit: int) -> list[tuple]:
+def read_entries_by_name_part(list_id: str, name_part: str, limit: int) -> List[Tuple]:
     query = """
     SELECT name 
     FROM `Entries` 
@@ -255,7 +255,7 @@ def read_entries_by_name_part(list_id: str, name_part: str, limit: int) -> list[
     return records
 
 
-def read_last_entry(list_id: str) -> list[tuple]:
+def read_last_entry(list_id: str) -> List[Tuple]:
     query = (
         """SELECT id, name FROM `Entries` WHERE list_id = ? ORDER BY id DESC LIMIT 1;"""
     )
@@ -263,7 +263,7 @@ def read_last_entry(list_id: str) -> list[tuple]:
     return records
 
 
-def read_all_entries() -> list[tuple]:
+def read_all_entries() -> List[Tuple]:
     query = """SELECT * FROM `Entries` """
     records = execute_query(
         query,
@@ -311,7 +311,7 @@ def create_source(source_name: str):
         execute_query(query, (source_name,))
 
 
-def read_sources_by_name_part(list_id: str, name_part: str, limit: int) -> list[tuple]:
+def read_sources_by_name_part(list_id: str, name_part: str, limit: int) -> List[Tuple]:
     query = """
     SELECT EntriesSource.name 
     FROM `EntriesHistory` 

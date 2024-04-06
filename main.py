@@ -25,13 +25,13 @@ class MainApp(App):
             "White": [1.0, 1.0, 1.0, 1],
             "Black": [0, 0, 0, 1],
         }
-        Window.clearcolor = background_dict[
-            config.get_option_value("background_colour")
-        ]
+        Window.clearcolor = background_dict[config.get_option_value("background_colour")]
         Window.softinput_mode = "below_target"  # TextInput keyboard position https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
         # TODO move ALL paths to system settings
         self.icon = "images/icon.png"
-        self.title = f"{config.get_option_value('app_title')}  {config.get_option_value('app_version')}"
+        self.title = (
+            f"{config.get_option_value('app_title')}  {config.get_option_value('app_version')}"
+        )
         lang.reload_lang()
         config.load_config()
 

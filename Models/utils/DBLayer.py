@@ -99,9 +99,7 @@ def create_database():
     FOREIGN KEY(entry_id) REFERENCES Entries(id),
     FOREIGN KEY(source_id) REFERENCES EntriesSource(id));
     """
-    sqlite_create_entry_name_index = (
-        """CREATE UNIQUE INDEX entry_name ON Entries(name);"""
-    )
+    sqlite_create_entry_name_index = """CREATE UNIQUE INDEX entry_name ON Entries(name);"""
     sqlite_insert_default_lists = """
     INSERT INTO 'Lists' ('name', 'order_id') VALUES ("Supermarket", 1 ), ("To Do", 2 ), ("Drug Store", 3 ), ("Movies to watch", 4 );
     """
@@ -256,9 +254,7 @@ def read_entries_by_name_part(list_id: str, name_part: str, limit: int) -> List[
 
 
 def read_last_entry(list_id: str) -> List[Tuple]:
-    query = (
-        """SELECT id, name FROM `Entries` WHERE list_id = ? ORDER BY id DESC LIMIT 1;"""
-    )
+    query = """SELECT id, name FROM `Entries` WHERE list_id = ? ORDER BY id DESC LIMIT 1;"""
     records = execute_query(query, (list_id,))
     return records
 

@@ -33,9 +33,7 @@ class TextInputWithEntriesDropDown(TextInput):
         self.suggestions.clear()
 
         screen_manager = main.MainApp.get_running_app().root
-        entries_screen_instance = screen_manager.get_screen(
-            screen_manager.entries_screen
-        )
+        entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
         max_suggestions_count = int(config.get_option_value("max_suggestions_count"))
         available_suggestions = db.read_entries_by_name_part(
             list_id=entries_screen_instance.current_list_id,
@@ -59,9 +57,7 @@ class TextInputWithEntriesDropDown(TextInput):
             if len(self.text) < len(self.suggestions[0]):
                 self.suggestion_text = self.suggestions[0][len(self.text) :]
             else:
-                self.suggestion_text = (
-                    " "  # setting suggestion_text to '' screws everything
-                )
+                self.suggestion_text = " "  # setting suggestion_text to '' screws everything
             self.dropdown = DropDown()
             for suggestion in self.suggestions:
                 button = Button(
@@ -76,9 +72,7 @@ class TextInputWithEntriesDropDown(TextInput):
     def do_choose(self, btn_obj: Button):
         self.text = ""
         screen_manager = main.MainApp.get_running_app().root
-        entries_screen_instance = screen_manager.get_screen(
-            screen_manager.entries_screen
-        )
+        entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
         entries_screen_instance.create_entry(btn_obj.text)
         self.focused = True
         # TODO press enter here

@@ -59,9 +59,7 @@ class TextInputWithSourcesDropDown(TextInput):
             if len(self.text) < len(self.suggestions[0]):
                 self.suggestion_text = self.suggestions[0][len(self.text) :]
             else:
-                self.suggestion_text = (
-                    " "  # setting suggestion_text to '' screws everything
-                )
+                self.suggestion_text = " "  # setting suggestion_text to '' screws everything
 
             self.dropdown = DropDown()
             for suggestion in self.suggestions:

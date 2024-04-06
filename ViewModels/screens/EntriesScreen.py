@@ -87,9 +87,7 @@ class EntriesScreen(Screen):
         #  Now entry completed even if close app on entry_details_screen without save
         self.complete_entry(btn_obj)
 
-        complete_entry_screen_instance = self.manager.get_screen(
-            self.manager.complete_entry_screen
-        )
+        complete_entry_screen_instance = self.manager.get_screen(self.manager.complete_entry_screen)
         complete_entry_screen_instance.entry_id = btn_obj.id
         self.manager.change_screen(self.manager.complete_entry_screen, "up")
 
@@ -144,9 +142,7 @@ class EntriesScreen(Screen):
         :return:
         """
         # Init entry_info_screen
-        entry_info_screen_instance = self.manager.get_screen(
-            self.manager.entry_info_screen
-        )
+        entry_info_screen_instance = self.manager.get_screen(self.manager.entry_info_screen)
         current_entry_id = btn_obj.id
         entry_info_screen_instance.init_screen(current_entry_id)
 

@@ -12,9 +12,7 @@ class ListsScreen(Screen):
     def __init__(self, **kwargs):
         super(ListsScreen, self).__init__(**kwargs)
         self.is_edit_mode = False
-        Clock.schedule_once(
-            self.init_screen, 0.5
-        )  # Add lists to Lists screen on app start
+        Clock.schedule_once(self.init_screen, 0.5)  # Add lists to Lists screen on app start
 
     def init_screen(self, *delta_time: float):
         self.refresh_lists()

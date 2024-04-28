@@ -18,6 +18,27 @@ def execute_query(query, *args):
     :type args: tuple
     :return: result of query execution
     """
+    with sqlite3.connect(database_path) as sqlite_connection:
+        cursor = sqlite_connection.cursor()
+        try:
+            cursor.execute(query, *args)
+        except sqlite3.Error as error:
+            print(f"Error executing query: {error}")
+            # TODO add error handling - open error popup
+        records = cursor.fetchall()
+        sqlite_connection.commit()
+
+        return records
+
+
+def execute_query(query, *args):
+    """
+    Execute given query with given params
+    :param query: SQL query
+    :param args: params for a query
+    :type args: tuple
+    :return: result of query execution
+    """
     sqlite_connection = sqlite3.connect(database_path)
     cursor = sqlite_connection.cursor()
     try:
@@ -120,7 +141,7 @@ def create_database():
 
 
 def run_migrations():
-    # todo add try except
+    # TODO add try except
     current_db_version = int(config.get_option_value("db_version"))
     available_db_version = int(config.get_option_value("available_db_version"))
     if current_db_version == available_db_version:
@@ -301,7 +322,7 @@ def delete_entries(list_id: str):
 
 # Sources CRUD
 def create_source(source_name: str):
-    # todo - fix, it doesnt work
+    # TODO - fix, it doesnt work
     if not source_exist(source_name):
         query = """INSERT INTO 'EntriesSource' ('name') VALUES (?)"""
         execute_query(query, (source_name,))
@@ -363,7 +384,7 @@ def create_entries_history(
         )
 
 
-# todo add annotation
+# TODO add annotation
 def entry_history_exists(source_id, entry_id, price):
     query = """SELECT * FROM `EntriesHistory` WHERE source_id = ? and entry_id = ? and price = ?"""
     records = execute_query(

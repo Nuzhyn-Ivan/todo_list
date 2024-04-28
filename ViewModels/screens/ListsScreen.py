@@ -34,7 +34,7 @@ class ListsScreen(Screen):
         list_btn.name = list_name
         list_btn.entries_count = db.read_entries_count(list_id)
 
-        # todo move out is_edit_mode . One responsibility for one object
+        # TODO move out is_edit_mode . One responsibility for one object
         if self.is_edit_mode:
             list_btn.bind(on_release=self.open_edit_popup)
             list_btn.text = f"{list_btn.name}{lang.get('tap_to_edit')}"
@@ -77,14 +77,14 @@ class ListsScreen(Screen):
         :param list_name: Name of list to create
         :return:
         """
-        # todo - implement lists order display
-        # todo - handle duplicates
+        # TODO - implement lists order display
+        # TODO - handle duplicates
         order_id_of_list = 1
         list_name = list_name.strip()
         if list_name:
             db.create_list(list_name, order_id_of_list)
             list_id, list_name = db.read_last_list()
-            # todo add keyword arguments
+            # TODO add keyword arguments
             self.add_list(
                 list_id=list_id,
                 list_name=list_name,

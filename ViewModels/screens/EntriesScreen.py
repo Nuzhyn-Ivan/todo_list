@@ -119,7 +119,7 @@ class EntriesScreen(Screen):
         if not self.ready_to_revoke_entries:
             self.ids.revoke_btn_id.disabled = True
 
-    # todo add annotation for all btn_obj
+    # TODO add annotation for all btn_obj
     def open_tools_screen(self, btn_obj: Button):
         """
         Open one of the Tools screen - TagsScreen, HistoryScreen

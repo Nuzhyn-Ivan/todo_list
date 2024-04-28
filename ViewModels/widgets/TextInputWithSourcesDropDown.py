@@ -3,7 +3,7 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.textinput import TextInput
 
 import main
-from Models.utils.ConfigParser import ConfigParser as config
+from Models.utils import ConfigParser as config
 from Models.utils import DBLayer as db
 from ViewModels.widgets.Button import Button
 

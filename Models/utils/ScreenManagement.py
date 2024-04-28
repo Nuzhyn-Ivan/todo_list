@@ -42,7 +42,7 @@ class ScreenManagement(ScreenManager):
                     self.change_screen(self.lists_screen, 'right')
                     return True  # do not exit the app
 
-    # todo add keyword arguments for all usages
+    # TODO add keyword arguments for all usages
     def change_screen(self, screen_name: str, transition_direction: str):
         """
         Change app screen.

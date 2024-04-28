@@ -48,5 +48,5 @@ def load_config():
     if os.path.exists(BACKUP_CONFIG_PATH):
         shutil.copyfile(BACKUP_CONFIG_PATH, MAIN_CONFIG_PATH)  # load saved config
         __configfile.read(MAIN_CONFIG_PATH)  # refresh Kivy config
-        __configfile.write()  # save config to main.ini file # todo - is this step needed?
+        __configfile.write()  # save config to main.ini file # TODO - is this step needed?
         shutil.copyfile(MAIN_CONFIG_PATH, BACKUP_CONFIG_PATH)

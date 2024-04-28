@@ -114,6 +114,7 @@ class HistoryScreen(Screen):
             self.ids.revoke_btn_id.disabled = True
 
         # Add entry
+        # TODO fix bug - crash if revoke last element
         self.add_entry(
             entry_id=last_entry[0],
             entry_name=last_entry[1],

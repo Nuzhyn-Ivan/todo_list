@@ -1,4 +1,4 @@
-Kivy==1.11.1
+Kivy==2.3.0
 # https://kivy.org/doc/stable/installation/installation-windows.html
 # python -m pip install "kivy[base] @ https://github.com/kivy/kivy/archive/master.zip"
 

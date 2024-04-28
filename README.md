@@ -4,7 +4,17 @@ Multi-platform software that can help with:
  2. Any other purchasing
  3. Tasks planing
 
-  
+
+<h2>Installation: 
+- Install Python version >= 3.12
+- Clone project
+- Install requirements - run command in project riit folder:
+```
+pip install requirements.txt
+```
+
+
+<h2>Project links: 
 <b>[Screens mockups](https://docs.google.com/spreadsheets/d/1g5a4iL-abl7XVjZZBlOETwhCndjMTFNPsLoZjlWfgho/edit#gid=1589445334)</b>
  
 <b>[Dev plan \ features list](https://docs.google.com/spreadsheets/d/1W4E6JZhHewFV_RY0rLUNJusN-v26cQYMAsJaDdUuIqs/edit?usp=sharing)</b>
@@ -14,6 +24,7 @@ Multi-platform software that can help with:
 <b>[Database schema (https://dbdiagram.io)](https://dbdiagram.io/d/62470b7ad043196e39db9e48)</b>
  
 
+<h2>Project description and mockups: 
  You can create lists for grosser, any other shops, todo lists:
  
  <img width="264" alt="lists" src="https://user-images.githubusercontent.com/9976493/167604138-65cebcac-ed7c-4936-b448-19c44c4de058.png">

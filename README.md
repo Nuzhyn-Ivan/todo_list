@@ -5,7 +5,7 @@ Multi-platform software that can help with:
  3. Tasks planing
 
 
-<h2>Installation: 
+# <h2>Installation: 
 
 - Install Python version >= 3.12
 - Clone project
@@ -15,7 +15,7 @@ pip install requirements.txt
 ```
 
 
-<h2>Project links: 
+# <h2>Project links: 
 
 <b>[Screens mockups](https://docs.google.com/spreadsheets/d/1g5a4iL-abl7XVjZZBlOETwhCndjMTFNPsLoZjlWfgho/edit#gid=1589445334)</b>
  
@@ -26,7 +26,7 @@ pip install requirements.txt
 <b>[Database schema (https://dbdiagram.io)](https://dbdiagram.io/d/62470b7ad043196e39db9e48)</b>
  
 
-<h2>Project description and mockups: 
+# <h2>Project description and mockups: 
 
  You can create lists for grosser, any other shops, todo lists:
  

@@ -11,7 +11,7 @@
         ScrollView:
             size_hint: 1, 0.9
             id: entries_sw_id
-            bar_width: config.get_option_value('scrollview_size')
+            bar_width: root.config.get('scrollview_size')
             TextInput:
                 id: note_id
                 size_hint_y: None
@@ -19,13 +19,13 @@
                 halign: "center"
                 is_focusable: True
                 hint_text: lang.get('entry_note_textinput_hint')
-                font_size: config.get_option_value('font_size')
+                font_size: root.config.get('font_size')
         BoxLayout:
             orientation: 'horizontal'
             size_hint: 1, 0.1
             Button:
                 text: lang.get('back_btn')
-                font_size: config.get_option_value('font_size')
+                font_size: root.config.get('font_size')
                 height: "70dp"
                 size_hint:(1, None)
                 on_release:
@@ -33,7 +33,7 @@
 
             Button:
                 text: lang.get('save_btn')
-                font_size: config.get_option_value('font_size')
+                font_size: root.config.get('font_size')
                 height: "70dp"
                 size_hint:(1, None)
                 on_release:

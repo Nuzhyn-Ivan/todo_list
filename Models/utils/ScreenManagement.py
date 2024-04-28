@@ -3,8 +3,7 @@ from kivy.core.window import Window
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.screenmanager import ScreenManager, CardTransition
 
-from Models.utils import ConfigParser as config
-
+from Models.utils.config_parser import  Config
 
 # TODO add type of param and return for all methods
 class ScreenManagement(ScreenManager):
@@ -21,6 +20,7 @@ class ScreenManagement(ScreenManager):
 
     def __init__(self, **kwargs):
         super(ScreenManagement, self).__init__(**kwargs)
+        self.config = Config()
         Window.bind(on_keyboard=self.on_key)
 
     def on_key(self, window, key, *args):
@@ -53,7 +53,7 @@ class ScreenManagement(ScreenManager):
         :return:
         """
         self.transition = CardTransition(direction=transition_direction,
-                                         duration=float(config.get_option_value('screen_transition_duration')))
+                                         duration=float(self.config.get('screen_transition_duration')))
         self.current = screen_name
 
     def _update_screens(self, new_screens):

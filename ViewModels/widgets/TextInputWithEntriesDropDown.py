@@ -3,9 +3,9 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.textinput import TextInput
 
 import main
-from Models.utils import ConfigParser as config
 from Models.utils import DBLayer as db
 from ViewModels.widgets.Button import Button
+from Models.utils.config_parser import Config
 
 
 class TextInputWithEntriesDropDown(TextInput):
@@ -18,6 +18,7 @@ class TextInputWithEntriesDropDown(TextInput):
 
     def __init__(self, **kwargs):
         super(TextInputWithEntriesDropDown, self).__init__(**kwargs)
+        self.config = Config()
         self.suggestions = kwargs.pop("suggestions", [])  # list of suggestions
         self.text_validate_unfocus = False
         self.multiline = False
@@ -34,7 +35,7 @@ class TextInputWithEntriesDropDown(TextInput):
 
         screen_manager = main.MainApp.get_running_app().root
         entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
-        max_suggestions_count = int(config.get_option_value("max_suggestions_count"))
+        max_suggestions_count = int(self.config.get("max_suggestions_count"))
         available_suggestions = db.read_entries_by_name_part(
             list_id=entries_screen_instance.current_list_id,
             name_part=entry_name_part,

@@ -1,11 +1,13 @@
 from kivy.uix.screenmanager import Screen
 
 from Models.utils import DBLayer as db
+from Models.utils.config_parser import Config
 
 
 class EntryInfoScreen(Screen):
     def __init__(self, **kwargs):
         super(EntryInfoScreen, self).__init__(**kwargs)
+        self.config = Config()
         self.note_text = str
         self.current_entry_id = None
 

@@ -3,21 +3,21 @@ from kivy.core.window import Window
 from kivy.lang import Builder
 
 import Models.lang.Localization as lang
-from Models.utils import ConfigParser as config
+from Models.utils.config_parser import Config
 from Models.utils import DBLayer as db
 from Models.utils.ScreenManagement import ScreenManagement
 from ViewModels.popups.ErrorPopup import ErrorPopup
 
 
 class MainApp(App):
+
     def __init__(self, **kwargs):
         super(MainApp, self).__init__(**kwargs)
+        self.configuration = Config()
 
     def build(self):
         """
         Build app
-        :param:
-        :return:
         """
         # TODO refactor background - handle list type for config.get()
         background_dict = {
@@ -25,15 +25,14 @@ class MainApp(App):
             "White": [1.0, 1.0, 1.0, 1],
             "Black": [0, 0, 0, 1],
         }
-        Window.clearcolor = background_dict[config.get_option_value("background_colour")]
+        Window.clearcolor = background_dict[self.configuration.get("background_colour")]
         Window.softinput_mode = "below_target"  # TextInput keyboard position https://android.developreference.com/article/19684878/Android+on-screen+keyboard+hiding+Python+Kivy+TextInputs
         # TODO move ALL paths to system settings
         self.icon = "images/icon.png"
         self.title = (
-            f"{config.get_option_value('app_title')}  {config.get_option_value('app_version')}"
+            f"{self.configuration.get('app_title')}  {self.configuration.get('app_version')}"
         )
         lang.reload_lang()
-        config.load_config()
 
         return ScreenManagement()
 

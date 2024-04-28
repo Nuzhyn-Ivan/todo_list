@@ -1,7 +1,9 @@
 import codecs
 import locale
 
-from Models.utils import ConfigParser as config
+from Models.utils.config_parser import Config
+
+config = Config()
 
 lang_dict = {}
 supported_lang_path = {
@@ -12,19 +14,15 @@ supported_lang_path = {
 
 def reload_lang():
     lang_dict.clear()
-    system_language = config.get_option_value("lang")
+    system_language = config.get("lang")
     if system_language is None:
         system_default_lang = locale.getdefaultlocale()[0][:2].lower()
         system_language = (
-            "en"
-            if system_default_lang not in supported_lang_path.keys()
-            else system_default_lang
+            "en" if system_default_lang not in supported_lang_path.keys() else system_default_lang
         )
-        config.set_option_value("lang", system_language)
+        config.set("lang", system_language)
 
-    with codecs.open(
-        supported_lang_path.get(system_language), encoding="utf-8"
-    ) as file:
+    with codecs.open(supported_lang_path.get(system_language), encoding="utf-8") as file:
         for line in file:
             name, _, var = line.partition("=")
             lang_dict[name.strip()] = var.rstrip()

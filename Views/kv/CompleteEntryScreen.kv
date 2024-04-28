@@ -8,14 +8,14 @@
 
         # Entry details panel
         ScrollView:
-            bar_width: config.get_option_value('scrollview_size')
+            bar_width: root.config.get('scrollview_size')
             GridLayout:
                 id: entry_details_panel_id
                 size_hint_y: None
                 height: 50
                 cols: 3
-                spacing: int(config.get_option_value('spacing'))
-                padding: int(config.get_option_value('padding'))
+                spacing: int(root.config.get('spacing'))
+                padding: int(root.config.get('padding'))
 
         # Separator
         BoxLayout:

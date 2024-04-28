@@ -2,9 +2,10 @@ import os.path
 import sqlite3
 from typing import Tuple, List, Union
 
-from Models.utils import ConfigParser as config
+from Models.utils.config_parser import Config
 
-database_path = config.get_option_value("db_path")
+config = Config()
+database_path = config.get("db_path")
 migrations_list = {
     1: """ALTER TABLE `Entries` ADD COLUMN note TEXT;""",
 }
@@ -142,8 +143,8 @@ def create_database():
 
 def run_migrations():
     # TODO add try except
-    current_db_version = int(config.get_option_value("db_version"))
-    available_db_version = int(config.get_option_value("available_db_version"))
+    current_db_version = int(config.get("db_version"))
+    available_db_version = int(config.get("available_db_version"))
     if current_db_version == available_db_version:
         return
     else:
@@ -151,7 +152,7 @@ def run_migrations():
             if key > current_db_version:
                 execute_query(query)
                 current_db_version = key
-        config.set_option_value("db_version", str(current_db_version))
+        config.set("db_version", str(current_db_version))
 
 
 # Lists CRUD

@@ -3,12 +3,14 @@ from kivy.uix.screenmanager import Screen
 
 import ViewModels.widgets.Button
 from Models.lang import Localization as lang
-from Models.utils import DBLayer as db, ConfigParser as config
+from Models.utils import DBLayer as db
+from Models.utils.config_parser import Config
 
 
 class EntriesScreen(Screen):
     def __init__(self, **kwargs):
         super(EntriesScreen, self).__init__(**kwargs)
+        self.config = Config()
         self.ready_to_revoke_entries = []
         self.current_list_id = ""
         self.current_list_name = ""
@@ -27,8 +29,8 @@ class EntriesScreen(Screen):
         entry_note = Button(
             text=lang.get("open_entry_info"),
             size_hint=(0.2, None),
-            height=config.get_option_value("entries_height"),
-            font_size=config.get_option_value("entries_font_size"),
+            height=self.config.get("entries_height"),
+            font_size=self.config.get("entries_font_size"),
             on_release=self.open_entry_info_screen,
         )
         entry_note.id = entry_id
@@ -37,8 +39,8 @@ class EntriesScreen(Screen):
         entry = ViewModels.widgets.Button.Button(
             text=entry_name,
             size_hint=(0.6, None),
-            height=config.get_option_value("entries_height"),
-            font_size=config.get_option_value("entries_font_size"),
+            height=self.config.get("entries_height"),
+            font_size=self.config.get("entries_font_size"),
             on_release=self.complete_entry,
             duration_long_touch=0.4,
         )

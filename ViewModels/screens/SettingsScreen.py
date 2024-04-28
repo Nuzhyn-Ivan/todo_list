@@ -1,7 +1,7 @@
-from kivy.properties import DictProperty
 from kivy.uix.screenmanager import Screen
 
-from Models.utils import ConfigParser as config, DBLayer as db
+from Models.utils import DBLayer as db
+from Models.utils.config_parser import Config
 from main import MainApp
 
 
@@ -10,20 +10,21 @@ class SettingsScreen(Screen):
     # TODO move all kv strings to lang
     def __init__(self, **kwargs):
         super(SettingsScreen, self).__init__(**kwargs)
+        self.config = Config()
 
-    current_settings = DictProperty(
-        {
-            "background_colour": config.get_option_value("background_colour"),
-            "lang": config.get_option_value("lang"),
-            "entries_font_size": config.get_option_value("entries_font_size"),
-            "lists_font_size": config.get_option_value("lists_font_size"),
-            "max_suggestions_count": config.get_option_value("max_suggestions_count"),
-            "font_size": config.get_option_value("font_size"),
-            "padding": config.get_option_value("padding"),
-            "spacing": config.get_option_value("spacing"),
-            "scrollview_size": config.get_option_value("scrollview_size"),
-        }
-    )
+        self.current_settings = dict(
+            {
+                "background_colour": self.config.get("background_colour"),
+                "lang": self.config.get("lang"),
+                "entries_font_size": self.config.get("entries_font_size"),
+                "lists_font_size": self.config.get("lists_font_size"),
+                "max_suggestions_count": self.config.get("max_suggestions_count"),
+                "font_size": self.config.get("font_size"),
+                "padding": self.config.get("padding"),
+                "spacing": self.config.get("spacing"),
+                "scrollview_size": self.config.get("scrollview_size"),
+            }
+        )
 
     def init_screen(self):
         self.get_current_settings()
@@ -35,7 +36,7 @@ class SettingsScreen(Screen):
         :return:
         """
         for key in self.current_settings:
-            self.current_settings[key] = config.get_option_value(key)
+            self.current_settings[key] = self.config.get(key)
 
     @staticmethod
     def reset_db():
@@ -55,6 +56,6 @@ class SettingsScreen(Screen):
         :return:
         """
         for key in self.current_settings:
-            config.set_option_value(option=key, value=self.current_settings[key])
+            self.config.set(option=key, value=self.current_settings[key])
         # TODO lang reload doesnt work
         self.manager.refresh_screens()

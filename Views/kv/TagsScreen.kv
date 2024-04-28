@@ -8,12 +8,12 @@
         Label:
             size_hint: (1, None)
             text: 'tags_screen'
-            font_size: config.get_option_value('font_size')
+
             height: "35dp"
             color: 0, 0, 0, 1
         Button:
             text: lang.get('back_btn')
             height: "70dp"
-            font_size: config.get_option_value('font_size')
+
             on_release:
                 root.manager.change_screen(root.manager.entries_screen, "right")

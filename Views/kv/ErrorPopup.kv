@@ -14,7 +14,7 @@
             text: root.error_text
         Button:
             text: lang.get('close_btn')
-            font_size: config.get_option_value('font_size')
+            font_size: root.config.get('font_size')
             height: "70dp"
             size_hint:(1, None)
             on_release:

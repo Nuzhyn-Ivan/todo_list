@@ -1,11 +1,15 @@
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 
+from Models.screen_names import ScreenNames
 from Models.utils import DBLayer as db
+from Models.utils.ScreenManagement import ScreenManagement
 from Models.utils.config_parser import  Config
 
 
 class HistoryScreen(Screen):
+    manager: ScreenManagement
+    
     def __init__(self, **kwargs):
         super(HistoryScreen, self).__init__(**kwargs)
         self.config = Config()
@@ -40,7 +44,7 @@ class HistoryScreen(Screen):
         """
         Refresh History Screen
         """
-        entries_screen_instance = self.manager.get_screen(self.manager.entries_screen)
+        entries_screen_instance = self.manager.get_screen(ScreenNames.ENTRIES)
 
         # Remove all
         self.ids.history_panel_id.clear_widgets()

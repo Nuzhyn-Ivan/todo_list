@@ -1,5 +1,5 @@
 <EntriesScreen>:
-    name: root.manager.entries_screen
+    name: ScreenNames.ENTRIES
     orientation: 'vertical'
     on_pre_enter:
         root.refresh_entries_screen()
@@ -20,7 +20,7 @@
                 id: current_list_btn
                 font_size: root.config.get('font_size')
                 size_hint: 0.6, 1
-                on_release: root.manager.change_screen(root.manager.lists_screen, "right")
+                on_release: root.manager.change_screen(ScreenNames.LISTS, "right")
             Button:
                 id: revoke_btn_id
                 text: lang.get('revoke_btn')

@@ -1,5 +1,5 @@
 <EntryInfoScreen>:
-    name: root.manager.entry_info_screen
+    name: ScreenNames.ENTRY_INFO
 #    on_pre_enter:
 
     # Root
@@ -29,7 +29,7 @@
                 height: "70dp"
                 size_hint:(1, None)
                 on_release:
-                    root.manager.change_screen(root.manager.entries_screen, "left")
+                    root.manager.change_screen(ScreenNames.ENTRIES, "left")
 
             Button:
                 text: lang.get('save_btn')

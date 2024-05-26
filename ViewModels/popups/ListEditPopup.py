@@ -1,6 +1,7 @@
 from kivy.properties import StringProperty
 from kivy.uix.popup import Popup
 
+from Models.screen_names import ScreenNames
 import main
 from Models.utils import DBLayer as db
 
@@ -21,5 +22,5 @@ class ListEditPopup(Popup):
     @staticmethod
     def refresh_lists():
         screen_manager = main.MainApp.get_running_app().root
-        lists_screen_instance = screen_manager.get_screen(screen_manager.lists_screen)
+        lists_screen_instance = screen_manager.get_screen(ScreenNames.LISTS)
         lists_screen_instance.refresh_lists()

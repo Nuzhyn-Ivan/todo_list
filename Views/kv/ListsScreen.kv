@@ -1,5 +1,5 @@
 <ListsScreen>:
-    name: root.manager.lists_screen
+    name: ScreenNames.LISTS
     on_pre_enter: root.init_screen()
 
     # Root
@@ -17,7 +17,7 @@
             Button:
                 text: lang.get('settings_btn')
                 font_size: root.config.get('font_size')
-                on_release: root.manager.change_screen(root.manager.settings_screen, "left")
+                on_release: root.manager.change_screen(ScreenNames.SETTINGS, "left")
                 size_hint: 0.6, 1
             Button:
                 id: lists_edit_btn

@@ -1,10 +1,14 @@
 from kivy.uix.screenmanager import Screen
 
+from Models.screen_names import ScreenNames
 from Models.utils import DBLayer as db
+from Models.utils.ScreenManagement import ScreenManagement
 from Models.utils.config_parser import Config
 
 
 class EntryInfoScreen(Screen):
+    manager: ScreenManagement
+
     def __init__(self, **kwargs):
         super(EntryInfoScreen, self).__init__(**kwargs)
         self.config = Config()
@@ -25,7 +29,7 @@ class EntryInfoScreen(Screen):
         Save note to database
 
         """
-        self.manager.change_screen(self.manager.entries_screen, "left")
+        self.manager.change_screen(ScreenNames.ENTRIES, "left")
         db.set_entry_note(self.entry_id, self.ids.note_id.text)
         self.ids.note_id.text = ""
 
@@ -34,4 +38,4 @@ class EntryInfoScreen(Screen):
         Change screen to EntriesScreen
 
         """
-        self.manager.change_screen(self.manager.entries_screen, "left")
+        self.manager.change_screen(ScreenNames.ENTRIES, "left")

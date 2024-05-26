@@ -1,5 +1,5 @@
 <CompleteEntryScreen>:
-    name: root.manager.complete_entry_screen
+    name: ScreenNames.COMPLETE_ENTRY
     orientation: 'vertical'
 
     # Root
@@ -72,5 +72,5 @@
                 id: add_entry_details_id
                 text: lang.get('complete_without_details')
                 on_release:
-                    root.manager.change_screen(root.manager.entries_screen, "down")
+                    root.manager.change_screen(ScreenNames.ENTRIES, "down")
                     # TODO clear price_id, qty_id

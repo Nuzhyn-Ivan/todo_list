@@ -1,5 +1,5 @@
 <HistoryScreen>:
-    name: root.manager.history_screen
+    name: ScreenNames.HISTORY
     on_pre_enter:
         root.init_screen()
     on_pre_leave:
@@ -21,7 +21,7 @@
                 height: "70dp"
                 font_size: root.config.get('font_size')
                 on_release:
-                    root.manager.change_screen(root.manager.entries_screen, "left")
+                    root.manager.change_screen(ScreenNames.ENTRIES, "left")
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None

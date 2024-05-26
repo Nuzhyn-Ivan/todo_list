@@ -1,6 +1,7 @@
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 
+from Models.screen_names import ScreenNames
 import ViewModels.widgets.Button
 from Models.lang import Localization as lang
 from Models.utils import DBLayer as db
@@ -89,7 +90,7 @@ class EntriesScreen(Screen):
 
         complete_entry_screen_instance = self.manager.get_screen(self.manager.complete_entry_screen)
         complete_entry_screen_instance.entry_id = btn_obj.id
-        self.manager.change_screen(self.manager.complete_entry_screen, "up")
+        self.manager.change_screen(ScreenNames.COMPLETE_ENTRY, "up")
 
     def create_entry(self, text: str):
         """
@@ -130,9 +131,9 @@ class EntriesScreen(Screen):
 
         pressed_button = lang.get_key_by_value(btn_obj.text)
         if pressed_button == "tags_btn":
-            self.manager.change_screen(self.manager.tags_screen, "right")
+            self.manager.change_screen(ScreenNames.TAGS, "right")
         elif pressed_button == "history_btn":
-            self.manager.change_screen(self.manager.history_screen, "right")
+            self.manager.change_screen(ScreenNames.HISTORY, "right")
         else:
             # TODO: add exception handling
             pass
@@ -146,9 +147,9 @@ class EntriesScreen(Screen):
         """
 
         # Init entry_info_screen
-        entry_info_screen_instance = self.manager.get_screen(self.manager.entry_info_screen)
+        entry_info_screen_instance = self.manager.get_screen(ScreenNames.ENTRY_INFO)
         current_entry_id = btn_obj.id
         entry_info_screen_instance.init_screen(current_entry_id)
 
         # Change screen to entry_info_screen
-        self.manager.change_screen(self.manager.entry_info_screen, "right")
+        self.manager.change_screen(ScreenNames.ENTRY_INFO, "right")

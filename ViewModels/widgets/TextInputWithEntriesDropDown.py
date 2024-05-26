@@ -2,6 +2,7 @@ from kivy.properties import ListProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.textinput import TextInput
 
+from Models.screen_names import ScreenNames
 import main
 from Models.utils import DBLayer as db
 from ViewModels.widgets.Button import Button
@@ -34,7 +35,7 @@ class TextInputWithEntriesDropDown(TextInput):
         self.suggestions.clear()
 
         screen_manager = main.MainApp.get_running_app().root
-        entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
+        entries_screen_instance = screen_manager.get_screen(ScreenNames.ENTRIES)
         max_suggestions_count = int(self.config.get("max_suggestions_count"))
         available_suggestions = db.read_entries_by_name_part(
             list_id=entries_screen_instance.current_list_id,

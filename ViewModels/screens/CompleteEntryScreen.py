@@ -1,5 +1,6 @@
 from kivy.uix.screenmanager import Screen
 
+from Models.screen_names import ScreenNames
 from Models.utils import DBLayer as db
 from Models.utils.config_parser import Config
 
@@ -34,4 +35,4 @@ class CompleteEntryScreen(Screen):
 
         self.ids.qty_id.text = ""
         self.ids.price_id.text = ""
-        self.manager.change_screen(self.manager.entries_screen, "down")
+        self.manager.change_screen(ScreenNames.ENTRIES, "down")

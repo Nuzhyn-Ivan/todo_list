@@ -2,6 +2,8 @@ from kivy.clock import Clock
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 
+from Models.screen_names import ScreenNames
+from Models.utils.ScreenManagement import ScreenManagement
 import ViewModels.popups.ListEditPopup
 from Models.lang import Localization as lang
 from Models.utils import DBLayer as db
@@ -10,6 +12,8 @@ from Models.utils.config_parser import Config
 
 
 class ListsScreen(Screen):
+    manager: ScreenManagement
+
     def __init__(self, **kwargs):
         super(ListsScreen, self).__init__(**kwargs)
         self.config = Config()
@@ -70,11 +74,11 @@ class ListsScreen(Screen):
 
         # Set pressed list_id  to entries_screen
         list_id = btn_obj.id
-        entries_screen_instance = self.manager.get_screen(self.manager.entries_screen)
+        entries_screen_instance = self.manager.get_screen(ScreenNames.ENTRIES)
         entries_screen_instance.set_current_list(list_id)
 
         # Open entries_screen
-        self.manager.change_screen(self.manager.entries_screen, "left")
+        self.manager.change_screen(ScreenNames.ENTRIES, "left")
 
     def create_list(self, list_name: str):
         """

@@ -1,22 +1,15 @@
-from enum import Enum
 from kivy.core.window import Window
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.screenmanager import ScreenManager, CardTransition
 
 from Models.utils.config_parser import  Config
+from Models.screen_names import ScreenNames
 
 # TODO add type of param and return for all methods
 class ScreenManagement(ScreenManager):
     """
     Class to handle screens transition in app and access to all instances of screens
     """
-    lists_screen = 'lists_screen'
-    entries_screen = 'entries_screen'
-    complete_entry_screen = 'complete_entry_screen'
-    entry_info_screen = 'entry_info_screen'
-    settings_screen = 'settings_screen'
-    history_screen = 'history_screen'
-    tags_screen = 'tags_screen'
 
     def __init__(self, **kwargs):
         super(ScreenManagement, self).__init__(**kwargs)
@@ -33,13 +26,13 @@ class ScreenManagement(ScreenManager):
 
         if key == back_key:
             match self.current_screen.name:
-                case self.lists_screen:
+                case ScreenNames.LISTS:
                     return False  # exit the app from this page
-                case self.settings_screen:
-                    self.change_screen(self.lists_screen, 'right')
+                case ScreenNames.SETTINGS:
+                    self.change_screen(ScreenNames.LISTS, 'right')
                     return True  # do not exit the app
-                case self.entries_screen:
-                    self.change_screen(self.lists_screen, 'right')
+                case ScreenNames.ENTRIES:
+                    self.change_screen(ScreenNames.LISTS, 'right')
                     return True  # do not exit the app
 
     # TODO add keyword arguments for all usages

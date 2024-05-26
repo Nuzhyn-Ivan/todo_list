@@ -1,5 +1,5 @@
 <SettingsScreen>:
-    name: root.manager.settings_screen
+    name: ScreenNames.SETTINGS
     on_pre_enter: root.init_screen()
 
     # Root
@@ -165,11 +165,11 @@
                 height: "70dp"
                 font_size: root.config.get('font_size')
                 on_release:
-                    root.manager.change_screen(root.manager.lists_screen, "right")
+                    root.manager.change_screen(ScreenNames.LISTS, "right")
             Button:
                 text: lang.get('save_btn')
                 height: "70dp"
                 font_size: root.config.get('font_size')
                 on_release:
                     root.apply_settings()
-                    root.manager.change_screen(root.manager.lists_screen, "right")
+                    root.manager.change_screen(ScreenNames.LISTS, "right")

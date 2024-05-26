@@ -124,29 +124,29 @@
                 # ScrollView width
                 Label:
                     size_hint: (1, None)
-                    text: "{}: {}".format(lang.get('scrollview_size'), int(scrollwiew_slider_id.value))
+                    text: "{}: {}".format(lang.get('scrollview_size'), int(scrollview_slider_id.value))
                     font_size: root.config.get('font_size')
                     height: "35dp"
                     color: 0, 0, 0, 1
                 Slider:
                     size_hint: (1, None)
                     height: "30dp"
-                    id: scrollwiew_slider_id
+                    id: scrollview_slider_id
                     value: int(root.current_settings['scrollview_size'])
                     range: (0,15)
                     step: 1
                     on_value: root.current_settings['scrollview_size'] =  str(int(self.value))
 
-                # Background colour
+                # Background color
                 Spinner:
                     height: "70dp"
                     size_hint: (1, None)
                     font_size: root.config.get('font_size')
-                    text: "{} {}".format(lang.get('theme'), root.current_settings['background_colour'])
+                    text: "{} {}".format(lang.get('theme'), root.current_settings['background_color'])
                     values:
                         "{} Orange".format(lang.get('theme')), "{} White".format(lang.get('theme')), "{} Black".format(lang.get('theme'))
 
-                    on_text:  root.current_settings['background_colour'] = (self.text).rsplit(' ', 1)[1]
+                    on_text:  root.current_settings['background_color'] = (self.text).rsplit(' ', 1)[1]
                 Spinner:
                     height: "70dp"
                     size_hint: (1, None)

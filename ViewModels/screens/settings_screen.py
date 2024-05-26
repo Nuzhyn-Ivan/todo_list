@@ -19,7 +19,7 @@ class SettingsScreen(Screen):
 
         self.current_settings = dict(
             {
-                "background_colour": self.config.get("background_colour"),
+                "background_color": self.config.get("background_color"),
                 "lang": self.config.get("lang"),
                 "entries_font_size": self.config.get("entries_font_size"),
                 "lists_font_size": self.config.get("lists_font_size"),
@@ -57,5 +57,5 @@ class SettingsScreen(Screen):
         """
         for key in self.current_settings:
             self.config.set(option=key, value=self.current_settings[key])
-        # TODO lang reload doesnt work
+        # TODO lang reload does not work
         self.manager.refresh_screens()

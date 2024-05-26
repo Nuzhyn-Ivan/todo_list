@@ -3,7 +3,7 @@ from kivy.uix.popup import Popup
 
 from Models.screen_names import ScreenNames
 import main
-from Models.utils import DBLayer as db
+from Models.utils import database_layer as db
 
 
 class ListEditPopup(Popup):

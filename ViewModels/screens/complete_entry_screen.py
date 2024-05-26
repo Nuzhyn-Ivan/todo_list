@@ -1,7 +1,7 @@
 from kivy.uix.screenmanager import Screen
 
 from Models.screen_names import ScreenNames
-from Models.utils import DBLayer as db
+from Models.utils import database_layer as db
 from Models.utils.config_parser import Config
 
 

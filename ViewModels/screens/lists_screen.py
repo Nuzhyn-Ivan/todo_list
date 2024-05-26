@@ -3,16 +3,19 @@ from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 
 from Models.screen_names import ScreenNames
-from Models.utils.ScreenManagement import ScreenManagement
-import ViewModels.popups.ListEditPopup
-from Models.lang import Localization as lang
-from Models.utils import DBLayer as db
+from Models.utils.screen_management import ScreenManagement
+import ViewModels.popups.list_edit_popup
+from Models.lang import localization as lang
+from Models.utils import database_layer as db
+from ViewModels.screens.entries_screen import EntriesScreen
 from main import MainApp
 from Models.utils.config_parser import Config
 
 
 class ListsScreen(Screen):
     manager: ScreenManagement
+    config: Config
+    is_edit_mode: bool
 
     def __init__(self, **kwargs):
         super(ListsScreen, self).__init__(**kwargs)
@@ -74,7 +77,7 @@ class ListsScreen(Screen):
 
         # Set pressed list_id  to entries_screen
         list_id = btn_obj.id
-        entries_screen_instance = self.manager.get_screen(ScreenNames.ENTRIES)
+        entries_screen_instance: EntriesScreen = self.manager.get_screen(ScreenNames.ENTRIES)
         entries_screen_instance.set_current_list(list_id)
 
         # Open entries_screen
@@ -135,7 +138,7 @@ class ListsScreen(Screen):
             btn_obj (Button): Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
         """
 
-        list_edit_popup = ViewModels.popups.ListEditPopup.ListEditPopup(
+        list_edit_popup = ViewModels.popups.list_edit_popup.ListEditPopup(
             title=btn_obj.text.replace(lang.get("tap_to_edit"), ""),
             title_align="center",
         )

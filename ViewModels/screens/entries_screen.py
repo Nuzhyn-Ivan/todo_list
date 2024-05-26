@@ -2,13 +2,22 @@ from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 
 from Models.screen_names import ScreenNames
-import ViewModels.widgets.Button
-from Models.lang import Localization as lang
-from Models.utils import DBLayer as db
+from Models.utils.screen_management import ScreenManagement
+from ViewModels.screens.complete_entry_screen import CompleteEntryScreen
+from ViewModels.screens.entry_info_screen import EntryInfoScreen
+import ViewModels.widgets.button
+from Models.lang import localization as lang
+from Models.utils import database_layer as db
 from Models.utils.config_parser import Config
 
 
 class EntriesScreen(Screen):
+    manager: ScreenManagement
+    config: Config
+    ready_to_revoke_entries: list
+    current_list_id: str
+    current_list_name: str
+
     def __init__(self, **kwargs):
         super(EntriesScreen, self).__init__(**kwargs)
         self.config = Config()
@@ -37,7 +46,7 @@ class EntriesScreen(Screen):
         entry_note.id = entry_id
         self.ids.entries_panel_id.add_widget(entry_note, index)
 
-        entry = ViewModels.widgets.Button.Button(
+        entry = ViewModels.widgets.button.Button(
             text=entry_name,
             size_hint=(0.6, None),
             height=self.config.get("entries_height"),
@@ -88,7 +97,9 @@ class EntriesScreen(Screen):
         #  Now entry completed even if close app on entry_details_screen without save
         self.complete_entry(btn_obj)
 
-        complete_entry_screen_instance = self.manager.get_screen(self.manager.complete_entry_screen)
+        complete_entry_screen_instance: CompleteEntryScreen = self.manager.get_screen(
+            ScreenNames.COMPLETE_ENTRY
+        )
         complete_entry_screen_instance.entry_id = btn_obj.id
         self.manager.change_screen(ScreenNames.COMPLETE_ENTRY, "up")
 
@@ -129,10 +140,10 @@ class EntriesScreen(Screen):
             btn_obj (Button): Object of pressed button.
         """
 
-        pressed_button = lang.get_key_by_value(btn_obj.text)
-        if pressed_button == "tags_btn":
+        pressed_button_name = lang.get_key_by_value(btn_obj.text)
+        if pressed_button_name == "tags_btn":
             self.manager.change_screen(ScreenNames.TAGS, "right")
-        elif pressed_button == "history_btn":
+        elif pressed_button_name == "history_btn":
             self.manager.change_screen(ScreenNames.HISTORY, "right")
         else:
             # TODO: add exception handling
@@ -147,7 +158,9 @@ class EntriesScreen(Screen):
         """
 
         # Init entry_info_screen
-        entry_info_screen_instance = self.manager.get_screen(ScreenNames.ENTRY_INFO)
+        entry_info_screen_instance: EntryInfoScreen = self.manager.get_screen(
+            ScreenNames.ENTRY_INFO
+        )
         current_entry_id = btn_obj.id
         entry_info_screen_instance.init_screen(current_entry_id)
 

@@ -1,11 +1,16 @@
 from kivy.uix.screenmanager import Screen
 
-from Models.utils import DBLayer as db
+from Models.utils import database_layer as db
+from Models.utils.screen_management import ScreenManagement
 from Models.utils.config_parser import Config
 from main import MainApp
 
 
 class SettingsScreen(Screen):
+    manager: ScreenManagement
+    config: Config
+    current_settings: dict
+
     # TODO fix bug with font_size not apply on save(same as lang)
     # TODO move all kv strings to lang
     def __init__(self, **kwargs):

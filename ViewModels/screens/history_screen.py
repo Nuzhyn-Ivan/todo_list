@@ -2,13 +2,18 @@ from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 
 from Models.screen_names import ScreenNames
-from Models.utils import DBLayer as db
-from Models.utils.ScreenManagement import ScreenManagement
+from Models.utils import database_layer as db
+from Models.utils.screen_management import ScreenManagement
 from Models.utils.config_parser import  Config
+from ViewModels.screens.entries_screen import EntriesScreen
 
 
 class HistoryScreen(Screen):
     manager: ScreenManagement
+    config: Config
+    entries_list: list
+    entries_list_to_delete: list
+    sorting_type: str
     
     def __init__(self, **kwargs):
         super(HistoryScreen, self).__init__(**kwargs)
@@ -20,7 +25,7 @@ class HistoryScreen(Screen):
     def init_screen(self):
         self.refresh_history_screen()
 
-    def add_entry(self, entry_id: str, entry_name: str, index=0):
+    def add_entry(self, entry_id: str, entry_name: str, index: int=0):
         """        
         Add entry to HistoryScreen and database
 
@@ -44,7 +49,7 @@ class HistoryScreen(Screen):
         """
         Refresh History Screen
         """
-        entries_screen_instance = self.manager.get_screen(ScreenNames.ENTRIES)
+        entries_screen_instance: EntriesScreen = self.manager.get_screen(ScreenNames.ENTRIES)
 
         # Remove all
         self.ids.history_panel_id.clear_widgets()

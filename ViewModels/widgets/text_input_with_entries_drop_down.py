@@ -2,13 +2,14 @@ from kivy.properties import ListProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.textinput import TextInput
 
+from Models.screen_names import ScreenNames
 import main
-from Models.utils import DBLayer as db
-from ViewModels.widgets.Button import Button
+from Models.utils import database_layer as db
+from ViewModels.widgets.button import Button
 from Models.utils.config_parser import Config
 
 
-class TextInputWithSourcesDropDown(TextInput):
+class TextInputWithEntriesDropDown(TextInput):
     """
     TextInput with DropDown for 'suggestions' feature
     https://stackoverflow.com/questions/59779143/is-there-a-way-to-have-a-textinput-box-that-searches-automatically-searches-a-li
@@ -17,7 +18,7 @@ class TextInputWithSourcesDropDown(TextInput):
     suggestions = ListProperty([])
 
     def __init__(self, **kwargs):
-        super(TextInputWithSourcesDropDown, self).__init__(**kwargs)
+        super(TextInputWithEntriesDropDown, self).__init__(**kwargs)
         self.config = Config()
         self.suggestions = kwargs.pop("suggestions", [])  # list of suggestions
         self.text_validate_unfocus = False
@@ -28,24 +29,22 @@ class TextInputWithSourcesDropDown(TextInput):
         self.suggestion_text = " "
 
     def on_touch_down(self, touch):
-        super(TextInputWithSourcesDropDown, self).on_touch_down(touch)
-        self.text = ""
+        super(TextInputWithEntriesDropDown, self).on_touch_down(touch)
 
     def load_choices(self, entry_name_part, chooser):
-        screen_manager = main.MainApp.get_running_app().root
-        entry_details_screen_instance = screen_manager.get_screen(
-            screen_manager.entry_details_screen
-        )
         self.suggestions.clear()
+
+        screen_manager = main.MainApp.get_running_app().root
+        entries_screen_instance = screen_manager.get_screen(ScreenNames.ENTRIES)
         max_suggestions_count = int(self.config.get("max_suggestions_count"))
-        available_suggestions = db.read_sources_by_name_part(
-            list_id=entry_details_screen_instance.entry_id,
+        available_suggestions = db.read_entries_by_name_part(
+            list_id=entries_screen_instance.current_list_id,
             name_part=entry_name_part,
             limit=max_suggestions_count,
         )
         self.suggestions.extend(available_suggestions)
 
-        # The first entry has to be next to TextInput - this is the last position in suggestions
+        # The first entry has to be under TextInput - this is the last position in suggestions
         self.suggestions.reverse()
 
     def on_text(self, chooser, text):
@@ -61,7 +60,6 @@ class TextInputWithSourcesDropDown(TextInput):
                 self.suggestion_text = self.suggestions[0][len(self.text) :]
             else:
                 self.suggestion_text = " "  # setting suggestion_text to '' screws everything
-
             self.dropdown = DropDown()
             for suggestion in self.suggestions:
                 button = Button(
@@ -74,15 +72,10 @@ class TextInputWithSourcesDropDown(TextInput):
             self.dropdown.open(self)
 
     def do_choose(self, btn_obj: Button):
-        """
-        Set text of chosen suggestion as a source InputLine text
-        """
         self.text = ""
         screen_manager = main.MainApp.get_running_app().root
-        entry_details_screen_instance = screen_manager.get_screen(
-            screen_manager.entry_details_screen
-        )
-        entry_details_screen_instance.ids.source_id.text = btn_obj.text
+        entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
+        entries_screen_instance.create_entry(btn_obj.text)
         self.focused = True
         # TODO press enter here
         if self.dropdown:

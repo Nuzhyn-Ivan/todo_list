@@ -2,11 +2,11 @@ from kivy.app import App
 from kivy.core.window import Window
 from kivy.lang import Builder
 
-import Models.lang.Localization as lang
+import Models.lang.localization as lang
 from Models.utils.config_parser import Config
-from Models.utils import DBLayer as db
-from Models.utils.ScreenManagement import ScreenManagement
-from ViewModels.popups.ErrorPopup import ErrorPopup
+from Models.utils import database_layer as db
+from Models.utils.screen_management import ScreenManagement
+from ViewModels.popups.error_popup import ErrorPopup
 
 
 class MainApp(App):

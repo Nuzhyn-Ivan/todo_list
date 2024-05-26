@@ -1,7 +1,7 @@
 # This file contain ScreenManagement namespace definitions and all needed imports
+# Yes, lines '#: ' is NOT a comments but worked imports. Welcome to kivy
 # All content used in kv - should be imported here
 
-# Various imports. Yes, its NOT a comments but worked imports. Welcome to kivy
 #: import hex kivy.utils.get_color_from_hex
 #: import CardTransition kivy.uix.screenmanager.CardTransition
 #: import Clipboard kivy.core.clipboard.Clipboard
@@ -18,13 +18,13 @@
 #: import CompleteEntryScreen ViewModels.screens.complete_entry_screen
 
 #  Screens kv
-#:include force Views//kv//ListsScreen.kv
-#:include force Views//kv//SettingsScreen.kv
-#:include force Views//kv//EntriesScreen.kv
-#:include force Views//kv//TagsScreen.kv
-#:include force Views//kv//HistoryScreen.kv
-#:include force Views//kv//EntryInfoScreen.kv
-#:include force Views//kv//CompleteEntryScreen.kv
+#:include force Views//screens//ListsScreen.kv
+#:include force Views//screens//SettingsScreen.kv
+#:include force Views//screens//EntriesScreen.kv
+#:include force Views//screens//TagsScreen.kv
+#:include force Views//screens//HistoryScreen.kv
+#:include force Views//screens//EntryInfoScreen.kv
+#:include force Views//screens//CompleteEntryScreen.kv
 
 #  Popups py
 #: import EntriesNotesPopup ViewModels.popups.entries_notes_popup
@@ -32,8 +32,8 @@
 #: import ListEditPopup ViewModels.popups.list_edit_popup
 
 #  Popups kv
-#:include force Views//kv//ErrorPopup.kv
-#:include force Views//kv//ListEditPopup.kv
+#:include force Views//popups//ErrorPopup.kv
+#:include force Views//popups//ListEditPopup.kv
 
 #  Widgets py
 #: import Button ViewModels.widgets.button

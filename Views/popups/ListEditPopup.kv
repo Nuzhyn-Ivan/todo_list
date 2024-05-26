@@ -23,7 +23,7 @@
                 root.dismiss()
         Button:
             text: lang.get('delete_list')
-            font_size: root.config.get('font_size')
+            font_size: root.configuration.get('font_size')
             height: "70dp"
             size_hint:(1, None)
             on_release:
@@ -31,7 +31,7 @@
                 root.refresh_lists()
         Button:
             text: lang.get('cancel_btn')
-            font_size: root.config.get('font_size')
+            font_size: root.configuration.get('font_size')
             height: "70dp"
             size_hint:(1, None)
             on_release:

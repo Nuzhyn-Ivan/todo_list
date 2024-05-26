@@ -1,4 +1,4 @@
-# This file contain ScreenManagement namespace definitions and all needed imports
+# This file contain ScreenManager namespace definitions and all needed imports
 # Yes, lines '#: ' is NOT a comments but worked imports. Welcome to kivy
 # All content used in kv - should be imported here
 
@@ -6,7 +6,7 @@
 #: import CardTransition kivy.uix.screenmanager.CardTransition
 #: import Clipboard kivy.core.clipboard.Clipboard
 #: import lang Models.lang.localization
-#: import ScreenNames Models.screen_names.ScreenNames
+#: import ScreenNames Models.utils.screen_manager.ScreenNames
 
 #  Screens py
 #: import ListsScreen ViewModels.screens.lists_screen
@@ -42,8 +42,8 @@
 
 #  Widgets kv
 
-<ScreenManagement>:
-    id: manager
+<ScreenManager>:
+    id: screen_manager
     ListsScreen:
     EntriesScreen:
     SettingsScreen:

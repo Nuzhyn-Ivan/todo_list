@@ -2,7 +2,8 @@ from kivy.properties import ListProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.textinput import TextInput
 
-from Models.screen_names import ScreenNames
+from Models.utils.screen_manager import ScreenNames
+from ViewModels.screens.entries_screen import EntriesScreen
 import main
 from Models.utils import database_layer as db
 from ViewModels.widgets.button import Button
@@ -74,7 +75,7 @@ class TextInputWithEntriesDropDown(TextInput):
     def do_choose(self, btn_obj: Button):
         self.text = ""
         screen_manager = main.MainApp.get_running_app().root
-        entries_screen_instance = screen_manager.get_screen(screen_manager.entries_screen)
+        entries_screen_instance: EntriesScreen = screen_manager.get_screen(ScreenNames.ENTRIES)
         entries_screen_instance.create_entry(btn_obj.text)
         self.focused = True
         # TODO press enter here

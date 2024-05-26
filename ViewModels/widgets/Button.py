@@ -1,7 +1,7 @@
 from kivy.uix.button import Button
 from kivymd.uix.behaviors import TouchBehavior
 
-from Models.screen_names import ScreenNames
+from Models.utils.screen_manager import ScreenNames
 import main
 
 

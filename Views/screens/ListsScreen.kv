@@ -16,30 +16,30 @@
 
             Button:
                 text: lang.get('settings_btn')
-                font_size: root.config.get('font_size')
+                font_size: root.configuration.get('font_size')
                 on_release: root.manager.change_screen(ScreenNames.SETTINGS, "left")
                 size_hint: 0.6, 1
             Button:
                 id: lists_edit_btn
                 text: lang.get('edit_btn')
-                font_size: root.config.get('font_size')
+                font_size: root.configuration.get('font_size')
                 size_hint: 0.2, 1
                 on_press: root.change_edit_mode()
                 #disabled: True
             Button:
                 text: lang.get('search_btn')
-                font_size: root.config.get('font_size')
+                font_size: root.configuration.get('font_size')
                 size_hint: 0.2, 1
                 disabled: True
         ScrollView:
-            bar_width: root.config.get('scrollview_size')
+            bar_width: root.configuration.get('scrollview_size')
 
             # Lists panel
             GridLayout:
                 id: lists_panel_id
                 cols: 1
-                spacing: int(root.config.get('spacing'))
-                padding: int(root.config.get('padding'))
+                spacing: int(root.configuration.get('spacing'))
+                padding: int(root.configuration.get('padding'))
                 size_hint_y: None
                 height: self.minimum_height
 

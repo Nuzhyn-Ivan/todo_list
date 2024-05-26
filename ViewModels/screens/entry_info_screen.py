@@ -1,20 +1,20 @@
 from kivy.uix.screenmanager import Screen
 
-from Models.screen_names import ScreenNames
+from Models.utils.screen_manager import ScreenNames
 from Models.utils import database_layer as db
-from Models.utils.screen_management import ScreenManagement
+from Models.utils.screen_manager import ScreenManager
 from Models.utils.config_parser import Config
 
 
 class EntryInfoScreen(Screen):
-    manager: ScreenManagement
-    config: Config
+    manager: ScreenManager
+    configuration: Config
     note_text: str
     entry_id: str
 
     def __init__(self, **kwargs):
         super(EntryInfoScreen, self).__init__(**kwargs)
-        self.config = Config()
+        self.configuration = Config()
         self.note_text = str
         self.entry_id = None
 

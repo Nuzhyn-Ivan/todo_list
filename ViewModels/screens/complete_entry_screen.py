@@ -1,14 +1,18 @@
 from kivy.uix.screenmanager import Screen
 
-from Models.screen_names import ScreenNames
+from Models.utils.screen_manager import ScreenNames
 from Models.utils import database_layer as db
 from Models.utils.config_parser import Config
+from Models.utils.screen_manager import ScreenManager
 
 
 class CompleteEntryScreen(Screen):
+    configuration: Config
+    manager: ScreenManager
+
     def __init__(self, **kwargs):
         super(CompleteEntryScreen, self).__init__(**kwargs)
-        self.config = Config()
+        self.configuration = Config()
         self.note_text = ""
         self.entry_id = ""
         self.last_source = ""

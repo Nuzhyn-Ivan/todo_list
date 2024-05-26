@@ -18,21 +18,21 @@
             spacing: 2
             Button:
                 id: current_list_btn
-                font_size: root.config.get('font_size')
+                font_size: root.configuration.get('font_size')
                 size_hint: 0.6, 1
                 on_release: root.manager.change_screen(ScreenNames.LISTS, "right")
             Button:
                 id: revoke_btn_id
                 text: lang.get('revoke_btn')
                 size_hint: 0.2, 1
-                font_size: root.config.get('font_size')
+                font_size: root.configuration.get('font_size')
                 disabled: True
                 on_release: root.revoke_entry()
             Spinner:
                 id: tools_btn_id
                 height: "70dp"
                 size_hint: 0.2, 1
-                font_size: root.config.get('font_size')
+                font_size: root.configuration.get('font_size')
                 text: lang.get('tools_btn')
                 values: 'Tags', 'History'
                 on_text:
@@ -41,7 +41,7 @@
         # Entries Panel
         ScrollView:
             id: entries_sw_id
-            bar_width: root.config.get('scrollview_size')
+            bar_width: root.configuration.get('scrollview_size')
             GridLayout:
                 id: entries_panel_id
                 #adaptive_size: True
@@ -49,8 +49,8 @@
                 height: 50
                 #size_hint: 1, None
                 cols: 2
-                spacing: int(root.config.get('spacing'))
-                padding: int(root.config.get('padding'))
+                spacing: int(root.configuration.get('spacing'))
+                padding: int(root.configuration.get('padding'))
                 #height: self.minimum_height
 
         # Bottom Panel

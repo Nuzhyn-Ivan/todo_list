@@ -1,26 +1,26 @@
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 
-from Models.screen_names import ScreenNames
+from Models.utils.screen_manager import ScreenNames
 from Models.utils import database_layer as db
-from Models.utils.screen_management import ScreenManagement
+from Models.utils.screen_manager import ScreenManager
 from Models.utils.config_parser import  Config
 from ViewModels.screens.entries_screen import EntriesScreen
 
 
 class HistoryScreen(Screen):
-    manager: ScreenManagement
-    config: Config
+    manager: ScreenManager
+    configuration: Config
     entries_list: list
     entries_list_to_delete: list
     sorting_type: str
     
     def __init__(self, **kwargs):
         super(HistoryScreen, self).__init__(**kwargs)
-        self.config = Config()
+        self.configuration = Config()
         self.entries_list = []
         self.entries_list_to_delete = []
-        self.sorting_type = self.config.get('history_sorting')
+        self.sorting_type = self.configuration.get('history_sorting')
 
     def init_screen(self):
         self.refresh_history_screen()
@@ -39,7 +39,7 @@ class HistoryScreen(Screen):
             text=entry_name,
             size_hint=(1, None),
             height="70dp",
-            font_size=self.config.get('entries_font_size'),
+            font_size=self.configuration.get('entries_font_size'),
             on_release=self.tag_entry_to_delete,
         )
         entry.id = entry_id

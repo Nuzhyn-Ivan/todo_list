@@ -1,8 +1,8 @@
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 
-from Models.screen_names import ScreenNames
-from Models.utils.screen_management import ScreenManagement
+from Models.utils.screen_manager import ScreenNames
+from Models.utils.screen_manager import ScreenManager
 from ViewModels.screens.complete_entry_screen import CompleteEntryScreen
 from ViewModels.screens.entry_info_screen import EntryInfoScreen
 import ViewModels.widgets.button
@@ -12,15 +12,15 @@ from Models.utils.config_parser import Config
 
 
 class EntriesScreen(Screen):
-    manager: ScreenManagement
-    config: Config
+    manager: ScreenManager
+    configuration: Config
     ready_to_revoke_entries: list
     current_list_id: str
     current_list_name: str
 
     def __init__(self, **kwargs):
         super(EntriesScreen, self).__init__(**kwargs)
-        self.config = Config()
+        self.configuration = Config()
         self.ready_to_revoke_entries = []
         self.current_list_id = ""
         self.current_list_name = ""
@@ -39,8 +39,8 @@ class EntriesScreen(Screen):
         entry_note = Button(
             text=lang.get("open_entry_info"),
             size_hint=(0.2, None),
-            height=self.config.get("entries_height"),
-            font_size=self.config.get("entries_font_size"),
+            height=self.configuration.get("entries_height"),
+            font_size=self.configuration.get("entries_font_size"),
             on_release=self.open_entry_info_screen,
         )
         entry_note.id = entry_id
@@ -49,8 +49,8 @@ class EntriesScreen(Screen):
         entry = ViewModels.widgets.button.Button(
             text=entry_name,
             size_hint=(0.6, None),
-            height=self.config.get("entries_height"),
-            font_size=self.config.get("entries_font_size"),
+            height=self.configuration.get("entries_height"),
+            font_size=self.configuration.get("entries_font_size"),
             on_release=self.complete_entry,
             duration_long_touch=0.4,
         )

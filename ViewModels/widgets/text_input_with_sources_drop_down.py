@@ -2,6 +2,7 @@ from kivy.properties import ListProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.textinput import TextInput
 
+from Models.utils.screen_manager import ScreenManager
 import main
 from Models.utils import database_layer as db
 from ViewModels.widgets.button import Button
@@ -14,11 +15,15 @@ class TextInputWithSourcesDropDown(TextInput):
     https://stackoverflow.com/questions/59779143/is-there-a-way-to-have-a-textinput-box-that-searches-automatically-searches-a-li
     """
 
+    screen_manager: ScreenManager
+    config: Config
+
     suggestions = ListProperty([])
 
     def __init__(self, **kwargs):
         super(TextInputWithSourcesDropDown, self).__init__(**kwargs)
         self.config = Config()
+        self.screen_manager = main.MainApp.get_running_app().root
         self.suggestions = kwargs.pop("suggestions", [])  # list of suggestions
         self.text_validate_unfocus = False
         self.multiline = False
@@ -32,9 +37,8 @@ class TextInputWithSourcesDropDown(TextInput):
         self.text = ""
 
     def load_choices(self, entry_name_part, chooser):
-        screen_manager = main.MainApp.get_running_app().root
-        entry_details_screen_instance = screen_manager.get_screen(
-            screen_manager.entry_details_screen
+        entry_details_screen_instance = self.screen_manager.get_screen(
+            self.screen_manager.entry_details_screen
         )
         self.suggestions.clear()
         max_suggestions_count = int(self.config.get("max_suggestions_count"))
@@ -78,9 +82,8 @@ class TextInputWithSourcesDropDown(TextInput):
         Set text of chosen suggestion as a source InputLine text
         """
         self.text = ""
-        screen_manager = main.MainApp.get_running_app().root
-        entry_details_screen_instance = screen_manager.get_screen(
-            screen_manager.entry_details_screen
+        entry_details_screen_instance = self.screen_manager.get_screen(
+            self.screen_manager.entry_details_screen
         )
         entry_details_screen_instance.ids.source_id.text = btn_obj.text
         self.focused = True

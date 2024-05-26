@@ -2,8 +2,8 @@ from kivy.clock import Clock
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 
-from Models.screen_names import ScreenNames
-from Models.utils.screen_management import ScreenManagement
+from Models.utils.screen_manager import ScreenNames
+from Models.utils.screen_manager import ScreenManager
 import ViewModels.popups.list_edit_popup
 from Models.lang import localization as lang
 from Models.utils import database_layer as db
@@ -13,13 +13,13 @@ from Models.utils.config_parser import Config
 
 
 class ListsScreen(Screen):
-    manager: ScreenManagement
-    config: Config
+    manager: ScreenManager
+    configuration: Config
     is_edit_mode: bool
 
     def __init__(self, **kwargs):
         super(ListsScreen, self).__init__(**kwargs)
-        self.config = Config()
+        self.configuration = Config()
         self.is_edit_mode = False
         Clock.schedule_once(self.init_screen, 0.5)  # Add lists to Lists screen on app start
 
@@ -37,7 +37,7 @@ class ListsScreen(Screen):
         """
 
         list_btn = Button(
-            font_size=self.config.get("lists_font_size"),
+            font_size=self.configuration.get("lists_font_size"),
             size_hint=(1, None),
             height="70dp",
         )

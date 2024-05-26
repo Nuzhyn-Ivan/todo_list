@@ -1,19 +1,28 @@
+from enum import StrEnum
 from kivy.core.window import Window
 from kivy.uix.anchorlayout import AnchorLayout
-from kivy.uix.screenmanager import ScreenManager, CardTransition
+from kivy.uix import screenmanager
 
 from Models.utils.config_parser import  Config
-from Models.screen_names import ScreenNames
 
+class ScreenNames(StrEnum):
+    LISTS = "lists_screen"
+    ENTRIES = "entries_screen"
+    COMPLETE_ENTRY = "complete_entry_screen"
+    ENTRY_INFO = "entry_info_screen"
+    SETTINGS = "settings_screen"
+    HISTORY = "history_screen"
+    TAGS = "tags_screen"
+    
 # TODO add type of param and return for all methods
-class ScreenManagement(ScreenManager):
+class ScreenManager(screenmanager.ScreenManager):
     """
     Class to handle screens transition in app and access to all instances of screens
     """
 
     def __init__(self, **kwargs):
-        super(ScreenManagement, self).__init__(**kwargs)
-        self.config = Config()
+        super(ScreenManager, self).__init__(**kwargs)
+        self.configuration = Config()
         Window.bind(on_keyboard=self.on_key)
 
     def on_key(self, window, key, *args):
@@ -46,8 +55,8 @@ class ScreenManagement(ScreenManager):
             transition_direction (str):  Direction of screen change(left, right, up, down)
         """
 
-        self.transition = CardTransition(direction=transition_direction,
-                                         duration=float(self.config.get('screen_transition_duration')))
+        self.transition = screenmanager.CardTransition(direction=transition_direction,
+                                         duration=float(self.configuration.get('screen_transition_duration')))
         self.current = screen_name
 
     def _update_screens(self, new_screens):

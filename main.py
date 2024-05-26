@@ -5,11 +5,14 @@ from kivy.lang import Builder
 import Models.lang.localization as lang
 from Models.utils.config_parser import Config
 from Models.utils import database_layer as db
-from Models.utils.screen_management import ScreenManagement
+from Models.utils.screen_manager import ScreenManager
 from ViewModels.popups.error_popup import ErrorPopup
 
 
 class MainApp(App):
+    configuration: Config
+    icon: str
+    title: str
 
     def __init__(self, **kwargs):
         super(MainApp, self).__init__(**kwargs)
@@ -34,7 +37,7 @@ class MainApp(App):
         )
         lang.reload_lang()
 
-        return ScreenManagement()
+        return ScreenManager()
 
     @staticmethod
     def open_error_popup(text):

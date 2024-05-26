@@ -22,11 +22,13 @@ class ListsScreen(Screen):
     def add_list(self, list_id: str, list_name: str, index: int):
         """
         Add List on Lists screen.
-        :param list_id: List ID
-        :param list_name: List name
-        :param index: Index of exact list on Lists screen.
-        :return:
+
+        Args:
+            list_id (str): List ID
+            list_name (str): List name
+            index (int): Index of exact list on Lists screen.
         """
+
         list_btn = Button(
             font_size=self.config.get("lists_font_size"),
             size_hint=(1, None),
@@ -61,8 +63,9 @@ class ListsScreen(Screen):
     def open_list(self, btn_obj: Button):
         """
         Change screen to 'Entries', add entries of exact list
-        :param btn_obj: Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
-        :return:
+
+        Args:
+            btn_obj (Button): Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
         """
 
         # Set pressed list_id  to entries_screen
@@ -76,9 +79,11 @@ class ListsScreen(Screen):
     def create_list(self, list_name: str):
         """
         Add list_name to database and Lists screen
-        :param list_name: Name of list to create
-        :return:
+
+        Args:
+            list_name (str): Name of list to create
         """
+
         # TODO - implement lists order display
         # TODO - handle duplicates
         order_id_of_list = 1
@@ -101,9 +106,11 @@ class ListsScreen(Screen):
     def delete_list(self, btn_obj: Button):
         """
         Delete list from database and Lists screen
-        :param btn_obj: Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
-        :return:
+
+        Args:
+            btn_obj (Button): Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
         """
+
         db.delete_list_by_id(btn_obj.id)
         self.ids.lists_panel_id.remove_widget(btn_obj)
 
@@ -119,9 +126,11 @@ class ListsScreen(Screen):
     def open_edit_popup(btn_obj: Button):
         """
         Open ListEditPopup
-        :param btn_obj: Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
-        :return:
+
+        Args:
+            btn_obj (Button): Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
         """
+
         list_edit_popup = ViewModels.popups.ListEditPopup.ListEditPopup(
             title=btn_obj.text.replace(lang.get("tap_to_edit"), ""),
             title_align="center",

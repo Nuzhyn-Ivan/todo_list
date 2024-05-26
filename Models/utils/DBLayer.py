@@ -11,14 +11,18 @@ migrations_list = {
 }
 
 
-def execute_query(query, *args):
+def execute_query(query: str, *args):
     """
-    Execute given query with given params
-    :param query: SQL query
-    :param args: params for a query
-    :type args: tuple
-    :return: result of query execution
+    Execute given query with given params.
+
+    Args:
+        query (str): SQL query
+        args (tuple): params for a query
+
+    Returns:
+        tuple: result of query execution
     """
+
     with sqlite3.connect(database_path) as sqlite_connection:
         cursor = sqlite_connection.cursor()
         try:
@@ -30,29 +34,6 @@ def execute_query(query, *args):
         sqlite_connection.commit()
 
         return records
-
-
-def execute_query(query, *args):
-    """
-    Execute given query with given params
-    :param query: SQL query
-    :param args: params for a query
-    :type args: tuple
-    :return: result of query execution
-    """
-    sqlite_connection = sqlite3.connect(database_path)
-    cursor = sqlite_connection.cursor()
-    try:
-        cursor.execute(query, *args)
-        records = cursor.fetchall()
-        sqlite_connection.commit()
-        return records
-    except sqlite3.Error as error:
-        print(f"Error executing query: {error}")
-        # todo add error handling - open error popup
-    finally:
-        cursor.close()
-        sqlite_connection.close()
 
 
 # TODO update documentation, refactor DBLayer(try to extract sqlite part from def)
@@ -157,15 +138,18 @@ def run_migrations():
 
 # Lists CRUD
 def create_list(list_name: str, order_id: int):
+    """
+    Select all entries from Lists table
+
+    Args:
+        list_name (str): Name of list.
+        order_id (int): Position of list.
+    """
     query = """INSERT INTO 'Lists' ('name', 'order_id') VALUES (?, ? )"""
     execute_query(query, (list_name, order_id))
 
 
 def read_lists() -> List[Tuple]:
-    """
-    Select all entries from Lists table
-    :return: [id, name, order_id, created_date]
-    """
     query = """SELECT * FROM `Lists` ORDER BY order_id"""
     records = execute_query(query)
     return records

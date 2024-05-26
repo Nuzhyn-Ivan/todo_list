@@ -50,8 +50,6 @@ class EntriesScreen(Screen):
     def refresh_entries_screen(self):
         """
         Refresh EntriesScreen
-        :param:
-        :return:
         """
         # TODO remove and refactor label sizing
 
@@ -96,9 +94,11 @@ class EntriesScreen(Screen):
     def create_entry(self, text: str):
         """
         Add entry to database and refresh EntriesScreen
-        :param text: Entry name
-        :return:
+
+        Args:
+            text (str): Entry name
         """
+
         text = text.strip()
         # TODO add error handling same with add_list
         if text:
@@ -111,8 +111,6 @@ class EntriesScreen(Screen):
     def revoke_entry(self):
         """
         Recover last completed entry and add it back to EntriesScreen
-        :param:
-        :return:
         """
         entry_text = self.ready_to_revoke_entries.pop()
         self.create_entry(entry_text)
@@ -125,9 +123,11 @@ class EntriesScreen(Screen):
     def open_tools_screen(self, btn_obj: Button):
         """
         Open one of the Tools screen - TagsScreen, HistoryScreen
-        :param btn_obj: Object of pressed button.
-        :return:
+
+        Args:
+            btn_obj (Button): Object of pressed button.
         """
+
         pressed_button = lang.get_key_by_value(btn_obj.text)
         if pressed_button == "tags_btn":
             self.manager.change_screen(self.manager.tags_screen, "right")
@@ -140,9 +140,11 @@ class EntriesScreen(Screen):
     def open_entry_info_screen(self, btn_obj: Button):
         """
         Open EntryInfo screen
-        :param btn_obj: Object of pressed button.
-        :return:
+
+        Args:
+            btn_obj (Button): Object of pressed button.
         """
+
         # Init entry_info_screen
         entry_info_screen_instance = self.manager.get_screen(self.manager.entry_info_screen)
         current_entry_id = btn_obj.id

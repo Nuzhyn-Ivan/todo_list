@@ -48,10 +48,11 @@ class ScreenManagement(ScreenManager):
         Change app screen.
         Screen title its 'name' param from kv screen file. Screens list can be found in self.screen_title.
 
-        :param screen_name: title of screen to open.
-        :param transition_direction: Direction of screen change(left, right, up, down)
-        :return:
+        Args:
+            screen_name (str): title of screen to open.
+            transition_direction (str):  Direction of screen change(left, right, up, down)
         """
+
         self.transition = CardTransition(direction=transition_direction,
                                          duration=float(self.config.get('screen_transition_duration')))
         self.current = screen_name

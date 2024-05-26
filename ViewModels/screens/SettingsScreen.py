@@ -32,8 +32,6 @@ class SettingsScreen(Screen):
     def get_current_settings(self):
         """
         Actualize self.current_settings from app config
-        :param:
-        :return:
         """
         for key in self.current_settings:
             self.current_settings[key] = self.config.get(key)
@@ -42,8 +40,6 @@ class SettingsScreen(Screen):
     def reset_db():
         """
         Drop current database and recreate it
-        :param:
-        :return:
         """
         # TODO Add popup msg that app will be closed and need to run manually. Or add correct restart of app
         db.drop_database()
@@ -52,8 +48,7 @@ class SettingsScreen(Screen):
     def apply_settings(self):
         """
         Apply settings from self.current_settings to app config
-        :param:
-        :return:
+
         """
         for key in self.current_settings:
             self.config.set(option=key, value=self.current_settings[key])

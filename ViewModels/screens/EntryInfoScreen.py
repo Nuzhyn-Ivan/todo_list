@@ -14,8 +14,7 @@ class EntryInfoScreen(Screen):
     def init_screen(self, current_entry_id):
         """
         Initiate EntryNotesScreen
-        :param:
-        :return:
+
         """
         self.current_entry_id = current_entry_id
         self.note_text = db.get_entry_note(current_entry_id)
@@ -24,8 +23,7 @@ class EntryInfoScreen(Screen):
     def save_note(self):
         """
         Save note to database
-        :param:
-        :return:
+
         """
         self.manager.change_screen(self.manager.entries_screen, "left")
         db.set_entry_note(self.entry_id, self.ids.note_id.text)
@@ -34,7 +32,6 @@ class EntryInfoScreen(Screen):
     def back(self):
         """
         Change screen to EntriesScreen
-        :param:
-        :return:
+
         """
         self.manager.change_screen(self.manager.entries_screen, "left")

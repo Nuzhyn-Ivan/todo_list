@@ -17,13 +17,15 @@ class HistoryScreen(Screen):
         self.refresh_history_screen()
 
     def add_entry(self, entry_id: str, entry_name: str, index=0):
-        """
+        """        
         Add entry to HistoryScreen and database
-        :param entry_id: ID of entry
-        :param entry_name: name of entry
-        :param index: index of entry to display on entries screen. Not implemented
-        :return:
+
+        Args:
+            entry_id (str): ID of entry
+            entry_name (str): name of entry
+            index (int, optional): index of entry to display on entries screen. Not implemented. Defaults to 0.
         """
+
         entry = Button(
             text=entry_name,
             size_hint=(1, None),
@@ -37,8 +39,6 @@ class HistoryScreen(Screen):
     def refresh_history_screen(self):
         """
         Refresh History Screen
-        :param:
-        :return:
         """
         entries_screen_instance = self.manager.get_screen(self.manager.entries_screen)
 
@@ -67,8 +67,6 @@ class HistoryScreen(Screen):
     def apply_entries_sorting(self, sorting_type: str):
         """
         Apply chosen sort type
-        :param:
-        :return:
         """
         match sorting_type:
             case 'az_sorting':
@@ -85,9 +83,11 @@ class HistoryScreen(Screen):
         Delete entry from UI
         Put to self.entries_list_to_delete
         Enable Revoke btn
-        :param: btn_obj
-        :return:
+
+        Args:
+            btn_obj (Button): Button object.
         """
+
         self.ids.history_panel_id.remove_widget(btn_obj)
         self.entries_list_to_delete.append(btn_obj.id)
         self.ids.revoke_btn_id.disabled = False
@@ -95,8 +95,6 @@ class HistoryScreen(Screen):
     def apply_delete_entry(self):
         """
         Delete entry from HistoryScreen
-        :param:
-        :return:
         """
         for entry in self.entries_list_to_delete:
             db.delete_entry(entry)
@@ -106,8 +104,6 @@ class HistoryScreen(Screen):
     def revoke_entry(self):
         """
         Recover last completed entry and add it back to HistoryScreen
-        :param:
-        :return:
         """
         last_entry = self.entries_list_to_delete.pop(-1)
 

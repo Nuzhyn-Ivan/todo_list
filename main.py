@@ -40,8 +40,7 @@ class MainApp(App):
     def open_error_popup(text):
         """
         Open ErrorPopup
-        :param:
-        :return:
+
         """
         ErrorPopup.error_text = text
         ErrorPopup.ErrorPopup().open()

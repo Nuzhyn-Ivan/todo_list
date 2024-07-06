@@ -31,10 +31,7 @@ class SettingsScreen(Screen):
             }
         )
 
-    def init_screen(self):
-        self.get_current_settings()
-
-    def get_current_settings(self):
+    def actualize_current_settings(self):
         """
         Actualize self.current_settings from app config
         """

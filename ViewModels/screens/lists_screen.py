@@ -4,7 +4,7 @@ from kivy.uix.screenmanager import Screen
 
 from Models.utils.screen_manager import ScreenNames
 from Models.utils.screen_manager import ScreenManager
-import ViewModels.popups.list_edit_popup
+from ViewModels.popups.list_edit_popup import ListEditPopup
 from Models.lang import localization as lang
 from Models.utils import database_layer as db
 from ViewModels.screens.entries_screen import EntriesScreen
@@ -138,9 +138,10 @@ class ListsScreen(Screen):
             btn_obj (Button): Object of pressed list button from Lists screen. Contain 'id' and 'name' of the list
         """
 
-        list_edit_popup = ViewModels.popups.list_edit_popup.ListEditPopup(
+        list_edit_popup = ListEditPopup(
             title=btn_obj.text.replace(lang.get("tap_to_edit"), ""),
             title_align="center",
         )
+
         list_edit_popup.list_name = btn_obj.text.replace(lang.get("tap_to_edit"), "")
         list_edit_popup.open()

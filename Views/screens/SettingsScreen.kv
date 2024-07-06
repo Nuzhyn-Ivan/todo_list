@@ -1,6 +1,6 @@
 <SettingsScreen>:
     name: ScreenNames.SETTINGS
-    on_pre_enter: root.init_screen()
+    on_pre_enter: root.actualize_current_settings()
 
     # Root
     BoxLayout:
@@ -151,8 +151,8 @@
                     height: "70dp"
                     size_hint: (1, None)
                     font_size: root.configuration.get('font_size')
-                    text: "{} {}".format(lang.get('language:'), root.current_settings['lang'])
-                    values: "{} en".format(lang.get('language:')), "{} ua".format(lang.get('language:'))
+                    text: "{} {}".format(lang.get('language'), root.current_settings['lang'])
+                    values: "{} en".format(lang.get('language')), "{} ua".format(lang.get('language'))
                     on_text:  root.current_settings['lang']  =  (self.text).rsplit(' ', 1)[1]
         # Bottom panel
         BoxLayout:

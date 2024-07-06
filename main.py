@@ -16,7 +16,7 @@ class MainApp(App):
 
     def __init__(self, **kwargs):
         super(MainApp, self).__init__(**kwargs)
-        self.configuration = Config()
+        self.configuration = Config()  # kivy adds 'config' object so cant use this name
 
     def build(self):
         """

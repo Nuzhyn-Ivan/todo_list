@@ -29,6 +29,7 @@ class CompleteEntryScreen(Screen):
 
         if not db.source_exist(source_name):
             db.create_source(source_name)
+
         source_id = db.get_source_id(source_name)
         db.create_entries_history(
             source_id=source_id,

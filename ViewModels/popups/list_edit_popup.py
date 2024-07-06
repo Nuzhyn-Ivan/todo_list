@@ -1,16 +1,17 @@
 from kivy.properties import StringProperty
 from kivy.uix.popup import Popup
 
+import main
 from Models.utils.screen_manager import ScreenNames
 from Models.utils.config_parser import Config
 from Models.utils.screen_manager import ScreenManager
-import main
 from Models.utils import database_layer as db
+from ViewModels.screens import lists_screen
 
 
 class ListEditPopup(Popup):
     configuration: Config = Config()
-    list_name = StringProperty()
+    list_name: str = ""
 
     def rename_list(self, text):
         if text != self.list_name:
@@ -25,5 +26,7 @@ class ListEditPopup(Popup):
     @staticmethod
     def refresh_lists():
         screen_manager: ScreenManager = main.MainApp.get_running_app().root
-        lists_screen_instance = screen_manager.get_screen(ScreenNames.LISTS)
+        lists_screen_instance: lists_screen.ListsScreen = screen_manager.get_screen(
+            ScreenNames.LISTS
+        )
         lists_screen_instance.refresh_lists()
